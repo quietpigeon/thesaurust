@@ -1,6 +1,6 @@
 use exitfailure::ExitFailure;
 use reqwest::Url;
-use serde_derive::{Deserialize, Serialize};
+use serde_derive::{ Deserialize, Serialize };
 use structopt::StructOpt;
 
 #[derive(StructOpt)]
@@ -29,24 +29,10 @@ struct Definition {
     antonyms: Vec<String>,
 }
 
-/** 
-impl Thesaurus {
-    async fn get(word: &String) -> Result<Self, ExitFailure> {
-        let url = format!("https://api.dictionaryapi.dev/api/v2/entries/en/{}", word);
-        let url = Url::parse(&*url)?;
-        let resp = reqwest::get(url)
-            .await?
-            .json::<Vec<Thesaurus>>()
-            .await?;
-        let r = &resp[0];
-        Ok(r)
-    }
-}
-*/
-
 #[tokio::main]
 async fn main() -> Result<(), ExitFailure> {
-    let data = r#"[{
+    let data =
+        r#"[{
             "word": "blue",
             "origin": "origin",
             "meanings": [{
@@ -61,14 +47,10 @@ async fn main() -> Result<(), ExitFailure> {
     }]"#;
     let args = Cli::from_args();
     let url = format!("https://api.dictionaryapi.dev/api/v2/entries/en/{}", args.word);
-    println!("{}", url);
     let response = reqwest::get(&url).await?;
     let r: Vec<Thesaurus> = response.json().await?;
-    //let resp = Thesaurus::get(&args.word).await?;
     let datas: Vec<Thesaurus> = serde_json::from_str(data)?;
-    println!("{:?}", r);
-    for data in datas.iter() {
-        println!("{:#?}", data.origin);
-}
+    let res = &r[0];
+    println!("{}", res.meanings[0].partOfSpeech);
     Ok(())
 }
