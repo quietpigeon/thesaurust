@@ -18,6 +18,7 @@ pub struct Thesaurus {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[allow(non_snake_case)]
 pub struct Meaning {
     pub partOfSpeech: String,
     pub definitions: Vec<Definition>
