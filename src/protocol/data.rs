@@ -1,6 +1,8 @@
 use serde_derive::{Deserialize, Serialize};
 use structopt::StructOpt;
 
+const DOMAIN: &str = "https://api.dictionaryapi.dev/api/v2/entries/en";
+
 /// The word that the user wants to search for in the thesaurus.
 #[derive(StructOpt)]
 pub struct Cli {
@@ -8,11 +10,12 @@ pub struct Cli {
 }
 
 impl Cli {
+    pub fn new(word: String) -> Self {
+        Self { word }
+    }
+
     pub fn construct_url(&self) -> String {
-        format!(
-            "https://api.dictionaryapi.dev/api/v2/entries/en/{}",
-            self.word
-        )
+        format!("{}/{}", DOMAIN, self.word)
     }
 }
 
