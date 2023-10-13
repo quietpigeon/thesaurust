@@ -31,26 +31,11 @@ struct Definition {
 
 #[tokio::main]
 async fn main() -> Result<(), ExitFailure> {
-    let data =
-        r#"[{
-            "word": "blue",
-            "origin": "origin",
-            "meanings": [{
-                "partOfSpeech": "wee",
-                "definitions": [{
-                    "definition": "",
-                    "example": "",
-                    "synonyms": [""],
-                    "antonyms": [""]
-                }]
-            }]
-    }]"#;
     let args = Cli::from_args();
     let url = format!("https://api.dictionaryapi.dev/api/v2/entries/en/{}", args.word);
     let response = reqwest::get(&url).await?;
-    let r: Vec<Thesaurus> = response.json().await?;
-    let datas: Vec<Thesaurus> = serde_json::from_str(data)?;
-    let res = &r[0];
-    println!("{}", res.meanings[0].partOfSpeech);
+    let results: Vec<Thesaurus> = response.json().await?;
+    let result = &results[0];
+    println!("{}", result.meanings[0].partOfSpeech);
     Ok(())
 }
