@@ -1,3 +1,9 @@
+pub mod app;
+pub mod event;
+pub mod ui;
+pub mod tui;
+pub mod update;
+
 use structopt::StructOpt;
 use thesaurust::{fetch_response, protocol::*};
 
