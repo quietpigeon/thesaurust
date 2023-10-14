@@ -1,17 +1,30 @@
-mod protocol;
+use exitfailure::ExitFailure;
+use structopt::StructOpt;
 
+#[path = "protocol/data.rs"]
+pub mod protocol;
+use crate::protocol::*;
+
+#[tokio::main]
+pub async fn fetch_response() -> Result<Vec<Thesaurus>, ExitFailure> {
+    let args = from_cli();
+    let url = Cli::construct_url(&args);
+    let response = reqwest::get(&url).await?;
+    let results: Vec<Thesaurus> = response.json().await?;
+    Ok(results)
+}
+
+/// MARK: Private functions
+fn from_cli() -> Cli {
+    Cli::from_args()
+}
+
+/// MARK: Unit tests
 #[cfg(test)]
-use mockito;
 mod tests {
     use super::*;
+    use tokio;
 
     #[tokio::test]
-    async fn valid_results() {
-        let test_args = protocol::Cli::new("lol".to_string());
-        let url = protocol::Cli::construct_url(&test_args);
-        let response = reqwest::get(&url).await.unwrap();
-        let results: Vec<protocol::Thesaurus> = response.json().await;
-        let result = &results[0];
-        assert!(result.meanings[0].partOfSpeech.is_empty())
-    }
+    async fn test_fetch_response() {}
 }

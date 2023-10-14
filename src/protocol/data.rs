@@ -26,20 +26,30 @@ pub struct Thesaurus {
     pub origin: Option<String>,
 
     // A word can have multiple meanings, hence it is represented as an array of meanings.
-    pub meanings: Vec<Meaning>,
+    pub meanings: Option<Vec<Meaning>>,
+}
+
+impl Thesaurus {
+    pub fn new(word: String, origin: String, meanings: Vec<Meaning>) -> Self {
+        Self {
+            word,
+            origin: Some(origin),
+            meanings: Some(meanings),
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[allow(non_snake_case)]
 pub struct Meaning {
-    pub partOfSpeech: String,
-    pub definitions: Vec<Definition>,
+    pub partOfSpeech: Option<String>,
+    pub definitions: Option<Vec<Definition>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Definition {
-    pub definition: String,
+    pub definition: Option<String>,
     pub example: Option<String>,
-    synonyms: Vec<String>,
-    antonyms: Vec<String>,
+    synonyms: Option<Vec<String>>,
+    antonyms: Option<Vec<String>>,
 }
