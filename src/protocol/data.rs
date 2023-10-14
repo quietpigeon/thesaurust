@@ -6,16 +6,17 @@ const DOMAIN: &str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 /// The word that the user wants to search for in the thesaurus.
 #[derive(StructOpt)]
 pub struct Cli {
-    pub word: String,
+    pub word: Option<String>,
 }
 
 impl Cli {
-    pub fn new(word: String) -> Self {
-        Self { word }
+    pub fn new() -> Self {
+        return Cli { word: None };
     }
 
     pub fn construct_url(&self) -> String {
-        format!("{}/{}", DOMAIN, self.word)
+        let word = self.word.as_ref().unwrap();
+        format!("{}/{}", DOMAIN, word)
     }
 }
 
@@ -42,7 +43,7 @@ impl Thesaurus {
 #[derive(Serialize, Deserialize, Debug)]
 #[allow(non_snake_case)]
 pub struct Meaning {
-    pub partOfSpeech: Option<String>,
+    pub partOfSpeech: String,
     pub definitions: Option<Vec<Definition>>,
 }
 

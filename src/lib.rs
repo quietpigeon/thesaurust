@@ -1,30 +1,15 @@
 use exitfailure::ExitFailure;
-use structopt::StructOpt;
+use serde_json::Value;
 
 #[path = "protocol/data.rs"]
 pub mod protocol;
 use crate::protocol::*;
 
 #[tokio::main]
-pub async fn fetch_response() -> Result<Vec<Thesaurus>, ExitFailure> {
-    let args = from_cli();
+pub async fn fetch_response(args: Cli) -> Result<Value, ExitFailure> {
     let url = Cli::construct_url(&args);
     let response = reqwest::get(&url).await?;
-    let results: Vec<Thesaurus> = response.json().await?;
+    let results: serde_json::Value = response.json().await?;
+    // let t: Vec<Thesaurus> = serde_json::from_value(results).unwrap();
     Ok(results)
-}
-
-/// MARK: Private functions
-fn from_cli() -> Cli {
-    Cli::from_args()
-}
-
-/// MARK: Unit tests
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use tokio;
-
-    #[tokio::test]
-    async fn test_fetch_response() {}
 }
