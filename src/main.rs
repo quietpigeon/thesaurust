@@ -1,5 +1,4 @@
 mod app;
-mod event;
 mod tui;
 mod ui;
 mod update;
@@ -8,7 +7,6 @@ use std::str::MatchIndices;
 
 use anyhow::Result;
 use app::App;
-use event::{Event, EventHandler};
 use ratatui::{
     backend::{self, CrosstermBackend},
     Terminal,
@@ -22,16 +20,12 @@ fn main() -> Result<()> {
     let mut app = App::new();
     let backend = CrosstermBackend::new(std::io::stderr());
     let terminal = Terminal::new(backend)?;
-    let events = EventHandler::new();
-    let mut tui = Tui::new(terminal, events);
+    let mut tui = Tui::new(terminal);
     tui.enter()?;
 
     // Start the main loop.
     while !app.should_quit {
         tui.draw(&mut app)?;
-        match tui.events.next()? {
-            // Some events
-        };
     }
 
     // Exit the user interface.

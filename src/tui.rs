@@ -9,17 +9,16 @@ use crossterm::{
 pub type Frame<'a> = ratatui::Frame<'a, ratatui::backend::CrosstermBackend<std::io::Stderr>>;
 pub type CrosstermTerminal = ratatui::Terminal<ratatui::backend::CrosstermBackend<std::io::Stderr>>;
 
-use crate::{app::App, event::EventHandler, ui};
+use crate::{app::App, ui};
 
 pub struct Tui {
     terminal: CrosstermTerminal,
-    pub events: EventHandler,
 }
 
 impl Tui {
     /// Constructs a new instance of Tui.
-    pub fn new(terminal: CrosstermTerminal, events: EventHandler) -> Self {
-        Self { terminal, events }
+    pub fn new(terminal: CrosstermTerminal) -> Self {
+        Self { terminal }
     }
 
     /// Initializes the terminal interface.
