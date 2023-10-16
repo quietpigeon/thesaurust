@@ -2,15 +2,16 @@ use exitfailure::ExitFailure;
 
 #[path = "protocol/data.rs"]
 pub mod protocol;
+use protocol::Thesaurus;
 use serde_json::Value;
 
 const DOMAIN: &str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
 #[tokio::main]
-pub async fn fetch_response(word: String) -> Result<Value, ExitFailure> {
+pub async fn fetch_response(word: String) -> Result<Vec<Thesaurus>, ExitFailure> {
     let url = construct_url(word);
     let response = reqwest::get(&url).await?;
-    let results: serde_json::Value = response.json().await?;
+    let results: Vec<Thesaurus> = response.json().await?;
     Ok(results)
 }
 

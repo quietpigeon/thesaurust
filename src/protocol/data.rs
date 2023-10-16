@@ -29,7 +29,7 @@ impl Thesaurus {
 #[derive(Serialize, Deserialize, Debug)]
 #[allow(non_snake_case)]
 pub struct Meaning {
-    pub partOfSpeech: Option<String>,
+    pub partOfSpeech: String,
     pub definitions: Option<Vec<Definition>>,
 }
 

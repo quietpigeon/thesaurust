@@ -18,7 +18,7 @@ pub struct App {
     pub should_quit: bool,
     pub input: Input,
     pub input_mode: InputMode,
-    pub results: Thesaurus,
+    pub results: Vec<Thesaurus>,
 }
 
 impl App {

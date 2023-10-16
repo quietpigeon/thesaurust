@@ -12,6 +12,7 @@ use ratatui::{
     backend::{self, CrosstermBackend},
     Terminal,
 };
+use thesaurust::fetch_response;
 use tui::Tui;
 use tui_input::backend::crossterm::EventHandler;
 
@@ -35,7 +36,7 @@ fn main() -> Result<()> {
                     KeyCode::Enter => {
                         let input_string = app.input.to_string();
                         if input_string.len() > 0 {
-                            let _ = thesaurust::fetch_response(input_string);
+                            // Fetch data
                         }
                     }
                     KeyCode::Char('/') => {
@@ -46,8 +47,8 @@ fn main() -> Result<()> {
                 InputMode::Editing => match key.code {
                     KeyCode::Enter => {
                         // Fetch data
-                        let _ = thesaurust::fetch_response(app.input.to_string());
                         app.input_mode = InputMode::Normal;
+                        app.results = fetch_response(app.input.to_string()).unwrap();
                         app.input.reset();
                     }
                     KeyCode::Esc => {
