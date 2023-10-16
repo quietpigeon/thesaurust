@@ -32,6 +32,12 @@ fn main() -> Result<()> {
                     KeyCode::Esc => {
                         App::quit(&mut app);
                     }
+                    KeyCode::Enter => {
+                        let input_string = app.input.to_string();
+                        if input_string.len() > 0 {
+                            let _ = thesaurust::fetch_response(input_string);
+                        }
+                    }
                     KeyCode::Char('/') => {
                         app.input_mode = InputMode::Editing;
                     }
@@ -40,8 +46,9 @@ fn main() -> Result<()> {
                 InputMode::Editing => match key.code {
                     KeyCode::Enter => {
                         // Fetch data
-                        let _ = thesaurust::fetch_response(app.input.value().to_owned());
+                        let _ = thesaurust::fetch_response(app.input.to_string());
                         app.input_mode = InputMode::Normal;
+                        app.input.reset();
                     }
                     KeyCode::Esc => {
                         app.input_mode = InputMode::Normal;
