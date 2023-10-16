@@ -15,8 +15,6 @@ use ratatui::{
 use tui::Tui;
 use tui_input::backend::crossterm::EventHandler;
 
-use thesaurust::{fetch_response, protocol::*};
-
 fn main() -> Result<()> {
     let mut app = App::new();
     let backend = CrosstermBackend::new(std::io::stderr());
@@ -27,6 +25,7 @@ fn main() -> Result<()> {
     // Start the main loop.
     while !app.should_quit {
         tui.draw(&mut app)?;
+        //TODO: Add an event handler for the events.
         if let Event::Key(key) = event::read()? {
             match app.input_mode {
                 InputMode::Normal => match key.code {
@@ -41,6 +40,8 @@ fn main() -> Result<()> {
                 InputMode::Editing => match key.code {
                     KeyCode::Enter => {
                         // Fetch data
+                        let _ = thesaurust::fetch_response(app.input.value().to_owned());
+                        app.input_mode = InputMode::Normal;
                     }
                     KeyCode::Esc => {
                         app.input_mode = InputMode::Normal;

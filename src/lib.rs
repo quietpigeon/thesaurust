@@ -2,15 +2,20 @@ use exitfailure::ExitFailure;
 
 #[path = "protocol/data.rs"]
 pub mod protocol;
-use crate::protocol::*;
 use serde_json::Value;
 
+const DOMAIN: &str = "https://api.dictionaryapi.dev/api/v2/entries/en";
+
 #[tokio::main]
-pub async fn fetch_response(args: Cli) -> Result<Value, ExitFailure> {
-    let url = Cli::construct_url(&args);
+pub async fn fetch_response(word: String) -> Result<Value, ExitFailure> {
+    let url = construct_url(word);
     let response = reqwest::get(&url).await?;
     let results: serde_json::Value = response.json().await?;
     Ok(results)
+}
+
+fn construct_url(word: String) -> String {
+    format!("{}/{}", DOMAIN, word)
 }
 
 /* In main.rs:

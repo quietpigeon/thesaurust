@@ -1,3 +1,4 @@
+use thesaurust::protocol::Thesaurus;
 use tui_input::Input;
 
 #[derive(Debug)]
@@ -17,8 +18,8 @@ pub struct App {
     pub should_quit: bool,
     pub input: Input,
     pub input_mode: InputMode,
+    pub results: Thesaurus,
 }
-
 
 impl App {
     pub fn new() -> Self {
