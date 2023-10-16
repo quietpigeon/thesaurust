@@ -1,3 +1,5 @@
+use tui_input::Input;
+
 #[derive(Debug)]
 pub enum InputMode {
     Normal,
@@ -13,9 +15,10 @@ impl Default for InputMode {
 #[derive(Debug, Default)]
 pub struct App {
     pub should_quit: bool,
-    pub input: String,
+    pub input: Input,
     pub input_mode: InputMode,
 }
+
 
 impl App {
     pub fn new() -> Self {
