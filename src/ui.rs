@@ -23,13 +23,17 @@ pub fn render(app: &mut App, f: &mut Frame) {
             .as_ref(),
         )
         .split(f.size());
+
+    // Instructions.
     f.render_widget(
-        Paragraph::new(format!("Press `Esc` to stop running, `/` to enter."))
+        Paragraph::new(format!("Press `Esc` to stop running, `/` to start."))
             .block(Block::default().borders(Borders::NONE))
             .style(Style::default().fg(Color::Green))
             .alignment(Alignment::Center),
         chunks[0],
     );
+
+    // Input section.
     let input = Paragraph::new(app.input.value())
         .style(match app.input_mode {
             InputMode::Normal => Style::default().fg(Color::Green),
