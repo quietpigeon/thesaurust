@@ -6,7 +6,8 @@ mod update;
 use std::str::MatchIndices;
 
 use anyhow::Result;
-use app::App;
+use app::{App, InputMode};
+use crossterm::event::{self, DisableMouseCapture, Event, KeyCode};
 use ratatui::{
     backend::{self, CrosstermBackend},
     Terminal,
@@ -26,24 +27,22 @@ fn main() -> Result<()> {
     // Start the main loop.
     while !app.should_quit {
         tui.draw(&mut app)?;
+        if let Event::Key(key) = event::read()? {
+            match app.input_mode {
+                InputMode::Normal => match key.code {
+                    KeyCode::Esc => {
+                        app.should_quit = true;
+                    }
+                    _ => {}
+                },
+            }
+            if app.should_quit {
+                return Ok(());
+            }
+        }
     }
 
     // Exit the user interface.
     tui.exit()?;
     Ok(())
 }
-/*
-#[tokio::main]
-async fn main() {
-    let args = Cli::from_args();
-    tokio::task::spawn_blocking(|| {
-        let data = fetch_response(args).unwrap();
-        let results: Vec<Thesaurus> = serde_json::from_value(data).unwrap();
-        let result = &results[0];
-        let meanings = result.meanings.as_ref().unwrap();
-        println!("Part of speech: {}", meanings[0].partOfSpeech);
-    })
-    .await
-    .expect("Task panicked");
-}
-*/
