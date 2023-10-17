@@ -8,7 +8,7 @@ mod data;
 use anyhow::Result;
 use app::{App, InputMode};
 use client::fetch_response;
-use crossterm::event::{self, DisableMouseCapture, Event, KeyCode};
+use crossterm::event::{self, Event, KeyCode};
 use ratatui::{
     backend::{self, CrosstermBackend},
     Terminal,

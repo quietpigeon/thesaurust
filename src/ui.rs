@@ -1,41 +1,32 @@
 use ratatui::{
-    layout::{Alignment, Direction, Layout},
+    layout::{ Alignment, Direction, Layout },
     prelude::Constraint,
-    style::{Color, Style},
-    widgets::{Block, BorderType, Borders, Paragraph, Wrap},
+    style::{ Color, Style },
+    widgets::{ Block, Borders, Paragraph, Wrap },
 };
-use serde::de;
 
-use crate::{
-    app::{App, InputMode},
-    tui::Frame,
-    data::Thesaurus,
-};
+use crate::{ app::{ App, InputMode }, tui::Frame, data::Thesaurus, main };
 
 pub fn render(app: &mut App, f: &mut Frame) {
-    let chunks = Layout::default()
+    // Main frame.
+    let main_frame = Layout::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .constraints(
-            [
-                Constraint::Length(1),
-                Constraint::Length(3),
-                Constraint::Min(1),
-            ]
-            .as_ref(),
-        )
+        .constraints([Constraint::Length(3), Constraint::Length(9), Constraint::Min(1)].as_ref())
         .split(f.size());
 
-    // Instructions.
-    f.render_widget(
-        Paragraph::new(format!("Press `Esc` to stop running, `/` to start."))
-            .block(Block::default().borders(Borders::NONE))
-            .style(Style::default().fg(Color::Green))
-            .alignment(Alignment::Center),
-        chunks[0],
-    );
+    let upper_frame = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([Constraint::Percentage(75), Constraint::Percentage(25)].as_ref())
+        .split(main_frame[0]);
 
-    // Input section.
+    let lower_frame = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([Constraint::Percentage(25), Constraint::Percentage(75)].as_ref())
+        .margin(1)
+        .split(main_frame[1]);
+
+    // Search bar.
     f.render_widget(
         Paragraph::new(app.input.value())
             .style(match app.input_mode {
@@ -44,31 +35,61 @@ pub fn render(app: &mut App, f: &mut Frame) {
             })
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Search")),
-        chunks[1],
+        upper_frame[0]
     );
 
-    // Part of speech.
+    // Help bar.
+    f.render_widget(
+        Paragraph::new(String::from("Press `Esc` to stop running, `/` to start.")).block(
+            Block::default().borders(Borders::ALL).title("Help")
+        ),
+        upper_frame[1]
+    );
+
+    // Results block.
+    f.render_widget(
+        Paragraph::new(String::from(""))
+            .style(Style::default().fg(Color::Green))
+            .wrap(Wrap { trim: true })
+            .block(Block::default().borders(Borders::ALL).title("Thesaurust")),
+        main_frame[1]
+    );
+
+    // `Part of speech`` block.
+    let mut part_of_speech = String::from("");
+    if app.results.len() > 0 {
+        part_of_speech = from_meanings(&app.results[0], String::from("part_of_speech"));
+    }
+    f.render_widget(
+        Paragraph::new(String::from(part_of_speech))
+            .style(Style::default().fg(Color::Green))
+            .wrap(Wrap { trim: true })
+            .block(Block::default().borders(Borders::ALL).title("Part of speech")),
+        lower_frame[0]
+    );
+
+    // Definition block.
     let mut word = String::from("");
     if app.results.len() > 0 {
-        word = get_definition(&app.results[0]);
+        word = from_meanings(&app.results[0], String::from("definition"));
     }
     f.render_widget(
         Paragraph::new(String::from(word))
             .style(Style::default().fg(Color::Green))
-            .wrap(Wrap {trim: true})
-            .block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title("Definition"),
-            ),
-        chunks[2],
+            .wrap(Wrap { trim: true })
+            .block(Block::default().borders(Borders::ALL).title("Definition")),
+        lower_frame[1]
     );
 }
 
 /// Retrieves first definition avaiable in the api response.
-fn get_definition(results: &Thesaurus) -> String {
+fn from_meanings(results: &Thesaurus, key: String) -> String {
     let meanings = results.meanings.as_ref().unwrap();
     let meaning = &meanings[0];
     let definitions = meaning.definitions.as_ref().unwrap();
-    definitions[0].definition.as_ref().unwrap().to_string()
+    if key == "definition" {
+        definitions[0].definition.as_ref().unwrap().to_string()
+    } else {
+        meaning.partOfSpeech.to_string()
+    }
 }
