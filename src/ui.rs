@@ -2,13 +2,14 @@ use ratatui::{
     layout::{Alignment, Direction, Layout},
     prelude::Constraint,
     style::{Color, Style},
-    widgets::{Block, BorderType, Borders, Paragraph},
+    widgets::{Block, BorderType, Borders, Paragraph, Wrap},
 };
 use serde::de;
 
 use crate::{
     app::{App, InputMode},
     tui::Frame,
+    data::Thesaurus,
 };
 
 pub fn render(app: &mut App, f: &mut Frame) {
@@ -41,31 +42,33 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 InputMode::Normal => Style::default().fg(Color::Green),
                 InputMode::Editing => Style::default().fg(Color::Yellow),
             })
+            .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Search")),
         chunks[1],
     );
 
     // Part of speech.
     let mut word = String::from("");
-    if app.results.len() == 0 {
-        word = String::from("value");
-    } else {
-        let res = &app.results[0];
-        word = res.word.as_ref().unwrap().to_string();
-        let temp = res.meanings.as_ref().unwrap();
-        let meaning = &temp[0];
-        let definitions = &meaning.definitions;
-        let d = definitions.iter().find(|s| !s.is_empty());
-        //TODO: Return a definition of a word.
+    if app.results.len() > 0 {
+        word = get_definition(&app.results[0]);
     }
     f.render_widget(
         Paragraph::new(String::from(word))
-            .style(Style::default().fg(Color::Cyan))
+            .style(Style::default().fg(Color::Green))
+            .wrap(Wrap {trim: true})
             .block(
                 Block::default()
                     .borders(Borders::ALL)
-                    .title("Part of speech"),
+                    .title("Definition"),
             ),
         chunks[2],
     );
+}
+
+/// Retrieves first definition avaiable in the api response.
+fn get_definition(results: &Thesaurus) -> String {
+    let meanings = results.meanings.as_ref().unwrap();
+    let meaning = &meanings[0];
+    let definitions = meaning.definitions.as_ref().unwrap();
+    definitions[0].definition.as_ref().unwrap().to_string()
 }

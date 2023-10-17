@@ -2,17 +2,17 @@ mod app;
 mod tui;
 mod ui;
 mod update;
-
-use std::str::MatchIndices;
+mod client;
+mod data;
 
 use anyhow::Result;
 use app::{App, InputMode};
+use client::fetch_response;
 use crossterm::event::{self, DisableMouseCapture, Event, KeyCode};
 use ratatui::{
     backend::{self, CrosstermBackend},
     Terminal,
 };
-use thesaurust::fetch_response;
 use tui::Tui;
 use tui_input::backend::crossterm::EventHandler;
 
@@ -41,6 +41,7 @@ fn main() -> Result<()> {
                     }
                     KeyCode::Char('/') => {
                         app.input_mode = InputMode::Editing;
+                        app.input.reset();
                     }
                     _ => {}
                 },
@@ -49,7 +50,6 @@ fn main() -> Result<()> {
                         // Fetch data
                         app.input_mode = InputMode::Normal;
                         app.results = fetch_response(app.input.to_string()).unwrap();
-                        app.input.reset();
                     }
                     KeyCode::Esc => {
                         app.input_mode = InputMode::Normal;

@@ -1,9 +1,6 @@
 use exitfailure::ExitFailure;
 
-#[path = "protocol/data.rs"]
-pub mod protocol;
-use protocol::Thesaurus;
-use serde_json::Value;
+use crate::data::Thesaurus;
 
 const DOMAIN: &str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 

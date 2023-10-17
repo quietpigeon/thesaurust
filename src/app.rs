@@ -1,4 +1,4 @@
-use thesaurust::protocol::Thesaurus;
+use crate::data::Thesaurus;
 use tui_input::Input;
 
 #[derive(Debug)]
