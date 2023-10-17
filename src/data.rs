@@ -1,4 +1,6 @@
-use serde_derive::{Deserialize, Serialize};
+use std::{ default, fmt::Debug };
+
+use serde_derive::{ Deserialize, Serialize };
 
 /// Components of a response from the Free Dictionary API.
 #[derive(Serialize, Deserialize, Debug)]
@@ -23,6 +25,19 @@ impl Default for Thesaurus {
 impl Thesaurus {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    fn is_null(&mut self) -> bool {
+        self.word.is_none() || self.origin.is_none() || self.meanings.is_none()
+    }
+
+    pub fn get_definitions_from(thesaurus: Thesaurus) -> &Vec<Definition> {
+        if thesaurus.is_null() {
+            Vec::<Definition>::new();
+        }
+        let meanings = thesaurus.meanings.as_ref().unwrap();
+        let meaning = &meanings[0];
+        meaning.definitions.as_ref().unwrap()
     }
 }
 
