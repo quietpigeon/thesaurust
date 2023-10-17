@@ -82,6 +82,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
     );
 }
 
+//TODO: Move function to app.rs.
 /// Retrieves first definition avaiable in the api response.
 fn from_meanings(results: &Thesaurus, key: String) -> String {
     let meanings = results.meanings.as_ref().unwrap();
