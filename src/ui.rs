@@ -1,18 +1,29 @@
 use ratatui::{
-    layout::{ Alignment, Direction, Layout },
+    layout::{Alignment, Direction, Layout},
     prelude::Constraint,
-    style::{ Color, Style },
-    widgets::{ Block, Borders, Paragraph, Wrap },
+    style::{Color, Style},
+    widgets::{Block, Borders, Paragraph, Wrap},
 };
 
-use crate::{ app::{ App, InputMode }, tui::Frame, data::Thesaurus, main };
+use crate::{
+    app::{App, InputMode},
+    data::Thesaurus,
+    tui::Frame,
+};
 
 pub fn render(app: &mut App, f: &mut Frame) {
     // Main frame.
     let main_frame = Layout::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .constraints([Constraint::Length(3), Constraint::Length(9), Constraint::Min(1)].as_ref())
+        .constraints(
+            [
+                Constraint::Length(3),
+                Constraint::Length(9),
+                Constraint::Min(1),
+            ]
+            .as_ref(),
+        )
         .split(f.size());
 
     let upper_frame = Layout::default()
@@ -35,15 +46,14 @@ pub fn render(app: &mut App, f: &mut Frame) {
             })
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Search")),
-        upper_frame[0]
+        upper_frame[0],
     );
 
     // Help bar.
     f.render_widget(
-        Paragraph::new(String::from("Press `Esc` to stop running, `/` to start.")).block(
-            Block::default().borders(Borders::ALL).title("Help")
-        ),
-        upper_frame[1]
+        Paragraph::new(String::from("Press `Esc` to stop running, `/` to start."))
+            .block(Block::default().borders(Borders::ALL).title("Help")),
+        upper_frame[1],
     );
 
     // Results block.
@@ -52,7 +62,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
             .style(Style::default().fg(Color::Green))
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Thesaurust")),
-        main_frame[1]
+        main_frame[1],
     );
 
     // `Part of speech`` block.
@@ -64,8 +74,12 @@ pub fn render(app: &mut App, f: &mut Frame) {
         Paragraph::new(String::from(part_of_speech))
             .style(Style::default().fg(Color::Green))
             .wrap(Wrap { trim: true })
-            .block(Block::default().borders(Borders::ALL).title("Part of speech")),
-        lower_frame[0]
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .title("Part of speech"),
+            ),
+        lower_frame[0],
     );
 
     // Definition block.
@@ -78,7 +92,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
             .style(Style::default().fg(Color::Green))
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Definition")),
-        lower_frame[1]
+        lower_frame[1],
     );
 }
 

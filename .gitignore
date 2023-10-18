@@ -1,3 +1,4 @@
 /target
 .vs
 .vscode
+.DS_Store
