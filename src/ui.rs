@@ -21,6 +21,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
         .constraints([Constraint::Percentage(75), Constraint::Percentage(25)].as_ref())
         .split(main_frame[0]);
 
+    // The `lower_frame` consists of the `part_of_speech` block and the `definitions` block.
     let lower_frame = Layout::default()
         .direction(Direction::Horizontal)
         .constraints([Constraint::Percentage(25), Constraint::Percentage(75)].as_ref())
