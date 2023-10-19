@@ -57,6 +57,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
     );
 
     // `Part of speech` block.
+    // TODO: Enable user to navigate between different meanings. Default should show the first result.
     let mut part_of_speech = String::from("");
     if app.results.len() > 0 {
         part_of_speech = Thesaurus::get_part_of_speech_from(&app.results[0]);
