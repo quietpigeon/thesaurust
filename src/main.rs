@@ -4,6 +4,7 @@ mod ui;
 mod update;
 mod client;
 mod data;
+mod errors;
 
 use anyhow::Result;
 use app::{ App, InputMode };
