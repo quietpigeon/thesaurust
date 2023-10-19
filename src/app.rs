@@ -1,7 +1,7 @@
 use crate::data::Thesaurus;
 use tui_input::Input;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum InputMode {
     Normal,
     Editing,
@@ -13,7 +13,7 @@ impl Default for InputMode {
     }
 }
 /// Application.
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct App {
     pub should_quit: bool,
     pub input: Input,

@@ -1,16 +1,16 @@
 mod app;
-mod tui;
-mod ui;
-mod update;
 mod client;
 mod data;
 mod errors;
+mod tui;
+mod ui;
+mod update;
 
 use anyhow::Result;
-use app::{ App, InputMode };
-use client::fetch_response;
-use crossterm::event::{ self, Event, KeyCode };
-use ratatui::{ backend::{ CrosstermBackend }, Terminal };
+use app::{App, InputMode};
+use client::{fetch_response, get_data};
+use crossterm::event::{self, Event, KeyCode};
+use ratatui::{backend::CrosstermBackend, Terminal};
 use tui::Tui;
 use tui_input::backend::crossterm::EventHandler;
 
@@ -27,37 +27,35 @@ fn main() -> Result<()> {
         //TODO: Add an event handler for the events.
         if let Event::Key(key) = event::read()? {
             match app.input_mode {
-                InputMode::Normal =>
-                    match key.code {
-                        KeyCode::Esc => {
-                            App::quit(&mut app);
-                        }
-                        KeyCode::Enter => {
-                            let input_string = app.input.to_string();
-                            if input_string.len() > 0 {
-                                // Fetch data
-                            }
-                        }
-                        KeyCode::Char('/') => {
-                            app.input_mode = InputMode::Editing;
-                            app.input.reset();
-                        }
-                        _ => {}
+                InputMode::Normal => match key.code {
+                    KeyCode::Esc => {
+                        App::quit(&mut app);
                     }
-                InputMode::Editing =>
-                    match key.code {
-                        KeyCode::Enter => {
+                    KeyCode::Enter => {
+                        let input_string = app.input.to_string();
+                        if input_string.len() > 0 {
                             // Fetch data
-                            app.input_mode = InputMode::Normal;
-                            app.results = fetch_response(app.input.to_string()).unwrap();
-                        }
-                        KeyCode::Esc => {
-                            app.input_mode = InputMode::Normal;
-                        }
-                        _ => {
-                            app.input.handle_event(&Event::Key(key));
                         }
                     }
+                    KeyCode::Char('/') => {
+                        app.input_mode = InputMode::Editing;
+                        app.input.reset();
+                    }
+                    _ => {}
+                },
+                InputMode::Editing => match key.code {
+                    KeyCode::Enter => {
+                        // Fetch data
+                        app.input_mode = InputMode::Normal;
+                        app.results = get_data(app.input.to_string());
+                    }
+                    KeyCode::Esc => {
+                        app.input_mode = InputMode::Normal;
+                    }
+                    _ => {
+                        app.input.handle_event(&Event::Key(key));
+                    }
+                },
             }
         }
     }

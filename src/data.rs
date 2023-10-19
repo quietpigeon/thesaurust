@@ -2,8 +2,10 @@ use std::{default, fmt::Debug};
 
 use serde_derive::{Deserialize, Serialize};
 
+use crate::app::InputMode;
+
 /// Components of a response from the Free Dictionary API.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Thesaurus {
     pub word: Option<String>,
     pub origin: Option<String>,
@@ -23,10 +25,6 @@ impl Default for Thesaurus {
 }
 
 impl Thesaurus {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     fn is_null(&self) -> bool {
         self.word.is_none() && self.origin.is_none() && self.meanings.is_none()
     }
@@ -37,24 +35,49 @@ impl Thesaurus {
         }
         let meanings = thesaurus.meanings.as_ref().unwrap();
         let meaning = &meanings[0];
-        meaning.definitions.as_ref().unwrap().to_vec()
+        if meaning.definitions.is_some() {
+            meaning.definitions.as_ref().unwrap().to_vec()
+        } else {
+            return Vec::<Definition>::new();
+        }
     }
 
     pub fn get_part_of_speech_from(thesaurus: &Thesaurus) -> String {
         if thesaurus.is_null() {
-            return String::from("")
+            return String::from("");
         }
         let meanings = thesaurus.meanings.as_ref().unwrap();
         let meaning = &meanings[0];
-        meaning.partOfSpeech.to_string()
+        if meaning.partOfSpeech.is_some() {
+            return meaning.partOfSpeech.as_ref().unwrap().to_string();
+        } else {
+            return String::from("");
+        }
+    }
+
+    pub fn generate_from(invalid_input: &String) -> Vec<Thesaurus> {
+        let mut thesaurus = Thesaurus::default();
+        let mut t = Vec::<Thesaurus>::new();
+        thesaurus.word = Some(invalid_input.to_string());
+        let _ = t.push(thesaurus);
+        t
     }
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 #[allow(non_snake_case)]
 pub struct Meaning {
-    pub partOfSpeech: String,
+    pub partOfSpeech: Option<String>,
     pub definitions: Option<Vec<Definition>>,
+}
+
+impl Default for Meaning {
+    fn default() -> Self {
+        Meaning {
+            partOfSpeech: None,
+            definitions: None,
+        }
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -63,4 +86,15 @@ pub struct Definition {
     pub example: Option<String>,
     synonyms: Option<Vec<String>>,
     antonyms: Option<Vec<String>>,
+}
+
+impl Default for Definition {
+    fn default() -> Self {
+        Definition {
+            definition: None,
+            example: None,
+            synonyms: None,
+            antonyms: None,
+        }
+    }
 }
