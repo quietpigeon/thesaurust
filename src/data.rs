@@ -28,7 +28,7 @@ impl Thesaurus {
     }
 
     fn is_null(&self) -> bool {
-        self.word.is_none() || self.origin.is_none() || self.meanings.is_none()
+        self.word.is_none() && self.origin.is_none() && self.meanings.is_none()
     }
 
     pub fn get_definitions_from(thesaurus: &Thesaurus) -> Vec<Definition> {
@@ -39,9 +39,18 @@ impl Thesaurus {
         let meaning = &meanings[0];
         meaning.definitions.as_ref().unwrap().to_vec()
     }
+
+    pub fn get_part_of_speech_from(thesaurus: &Thesaurus) -> String {
+        if thesaurus.is_null() {
+            return String::from("")
+        }
+        let meanings = thesaurus.meanings.as_ref().unwrap();
+        let meaning = &meanings[0];
+        meaning.partOfSpeech.to_string()
+    }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 #[allow(non_snake_case)]
 pub struct Meaning {
     pub partOfSpeech: String,

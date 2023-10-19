@@ -1,31 +1,21 @@
 use ratatui::{
-    layout::{Alignment, Direction, Layout},
+    layout::{ Alignment, Direction, Layout },
     prelude::Constraint,
-    style::{Color, Style},
-    widgets::{Block, Borders, Paragraph, Wrap},
+    style::{ Color, Style },
+    widgets::{ Block, Borders, Paragraph, Wrap },
 };
 
-use crate::{
-    app::{App, InputMode},
-    data::Thesaurus,
-    tui::Frame,
-};
+use crate::{ app::{ App, InputMode }, data::Thesaurus, tui::Frame };
 
 pub fn render(app: &mut App, f: &mut Frame) {
     // Main frame.
     let main_frame = Layout::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .constraints(
-            [
-                Constraint::Length(3),
-                Constraint::Length(9),
-                Constraint::Min(1),
-            ]
-            .as_ref(),
-        )
+        .constraints([Constraint::Length(3), Constraint::Length(9), Constraint::Min(1)].as_ref())
         .split(f.size());
 
+    // The `upper_frame` consists of the search bar and the help bar.
     let upper_frame = Layout::default()
         .direction(Direction::Horizontal)
         .constraints([Constraint::Percentage(75), Constraint::Percentage(25)].as_ref())
@@ -46,14 +36,15 @@ pub fn render(app: &mut App, f: &mut Frame) {
             })
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Search")),
-        upper_frame[0],
+        upper_frame[0]
     );
 
     // Help bar.
     f.render_widget(
-        Paragraph::new(String::from("Press `Esc` to stop running, `/` to start."))
-            .block(Block::default().borders(Borders::ALL).title("Help")),
-        upper_frame[1],
+        Paragraph::new(String::from("Press `Esc` to stop running, `/` to start.")).block(
+            Block::default().borders(Borders::ALL).title("Help")
+        ),
+        upper_frame[1]
     );
 
     // Results block.
@@ -62,49 +53,35 @@ pub fn render(app: &mut App, f: &mut Frame) {
             .style(Style::default().fg(Color::Green))
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Thesaurust")),
-        main_frame[1],
+        main_frame[1]
     );
 
-    // `Part of speech`` block.
+    // `Part of speech` block.
     let mut part_of_speech = String::from("");
     if app.results.len() > 0 {
-        part_of_speech = from_meanings(&app.results[0], String::from("part_of_speech"));
+        part_of_speech = Thesaurus::get_part_of_speech_from(&app.results[0]);
     }
     f.render_widget(
         Paragraph::new(String::from(part_of_speech))
             .style(Style::default().fg(Color::Green))
             .wrap(Wrap { trim: true })
-            .block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title("Part of speech"),
-            ),
-        lower_frame[0],
+            .block(Block::default().borders(Borders::ALL).title("Part of speech")),
+        lower_frame[0]
     );
 
     // Definition block.
-    let mut word = String::from("");
+    let mut definition = String::from("");
     if app.results.len() > 0 {
-        word = from_meanings(&app.results[0], String::from("definition"));
+        let definitions = Thesaurus::get_definitions_from(&app.results[0]);
+        if definitions.len() > 0 {
+            definition = definitions[0].definition.as_ref().unwrap().to_string();
+        }
     }
     f.render_widget(
-        Paragraph::new(String::from(word))
+        Paragraph::new(String::from(definition))
             .style(Style::default().fg(Color::Green))
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Definition")),
-        lower_frame[1],
+        lower_frame[1]
     );
-}
-
-//TODO: Move function to app.rs.
-/// Retrieves first definition avaiable in the api response.
-fn from_meanings(results: &Thesaurus, key: String) -> String {
-    let meanings = results.meanings.as_ref().unwrap();
-    let meaning = &meanings[0];
-    let definitions = meaning.definitions.as_ref().unwrap();
-    if key == "definition" {
-        definitions[0].definition.as_ref().unwrap().to_string()
-    } else {
-        meaning.partOfSpeech.to_string()
-    }
 }
