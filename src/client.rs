@@ -11,6 +11,7 @@ pub fn get_data(word: String) -> Vec<Thesaurus> {
 }
 
 // TODO: Error handling.
+// Return a `serde_json::Value` first, then check the fields to see if the input is valid or not.
 #[tokio::main]
 pub async fn fetch_response(word: String) -> Result<Vec<Thesaurus>, ApiError> {
     let url = construct_url(word);

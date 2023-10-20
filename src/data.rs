@@ -1,6 +1,6 @@
-use std::{default, fmt::Debug};
+use std::{ default, fmt::Debug };
 
-use serde_derive::{Deserialize, Serialize};
+use serde_derive::{ Deserialize, Serialize };
 
 use crate::app::InputMode;
 
