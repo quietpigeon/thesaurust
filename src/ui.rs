@@ -86,4 +86,6 @@ pub fn render(app: &mut App, f: &mut Frame) {
             .block(Block::default().borders(Borders::ALL).title("Definition")),
         lower_frame[1]
     );
+
+    // TODO: Add synonyms and antonyms block.
 }
