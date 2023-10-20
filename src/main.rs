@@ -5,6 +5,7 @@ mod errors;
 mod tui;
 mod ui;
 mod update;
+mod utils;
 
 use anyhow::Result;
 use app::{App, InputMode};

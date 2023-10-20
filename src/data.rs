@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+use std::{default, fmt::Debug};
 
 use serde_derive::{Deserialize, Serialize};
 
@@ -22,7 +22,17 @@ impl Default for Thesaurus {
     }
 }
 
+trait ErrorIndicator<Thesaurus> {
+    fn inject_error_message(&self) -> Vec<Thesaurus> {
+        Vec::<Thesaurus>::default()
+    }
+}
+
 impl Thesaurus {
+    fn new(&self) -> Self {
+        Self::default()
+    }
+
     /// A function that unwraps the contents inside `Meaning`. It returns a tuple that contains the `partOfSpeech` and `Vec<Definition>`.   
     pub fn unwrap_meanings_at(index: usize, thesaurus: &Thesaurus) -> (String, Vec<Definition>) {
         //TODO: Create unit test to check index and array length.

@@ -1,12 +1,11 @@
-use crate::{ data::{ Thesaurus }, errors::ApiError };
+use crate::{data::Thesaurus, errors::ApiError};
 
 const DOMAIN: &'static str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
 pub fn get_data(word: String) -> Vec<Thesaurus> {
     match fetch_response(word.clone()) {
         Ok(t) => t,
-        Err(ApiError::InvalidInput) => Thesaurus::generate_from(&word),
-        Err(_) => Vec::<Thesaurus>::default(),
+        Err(_) => Thesaurus::generate_from(&word),
     }
 }
 
@@ -20,7 +19,7 @@ pub async fn fetch_response(word: String) -> Result<Vec<Thesaurus>, ApiError> {
         let results: Vec<Thesaurus> = response.json().await?;
         Ok(results)
     } else {
-        Err(ApiError::InvalidInput)
+        Err(ApiError::InvalidData)
     }
 }
 
