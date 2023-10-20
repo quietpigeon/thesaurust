@@ -1,9 +1,6 @@
-use crate::{
-    data::{Meaning, Thesaurus},
-    errors::ApiError,
-};
+use crate::{ data::{ Thesaurus }, errors::ApiError };
 
-const DOMAIN: &str = "https://api.dictionaryapi.dev/api/v2/entries/en";
+const DOMAIN: &'static str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
 pub fn get_data(word: String) -> Vec<Thesaurus> {
     match fetch_response(word.clone()) {
