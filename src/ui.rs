@@ -1,18 +1,29 @@
 use ratatui::{
-    layout::{ Direction, Layout },
+    layout::{Direction, Layout},
     prelude::Constraint,
-    style::{ Color, Style },
-    widgets::{ Block, Borders, Paragraph, Wrap },
+    style::{Color, Style},
+    widgets::{Block, Borders, Paragraph, Wrap},
 };
 
-use crate::{ app::{ App, InputMode }, data::Thesaurus, tui::Frame };
+use crate::{
+    app::{App, InputMode},
+    data::Thesaurus,
+    tui::Frame,
+};
 
 pub fn render(app: &mut App, f: &mut Frame) {
     // Main frame.
     let main_frame = Layout::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .constraints([Constraint::Length(3), Constraint::Length(9), Constraint::Min(1)].as_ref())
+        .constraints(
+            [
+                Constraint::Length(3),
+                Constraint::Length(9),
+                Constraint::Min(1),
+            ]
+            .as_ref(),
+        )
         .split(f.size());
 
     // The `upper_frame` consists of the search bar and the help bar.
@@ -28,6 +39,16 @@ pub fn render(app: &mut App, f: &mut Frame) {
         .margin(1)
         .split(main_frame[1]);
 
+    let mut part_of_speech = String::from("");
+    let mut definition = String::from("");
+    if !app.results.is_empty() {
+        part_of_speech = Thesaurus::unwrap_meanings_at(0, &app.results[0]).0;
+        let definitions = Thesaurus::unwrap_meanings_at(0, &app.results[0]).1;
+        if definitions.len() > 0 {
+            definition = definitions[0].definition.as_ref().unwrap().to_string();
+        }
+    }
+
     // Search bar.
     f.render_widget(
         Paragraph::new(app.input.value())
@@ -37,15 +58,14 @@ pub fn render(app: &mut App, f: &mut Frame) {
             })
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Search")),
-        upper_frame[0]
+        upper_frame[0],
     );
 
     // Help bar.
     f.render_widget(
-        Paragraph::new(String::from("Press `Esc` to stop running, `/` to start.")).block(
-            Block::default().borders(Borders::ALL).title("Help")
-        ),
-        upper_frame[1]
+        Paragraph::new(String::from("Press `Esc` to stop running, `/` to start."))
+            .block(Block::default().borders(Borders::ALL).title("Help")),
+        upper_frame[1],
     );
 
     // Results block.
@@ -54,37 +74,30 @@ pub fn render(app: &mut App, f: &mut Frame) {
             .style(Style::default().fg(Color::Green))
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Thesaurust")),
-        main_frame[1]
+        main_frame[1],
     );
 
     // `Part of speech` block.
     // TODO: Enable user to navigate between different meanings. Default should show the first result.
-    let mut part_of_speech = String::from("");
-    if app.results.len() > 0 {
-        part_of_speech = Thesaurus::get_part_of_speech_from(&app.results[0]);
-    }
     f.render_widget(
         Paragraph::new(String::from(part_of_speech))
             .style(Style::default().fg(Color::Green))
             .wrap(Wrap { trim: true })
-            .block(Block::default().borders(Borders::ALL).title("Part of speech")),
-        lower_frame[0]
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .title("Part of speech"),
+            ),
+        lower_frame[0],
     );
 
     // Definition block.
-    let mut definition = String::from("");
-    if app.results.len() > 0 {
-        let definitions = Thesaurus::get_definitions_from(&app.results[0]);
-        if definitions.len() > 0 {
-            definition = definitions[0].definition.as_ref().unwrap().to_string();
-        }
-    }
     f.render_widget(
         Paragraph::new(String::from(definition))
             .style(Style::default().fg(Color::Green))
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Definition")),
-        lower_frame[1]
+        lower_frame[1],
     );
 
     // TODO: Add synonyms and antonyms block.
