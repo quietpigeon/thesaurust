@@ -8,7 +8,7 @@ mod update;
 
 use anyhow::Result;
 use app::{App, InputMode};
-use client::{fetch_response, get_data};
+use client::get_data;
 use crossterm::event::{self, Event, KeyCode};
 use ratatui::{backend::CrosstermBackend, Terminal};
 use tui::Tui;
