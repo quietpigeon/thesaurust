@@ -64,6 +64,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
     // Help bar.
     f.render_widget(
         Paragraph::new(String::from("Press `Esc` to stop running, `/` to start."))
+            .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Help")),
         upper_frame[1],
     );
