@@ -23,27 +23,19 @@ impl Default for Thesaurus {
 }
 
 impl Thesaurus {
-    //TODO: Combine `get_definitions_from()` and `get_part_of_speech` together.
-    pub fn get_definitions_from(thesaurus: &Thesaurus) -> Vec<Definition> {
-        let part_of_speech = Self::get_part_of_speech_from(thesaurus);
-        if part_of_speech.len() == 0 {
-            return Vec::<Definition>::new();
-        }
-        let meanings = thesaurus.meanings.as_ref().unwrap();
-        let meaning = &meanings[0];
-        meaning.definitions.as_ref().unwrap().to_vec()
-    }
-
-    pub fn get_part_of_speech_from(thesaurus: &Thesaurus) -> String {
-        if thesaurus.meanings.is_none() {
-            return String::from("");
-        }
-        let meanings = thesaurus.meanings.as_ref().unwrap();
-        let meaning = &meanings[0];
-        if meaning.partOfSpeech.is_none() {
-            return String::from("");
+    /// A function that unwraps the contents inside `Meaning`. It returns a tuple that contains the `partOfSpeech` and `Vec<Definition>`.   
+    pub fn unwrap_meanings_at(index: usize, thesaurus: &Thesaurus) -> (String, Vec<Definition>) {
+        //TODO: Create unit test to check index and array length.
+        if let Some(meanings) = thesaurus.meanings.clone() {
+            let meaning = meanings[index].clone();
+            if let Some(part_of_speech) = meaning.partOfSpeech.clone() {
+                let definitions = meaning.definitions.clone().unwrap();
+                return (part_of_speech, definitions);
+            } else {
+                return (String::from(""), Vec::<Definition>::default());
+            };
         } else {
-            return meaning.partOfSpeech.as_ref().unwrap().to_string();
+            return (String::from(""), Vec::<Definition>::default());
         }
     }
 
