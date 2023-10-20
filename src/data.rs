@@ -1,4 +1,4 @@
-use std::{default, fmt::Debug};
+use std::fmt::Debug;
 
 use serde_derive::{Deserialize, Serialize};
 
@@ -22,17 +22,7 @@ impl Default for Thesaurus {
     }
 }
 
-trait ErrorIndicator<Thesaurus> {
-    fn inject_error_message(&self) -> Vec<Thesaurus> {
-        Vec::<Thesaurus>::default()
-    }
-}
-
 impl Thesaurus {
-    fn new(&self) -> Self {
-        Self::default()
-    }
-
     /// A function that unwraps the contents inside `Meaning`. It returns a tuple that contains the `partOfSpeech` and `Vec<Definition>`.   
     pub fn unwrap_meanings_at(index: usize, thesaurus: &Thesaurus) -> (String, Vec<Definition>) {
         //TODO: Create unit test to check index and array length.
@@ -49,12 +39,26 @@ impl Thesaurus {
         }
     }
 
-    pub fn generate_from(invalid_input: &String) -> Vec<Thesaurus> {
-        let mut thesaurus = Thesaurus::default();
-        let mut t = Vec::<Thesaurus>::new();
-        thesaurus.word = Some(invalid_input.to_string());
-        let _ = t.push(thesaurus);
-        t
+    /// A function that prompts the user to re-enter the word because the word cannot be found in the API.
+    pub fn inject_error_message() -> Vec<Thesaurus> {
+        let definition = Definition {
+            definition: Some(String::from("No definitions found.")),
+            example: None,
+            synonyms: None,
+            antonyms: None,
+        };
+        let d = vec![definition];
+        let meaning = Meaning {
+            partOfSpeech: Some(String::from("/")),
+            definitions: Some(d),
+        };
+        let m = vec![meaning];
+        let thesaurus = Thesaurus {
+            word: None,
+            origin: None,
+            meanings: Some(m),
+        };
+        vec![thesaurus]
     }
 }
 
