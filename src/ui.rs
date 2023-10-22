@@ -2,12 +2,12 @@ use ratatui::{
     layout::{Direction, Layout},
     prelude::Constraint,
     style::{Color, Modifier, Style, Stylize},
-    widgets::{Block, Borders, Paragraph, Wrap, Padding},
+    widgets::{Block, Borders, List, ListItem, Padding, Paragraph, Wrap},
 };
 
 use crate::{
     app::{App, InputMode},
-    data::Thesaurus,
+    data::{Meaning, Thesaurus},
     tui::Frame,
 };
 
@@ -35,19 +35,20 @@ pub fn render(app: &mut App, f: &mut Frame) {
     // The `lower_frame` consists of the `part_of_speech` block and the `definitions` block.
     let lower_frame = Layout::default()
         .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(10), Constraint::Percentage(80), Constraint::Percentage(10)].as_ref())
+        .constraints(
+            [
+                Constraint::Percentage(10),
+                Constraint::Percentage(80),
+                Constraint::Percentage(10),
+            ]
+            .as_ref(),
+        )
         .margin(1)
         .split(main_frame[1]);
 
     let right_frame = Layout::default()
         .direction(Direction::Vertical)
-        .constraints(
-            [
-                Constraint::Percentage(50),
-                Constraint::Percentage(50),
-            ]
-            .as_ref(),
-        )
+        .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
         .split(lower_frame[1]);
 
     let mut part_of_speech = String::from("");
@@ -58,6 +59,8 @@ pub fn render(app: &mut App, f: &mut Frame) {
         let definitions = Thesaurus::unwrap_meanings_at(0, &app.results[0]).1;
         if definitions.len() > 0 {
             definition = definitions[0].definition.as_ref().unwrap().to_string();
+        }
+        if definitions[0].example.is_some() {
             example = definitions[0].example.as_ref().unwrap().to_string();
         }
     }
@@ -91,6 +94,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
         main_frame[1],
     );
 
+    /*
     // `Part of speech` block.
     // TODO: Enable user to navigate between different meanings. Default should show the first result.
     f.render_widget(
@@ -104,6 +108,20 @@ pub fn render(app: &mut App, f: &mut Frame) {
             ),
         lower_frame[0],
     );
+    */
+
+    if !app.results.is_empty() {
+        let meanings = app.results[0].meanings.clone();
+        if meanings.is_some() {
+            let parts: Vec<ListItem> = meanings
+                .unwrap()
+                .iter()
+                .map(|part| ListItem::new(part.partOfSpeech.as_ref().unwrap().to_string()))
+                .collect();
+            let parts_list = List::new(parts);
+            f.render_widget(parts_list, lower_frame[0]);
+        }
+    }
 
     // Definition block.
     f.render_widget(
@@ -131,6 +149,4 @@ pub fn render(app: &mut App, f: &mut Frame) {
             .block(Block::default().borders(Borders::ALL).title("Similar")),
         lower_frame[2],
     )
-
-    // TODO: Add synonyms and antonyms block.
 }

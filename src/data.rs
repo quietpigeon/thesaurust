@@ -1,3 +1,4 @@
+use crate::utils::IntoArray;
 use std::fmt::Debug;
 
 use serde_derive::{Deserialize, Serialize};
@@ -19,6 +20,15 @@ impl Default for Thesaurus {
             origin: None,
             meanings: None,
         }
+    }
+}
+
+impl IntoArray for Thesaurus {
+    type Item = Meaning;
+    fn into_array<T, const N: usize>(v: Vec<T>) -> [T; N] {
+        v.try_into().unwrap_or_else(|v: Vec<T>| {
+            panic!("Expected a Vec of length {} but it was {}", N, v.len())
+        })
     }
 }
 
