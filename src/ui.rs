@@ -50,6 +50,54 @@ pub fn render(app: &mut App, f: &mut Frame) {
         if definitions[0].example.is_some() {
             example = definitions[0].example.as_ref().unwrap().to_string();
         }
+
+        // `Part of speech` block.
+        //TODO: Make this widget stateful.
+        let meanings = app.results[0].meanings.clone();
+        if meanings.is_some() {
+            let parts: Vec<ListItem> = meanings
+                .unwrap()
+                .iter()
+                .map(|part| ListItem::new(part.partOfSpeech.as_ref().unwrap().to_string()))
+                .collect();
+            let parts_list = List::new(parts);
+            f.render_widget(
+                parts_list.block(
+                    Block::default()
+                        .borders(Borders::ALL)
+                        .title("SELECT")
+                        .title_alignment(Alignment::Center)
+                ),
+                lower_frame[0]
+            );
+        }
+
+        // Definition block.
+        f.render_widget(
+            Paragraph::new(String::from(definition))
+                .style(Style::default().fg(Color::Green))
+                .wrap(Wrap { trim: true })
+                .block(Block::default().borders(Borders::ALL).title("Definition")),
+            right_frame[0]
+        );
+
+        // Example block.
+        f.render_widget(
+            Paragraph::new(String::from(example).add_modifier(Modifier::ITALIC))
+                .style(Style::default())
+                .wrap(Wrap { trim: true })
+                .block(Block::default().borders(Borders::ALL).title("Example")),
+            right_frame[1]
+        );
+
+        // Synonym block.
+        f.render_widget(
+            Paragraph::new(String::from(""))
+                .style(Style::default())
+                .wrap(Wrap { trim: true })
+                .block(Block::default().borders(Borders::ALL).title("Synonyms")),
+            lower_frame[2]
+        );
     }
 
     // Search bar.
@@ -71,54 +119,4 @@ pub fn render(app: &mut App, f: &mut Frame) {
             .block(Block::default().borders(Borders::ALL).title("Help")),
         upper_frame[1]
     );
-
-    // `Part of speech` block.
-    //TODO: Make this widget stateful.
-    if !app.results.is_empty() {
-        let meanings = app.results[0].meanings.clone();
-        if meanings.is_some() {
-            let parts: Vec<ListItem> = meanings
-                .unwrap()
-                .iter()
-                .map(|part| ListItem::new(part.partOfSpeech.as_ref().unwrap().to_string()))
-                .collect();
-            let parts_list = List::new(parts);
-            f.render_widget(
-                parts_list.block(
-                    Block::default()
-                        .borders(Borders::ALL)
-                        .title("SELECT")
-                        .title_alignment(Alignment::Center)
-                ),
-                lower_frame[0]
-            );
-        }
-    }
-
-    // Definition block.
-    f.render_widget(
-        Paragraph::new(String::from(definition))
-            .style(Style::default().fg(Color::Green))
-            .wrap(Wrap { trim: true })
-            .block(Block::default().borders(Borders::ALL).title("Definition")),
-        right_frame[0]
-    );
-
-    // Example block.
-    f.render_widget(
-        Paragraph::new(String::from(example).add_modifier(Modifier::ITALIC))
-            .style(Style::default())
-            .wrap(Wrap { trim: true })
-            .block(Block::default().borders(Borders::ALL).title("Example")),
-        right_frame[1]
-    );
-
-    // Synonym block.
-    f.render_widget(
-        Paragraph::new(String::from(""))
-            .style(Style::default())
-            .wrap(Wrap { trim: true })
-            .block(Block::default().borders(Borders::ALL).title("Synonyms")),
-        lower_frame[2]
-    )
 }
