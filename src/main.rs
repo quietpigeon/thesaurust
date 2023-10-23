@@ -4,8 +4,8 @@ mod data;
 mod errors;
 mod tui;
 mod ui;
-mod update;
 mod utils;
+mod list;
 
 use anyhow::Result;
 use app::{App, InputMode};

@@ -1,4 +1,4 @@
-use crate::data::Thesaurus;
+use crate::{data::Thesaurus, list::StatefulList};
 use tui_input::Input;
 
 #[derive(Clone, Debug)]
@@ -19,6 +19,7 @@ pub struct App {
     pub input: Input,
     pub input_mode: InputMode,
     pub results: Vec<Thesaurus>,
+    pub selections: StatefulList<String>,
 }
 
 impl App {

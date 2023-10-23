@@ -1,18 +1,30 @@
 use ratatui::{
-    layout::{ Direction, Layout },
-    prelude::{ Constraint, Alignment },
-    style::{ Color, Modifier, Style, Stylize },
-    widgets::{ Block, Borders, List, ListItem, Paragraph, Wrap },
+    layout::{Direction, Layout},
+    prelude::{Alignment, Constraint},
+    style::{Color, Modifier, Style, Stylize},
+    widgets::{Block, Borders, List, ListItem, Paragraph, Wrap},
 };
 
-use crate::{ app::{ App, InputMode }, data::Thesaurus, tui::Frame };
+use crate::{
+    app::{App, InputMode},
+    data::Thesaurus,
+    list::StatefulList,
+    tui::Frame,
+};
 
 pub fn render(app: &mut App, f: &mut Frame) {
     // Main frame.
     let main_frame = Layout::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .constraints([Constraint::Length(3), Constraint::Length(12), Constraint::Min(1)].as_ref())
+        .constraints(
+            [
+                Constraint::Length(3),
+                Constraint::Length(12),
+                Constraint::Min(1),
+            ]
+            .as_ref(),
+        )
         .split(f.size());
 
     // The `upper_frame` consists of the search bar and the help bar.
@@ -30,7 +42,8 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 Constraint::Percentage(10),
                 Constraint::Percentage(80),
                 Constraint::Percentage(10),
-            ].as_ref()
+            ]
+            .as_ref(),
         )
         .horizontal_margin(1)
         .split(main_frame[1]);
@@ -55,21 +68,33 @@ pub fn render(app: &mut App, f: &mut Frame) {
         //TODO: Make this widget stateful.
         let meanings = app.results[0].meanings.clone();
         if meanings.is_some() {
-            let parts: Vec<ListItem> = meanings
+            let selections: Vec<String> = meanings
                 .unwrap()
                 .iter()
-                .map(|part| ListItem::new(part.partOfSpeech.as_ref().unwrap().to_string()))
+                .map(|part| String::from(part.partOfSpeech.as_ref().unwrap().to_string()))
                 .collect();
-            let parts_list = List::new(parts);
-            f.render_widget(
-                parts_list.block(
+
+            app.selections = StatefulList::with_items(selections);
+
+            let selections: Vec<ListItem> = app
+                .selections
+                .items
+                .iter()
+                .map(|i| ListItem::new(i.to_string()))
+                .collect();
+
+            let parts_list = List::new(selections)
+                .clone()
+                .block(
                     Block::default()
                         .borders(Borders::ALL)
                         .title("SELECT")
-                        .title_alignment(Alignment::Center)
-                ),
-                lower_frame[0]
-            );
+                        .title_alignment(Alignment::Center),
+                )
+                .highlight_symbol(">> ");
+
+            // `SELECT` block
+            f.render_stateful_widget(parts_list, lower_frame[0], &mut app.selections.state);
         }
 
         // Definition block.
@@ -78,7 +103,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 .style(Style::default().fg(Color::Green))
                 .wrap(Wrap { trim: true })
                 .block(Block::default().borders(Borders::ALL).title("Definition")),
-            right_frame[0]
+            right_frame[0],
         );
 
         // Example block.
@@ -87,7 +112,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 .style(Style::default())
                 .wrap(Wrap { trim: true })
                 .block(Block::default().borders(Borders::ALL).title("Example")),
-            right_frame[1]
+            right_frame[1],
         );
 
         // Synonym block.
@@ -96,7 +121,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 .style(Style::default())
                 .wrap(Wrap { trim: true })
                 .block(Block::default().borders(Borders::ALL).title("Synonyms")),
-            lower_frame[2]
+            lower_frame[2],
         );
     }
 
@@ -109,7 +134,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
             })
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Search")),
-        upper_frame[0]
+        upper_frame[0],
     );
 
     // Help bar.
@@ -117,6 +142,6 @@ pub fn render(app: &mut App, f: &mut Frame) {
         Paragraph::new(String::from("Press `Esc` to stop running, `/` to start."))
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Help")),
-        upper_frame[1]
+        upper_frame[1],
     );
 }
