@@ -2,10 +2,11 @@ mod app;
 mod client;
 mod data;
 mod errors;
+mod list;
+mod selection;
 mod tui;
 mod ui;
 mod utils;
-mod list;
 
 use anyhow::Result;
 use app::{App, InputMode};
@@ -32,11 +33,15 @@ fn main() -> Result<()> {
                     KeyCode::Esc => {
                         App::quit(&mut app);
                     }
-                    KeyCode::Enter => {
-                        let input_string = app.input.to_string();
-                        if input_string.len() > 0 {
-                            // Fetch data
-                        }
+                    //TODO: Check if selections is empty or not.
+                    KeyCode::Char('j') => {
+                        app.selections.next();
+                    }
+                    KeyCode::Char('k') => {
+                        app.selections.previous();
+                    }
+                    KeyCode::Char('q') => {
+                        app.selections.unselect();
                     }
                     KeyCode::Char('/') => {
                         app.input_mode = InputMode::Editing;

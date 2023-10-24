@@ -9,6 +9,7 @@ use crate::{
     app::{App, InputMode},
     data::Thesaurus,
     list::StatefulList,
+    selection::Selection,
     tui::Frame,
 };
 
@@ -68,19 +69,18 @@ pub fn render(app: &mut App, f: &mut Frame) {
         //TODO: Make this widget stateful.
         let meanings = app.results[0].meanings.clone();
         if meanings.is_some() {
-            let selections: Vec<String> = meanings
+            let selections: Vec<Selection> = meanings
                 .unwrap()
                 .iter()
-                .map(|part| String::from(part.partOfSpeech.as_ref().unwrap().to_string()))
+                .map(|part| Selection::new(part.partOfSpeech.as_ref().unwrap()))
                 .collect();
 
             app.selections = StatefulList::with_items(selections);
-
             let selections: Vec<ListItem> = app
                 .selections
                 .items
                 .iter()
-                .map(|i| ListItem::new(i.to_string()))
+                .map(|i| ListItem::new(i.content.clone()))
                 .collect();
 
             let parts_list = List::new(selections)
