@@ -64,10 +64,8 @@ pub fn render(app: &mut App, f: &mut Frame) {
         }
 
         // `Part of speech` block.
-        //TODO: Make this widget stateful.
         let meanings = app.results[0].meanings.clone();
         if meanings.is_some() {
-            //Move this outside.
             let selections: Vec<ListItem> = app
                 .selections
                 .items
@@ -79,10 +77,11 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 .block(
                     Block::default()
                         .borders(Borders::ALL)
-                        .title(app.selections.items.len().to_string())
+                        .title("SELECT")
                         .title_alignment(Alignment::Center),
                 )
-                .highlight_symbol(">> ");
+                .style(Style::default().fg(Color::Green))
+                .highlight_style(Style::default().bg(Color::Cyan));
 
             // `SELECT` block
             f.render_stateful_widget(selections, lower_frame[0], &mut app.selections.state);
@@ -100,7 +99,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
         // Example block.
         f.render_widget(
             Paragraph::new(String::from(example).add_modifier(Modifier::ITALIC))
-                .style(Style::default())
+                .style(Style::default().fg(Color::Green))
                 .wrap(Wrap { trim: true })
                 .block(Block::default().borders(Borders::ALL).title("Example")),
             right_frame[1],
@@ -109,7 +108,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
         // Synonym block.
         f.render_widget(
             Paragraph::new(String::from(""))
-                .style(Style::default())
+                .style(Style::default().fg(Color::Green))
                 .wrap(Wrap { trim: true })
                 .block(Block::default().borders(Borders::ALL).title("Synonyms")),
             lower_frame[2],
