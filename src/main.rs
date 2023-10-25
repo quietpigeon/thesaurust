@@ -26,14 +26,12 @@ fn main() -> Result<()> {
     // Start the main loop.
     while !app.should_quit {
         tui.draw(&mut app)?;
-        //TODO: Add an event handler for the events.
         if let Event::Key(key) = event::read()? {
             match app.input_mode {
                 InputMode::Normal => match key.code {
                     KeyCode::Esc => {
                         App::quit(&mut app);
                     }
-                    //TODO: Check if selections is empty or not.
                     KeyCode::Char('j') => {
                         app.selections.next();
                     }
@@ -51,9 +49,12 @@ fn main() -> Result<()> {
                 },
                 InputMode::Editing => match key.code {
                     KeyCode::Enter => {
-                        // Fetch data
                         app.input_mode = InputMode::Normal;
+
+                        // Fetch data
                         app.results = get_data(app.input.to_string());
+
+                        // Propagate the data into the corresponding stateful lists.
                         App::update_selections(&mut app);
                     }
                     KeyCode::Esc => {
