@@ -30,4 +30,18 @@ impl App {
     pub fn quit(&mut self) {
         self.should_quit = true;
     }
+
+    pub fn update_selections(&mut self) {
+        if !self.results.is_empty() {
+            let meanings = self.results[0].meanings.clone();
+            if meanings.is_some() {
+                let selections: Vec<Selection> = meanings
+                    .unwrap()
+                    .iter()
+                    .map(|part| Selection::new(part.partOfSpeech.as_ref().unwrap()))
+                    .collect();
+                self.selections = StatefulList::with_items(selections);
+            }
+        }
+    }
 }

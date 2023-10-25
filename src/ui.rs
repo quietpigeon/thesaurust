@@ -8,8 +8,6 @@ use ratatui::{
 use crate::{
     app::{App, InputMode},
     data::Thesaurus,
-    list::StatefulList,
-    selection::Selection,
     tui::Frame,
 };
 
@@ -69,13 +67,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
         //TODO: Make this widget stateful.
         let meanings = app.results[0].meanings.clone();
         if meanings.is_some() {
-            let selections: Vec<Selection> = meanings
-                .unwrap()
-                .iter()
-                .map(|part| Selection::new(part.partOfSpeech.as_ref().unwrap()))
-                .collect();
-
-            app.selections = StatefulList::with_items(selections);
+            //Move this outside.
             let selections: Vec<ListItem> = app
                 .selections
                 .items
@@ -83,18 +75,17 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 .map(|i| ListItem::new(i.content.clone()))
                 .collect();
 
-            let parts_list = List::new(selections)
-                .clone()
+            let selections = List::new(selections)
                 .block(
                     Block::default()
                         .borders(Borders::ALL)
-                        .title("SELECT")
+                        .title(app.selections.items.len().to_string())
                         .title_alignment(Alignment::Center),
                 )
                 .highlight_symbol(">> ");
 
             // `SELECT` block
-            f.render_stateful_widget(parts_list, lower_frame[0], &mut app.selections.state);
+            f.render_stateful_widget(selections, lower_frame[0], &mut app.selections.state);
         }
 
         // Definition block.

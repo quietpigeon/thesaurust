@@ -1,4 +1,4 @@
-use ratatui::widgets::{List, ListState};
+use ratatui::widgets::ListState;
 
 #[derive(Clone, Debug, Default)]
 pub struct StatefulList<T> {

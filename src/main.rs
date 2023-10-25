@@ -40,12 +40,12 @@ fn main() -> Result<()> {
                     KeyCode::Char('k') => {
                         app.selections.previous();
                     }
-                    KeyCode::Char('q') => {
-                        app.selections.unselect();
-                    }
                     KeyCode::Char('/') => {
                         app.input_mode = InputMode::Editing;
                         app.input.reset();
+                    }
+                    KeyCode::Char('q') => {
+                        app.selections.unselect();
                     }
                     _ => {}
                 },
@@ -54,6 +54,7 @@ fn main() -> Result<()> {
                         // Fetch data
                         app.input_mode = InputMode::Normal;
                         app.results = get_data(app.input.to_string());
+                        App::update_selections(&mut app);
                     }
                     KeyCode::Esc => {
                         app.input_mode = InputMode::Normal;
