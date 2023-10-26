@@ -81,7 +81,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
                         .title_alignment(Alignment::Center),
                 )
                 .style(Style::default().fg(Color::Green))
-                .highlight_style(Style::default().bg(Color::Cyan));
+                .highlight_style(Style::default().fg(Color::Black).bg(Color::Cyan));
 
             // `SELECT` block
             f.render_stateful_widget(selections, lower_frame[0], &mut app.selections.state);
