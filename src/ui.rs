@@ -54,8 +54,9 @@ pub fn render(app: &mut App, f: &mut Frame) {
 
     let mut definition = String::from("");
     let mut example = String::from("");
+    let idx = app.selections.state.selected();
     if !app.results.is_empty() {
-        let definitions = Thesaurus::unwrap_meanings_at(0, &app.results[0]).1;
+        let definitions = Thesaurus::unwrap_meanings_at(idx.unwrap(), &app.results[0]).1;
         if definitions.len() > 0 {
             definition = definitions[0].definition.as_ref().unwrap().to_string();
         }
@@ -107,6 +108,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
 
         // Synonym block.
         f.render_widget(
+            // Return the index of the selected item.
             Paragraph::new(String::from(""))
                 .style(Style::default().fg(Color::Green))
                 .wrap(Wrap { trim: true })
