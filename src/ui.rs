@@ -1,29 +1,18 @@
 use ratatui::{
-    layout::{Direction, Layout},
-    prelude::{Alignment, Constraint},
-    style::{Color, Modifier, Style, Stylize},
-    widgets::{Block, Borders, List, ListItem, Paragraph, Wrap},
+    layout::{ Direction, Layout },
+    prelude::{ Alignment, Constraint },
+    style::{ Color, Modifier, Style, Stylize },
+    widgets::{ Block, Borders, List, ListItem, Paragraph, Wrap },
 };
 
-use crate::{
-    app::{App, InputMode},
-    data::Thesaurus,
-    tui::Frame,
-};
+use crate::{ app::{ App, InputMode }, data::Thesaurus, tui::Frame };
 
 pub fn render(app: &mut App, f: &mut Frame) {
     // Main frame.
     let main_frame = Layout::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .constraints(
-            [
-                Constraint::Length(3),
-                Constraint::Length(12),
-                Constraint::Min(1),
-            ]
-            .as_ref(),
-        )
+        .constraints([Constraint::Length(3), Constraint::Length(12), Constraint::Min(1)].as_ref())
         .split(f.size());
 
     // The `upper_frame` consists of the search bar and the help bar.
@@ -41,12 +30,18 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 Constraint::Percentage(10),
                 Constraint::Percentage(80),
                 Constraint::Percentage(10),
-            ]
-            .as_ref(),
+            ].as_ref()
         )
         .horizontal_margin(1)
         .split(main_frame[1]);
 
+    // The frame for banner.
+    let banner_frame = Layout::default()
+        .constraints([Constraint::Percentage(100), Constraint::Percentage(0)])
+        .margin(2)
+        .split(main_frame[1]);
+
+    // The `right_frame` consists of the `definition` block and the `example` block.
     let right_frame = Layout::default()
         .direction(Direction::Vertical)
         .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
@@ -54,7 +49,10 @@ pub fn render(app: &mut App, f: &mut Frame) {
 
     let mut definition = String::from("");
     let mut example = String::from("");
+
+    // Index of the item selected by the user in `selections`.
     let idx = app.selections.state.selected();
+
     if !app.results.is_empty() {
         let definitions = Thesaurus::unwrap_meanings_at(idx.unwrap(), &app.results[0]).1;
         if definitions.len() > 0 {
@@ -64,12 +62,11 @@ pub fn render(app: &mut App, f: &mut Frame) {
             example = definitions[0].example.as_ref().unwrap().to_string();
         }
 
-        // `Part of speech` block.
+        // `SELECT` block that shows the part of speech of the word.
+        // They are also used to show whether the word has multiple definitions or not.
         let meanings = app.results[0].meanings.clone();
         if meanings.is_some() {
-            let selections: Vec<ListItem> = app
-                .selections
-                .items
+            let selections: Vec<ListItem> = app.selections.items
                 .iter()
                 .map(|i| ListItem::new(i.content.clone()))
                 .collect();
@@ -79,7 +76,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
                     Block::default()
                         .borders(Borders::ALL)
                         .title("SELECT")
-                        .title_alignment(Alignment::Center),
+                        .title_alignment(Alignment::Center)
                 )
                 .style(Style::default().fg(Color::Green))
                 .highlight_style(Style::default().fg(Color::Black).bg(Color::Cyan));
@@ -94,7 +91,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 .style(Style::default().fg(Color::Green))
                 .wrap(Wrap { trim: true })
                 .block(Block::default().borders(Borders::ALL).title("Definition")),
-            right_frame[0],
+            right_frame[0]
         );
 
         // Example block.
@@ -103,20 +100,24 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 .style(Style::default().fg(Color::Green))
                 .wrap(Wrap { trim: true })
                 .block(Block::default().borders(Borders::ALL).title("Example")),
-            right_frame[1],
+            right_frame[1]
         );
-
-        // Synonym block.
+    } else {
         f.render_widget(
-            // Return the index of the selected item.
-            Paragraph::new(String::from(""))
+            //TODO: Store the banner text as a static variable.
+            Paragraph::new(
+                "████████╗██╗  ██╗███████╗███████╗ █████╗ ██╗   ██╗██████╗ ██╗   ██╗███████╗████████╗
+╚══██╔══╝██║  ██║██╔════╝██╔════╝██╔══██╗██║   ██║██╔══██╗██║   ██║██╔════╝╚══██╔══╝
+   ██║   ███████║█████╗  ███████╗███████║██║   ██║██████╔╝██║   ██║███████╗   ██║   
+   ██║   ██╔══██║██╔══╝  ╚════██║██╔══██║██║   ██║██╔══██╗██║   ██║╚════██║   ██║   
+   ██║   ██║  ██║███████╗███████║██║  ██║╚██████╔╝██║  ██║╚██████╔╝███████║   ██║   
+   ╚═╝   ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝ "
+            )
                 .style(Style::default().fg(Color::Green))
-                .wrap(Wrap { trim: true })
-                .block(Block::default().borders(Borders::ALL).title("Synonyms")),
-            lower_frame[2],
+                .alignment(Alignment::Center),
+            banner_frame[0]
         );
     }
-
     // Search bar.
     f.render_widget(
         Paragraph::new(app.input.value())
@@ -126,14 +127,15 @@ pub fn render(app: &mut App, f: &mut Frame) {
             })
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Search")),
-        upper_frame[0],
+        upper_frame[0]
     );
 
     // Help bar.
     f.render_widget(
         Paragraph::new(String::from("Press `Esc` to stop running, `/` to start."))
+            .style(Style::default().fg(Color::Green))
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::ALL).title("Help")),
-        upper_frame[1],
+        upper_frame[1]
     );
 }

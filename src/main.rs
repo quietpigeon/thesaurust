@@ -33,10 +33,10 @@ fn main() -> Result<()> {
                         App::quit(&mut app);
                     }
                     KeyCode::Char('j') => {
-                        app.selections.next();
+                        app.selections.down();
                     }
                     KeyCode::Char('k') => {
-                        app.selections.previous();
+                        app.selections.up();
                     }
                     KeyCode::Char('/') => {
                         app.input_mode = InputMode::Editing;
