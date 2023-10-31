@@ -33,7 +33,7 @@ fn main() -> Result<()> {
                         KeyCode::Esc => {
                             App::quit(&mut app);
                         }
-                        KeyCode::Char(':') => {
+                        KeyCode::Char(':') | KeyCode::Char('j') | KeyCode::Char('e') => {
                             app.input_mode = InputMode::Selecting;
                         }
                         KeyCode::Char('/') => {
@@ -70,6 +70,9 @@ fn main() -> Result<()> {
                         }
                         KeyCode::Char('q') => {
                             app.input_mode = InputMode::Normal;
+                        }
+                        KeyCode::Esc => {
+                            App::quit(&mut app)
                         }
                         _ => {}
                     }
