@@ -5,14 +5,14 @@ use ratatui::{
     widgets::{ Block, Borders, List, ListItem, Paragraph, Wrap },
 };
 
-use crate::{ app::{ App, InputMode }, data::Thesaurus, tui::Frame };
+use crate::{ app::{ App, InputMode }, data::Thesaurus, tui::Frame, banner::BANNER};
 
 pub fn render(app: &mut App, f: &mut Frame) {
     // Main frame.
     let main_frame = Layout::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .constraints([Constraint::Length(3), Constraint::Length(9), Constraint::Min(1)].as_ref())
+        .constraints([Constraint::Length(3), Constraint::Length(12), Constraint::Min(1)].as_ref())
         .split(f.size());
 
     // The `upper_frame` consists of the search bar and the help bar.
@@ -111,12 +111,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
         f.render_widget(
             //TODO: Store the banner text as a static variable.
             Paragraph::new(
-                "████████╗██╗  ██╗███████╗███████╗ █████╗ ██╗   ██╗██████╗ ██╗   ██╗███████╗████████╗
-╚══██╔══╝██║  ██║██╔════╝██╔════╝██╔══██╗██║   ██║██╔══██╗██║   ██║██╔════╝╚══██╔══╝
-   ██║   ███████║█████╗  ███████╗███████║██║   ██║██████╔╝██║   ██║███████╗   ██║   
-   ██║   ██╔══██║██╔══╝  ╚════██║██╔══██║██║   ██║██╔══██╗██║   ██║╚════██║   ██║   
-   ██║   ██║  ██║███████╗███████║██║  ██║╚██████╔╝██║  ██║╚██████╔╝███████║   ██║   
-   ╚═╝   ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝ "
+                BANNER
             )
                 .style(Style::default().fg(Color::Green))
                 .alignment(Alignment::Center),

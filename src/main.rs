@@ -6,7 +6,7 @@ mod list;
 mod selection;
 mod tui;
 mod ui;
-mod utils;
+mod banner;
 
 use anyhow::Result;
 use app::{ App, InputMode };
