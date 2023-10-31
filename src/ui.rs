@@ -12,7 +12,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
     let main_frame = Layout::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .constraints([Constraint::Length(3), Constraint::Length(12), Constraint::Min(1)].as_ref())
+        .constraints([Constraint::Length(3), Constraint::Length(9), Constraint::Min(1)].as_ref())
         .split(f.size());
 
     // The `upper_frame` consists of the search bar and the help bar.
@@ -53,7 +53,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
     // Index of the item selected by the user in `selections`.
     let idx = app.selections.state.selected();
 
-    if !app.results.is_empty() {
+    if !app.results.is_empty() && idx.is_some() {
         let definitions = Thesaurus::unwrap_meanings_at(idx.unwrap(), &app.results[0]).1;
         if definitions.len() > 0 {
             definition = definitions[0].definition.as_ref().unwrap().to_string();
@@ -75,7 +75,12 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 .block(
                     Block::default()
                         .borders(Borders::ALL)
-                        .title("SELECT")
+                        .title( match app.input_mode {
+                            InputMode::Selecting => {
+                                "SELECT"
+                            }
+                            _ => {"Part of speech"}
+                        })
                         .title_alignment(Alignment::Center)
                 )
                 .style(Style::default().fg(Color::Green))
@@ -122,7 +127,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
     f.render_widget(
         Paragraph::new(app.input.value())
             .style(match app.input_mode {
-                InputMode::Normal => Style::default().fg(Color::Green),
+                InputMode::Normal | InputMode::Selecting => Style::default().fg(Color::Green),
                 InputMode::Editing => Style::default().fg(Color::Yellow),
             })
             .wrap(Wrap { trim: true })

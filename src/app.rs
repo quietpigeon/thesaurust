@@ -5,6 +5,7 @@ use tui_input::Input;
 pub enum InputMode {
     Normal,
     Editing,
+    Selecting,
 }
 
 impl Default for InputMode {
