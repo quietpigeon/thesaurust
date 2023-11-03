@@ -12,13 +12,13 @@ pub fn render(app: &mut App, f: &mut Frame) {
     let main_frame = Layout::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .constraints([Constraint::Length(3), Constraint::Length(12), Constraint::Min(1)].as_ref())
+        .constraints([Constraint::Length(3), Constraint::Length(9), Constraint::Min(1)].as_ref())
         .split(f.size());
 
     // The `upper_frame` consists of the search bar and the help bar.
     let upper_frame = Layout::default()
         .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(75), Constraint::Percentage(25)].as_ref())
+        .constraints([Constraint::Percentage(60), Constraint::Percentage(40)].as_ref())
         .horizontal_margin(1)
         .split(main_frame[0]);
 
@@ -38,7 +38,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
     // The frame for banner.
     let banner_frame = Layout::default()
         .constraints([Constraint::Percentage(100), Constraint::Percentage(0)])
-        .margin(2)
+        .margin(1)
         .split(main_frame[1]);
 
     // The `right_frame` consists of the `definition` block and the `example` block.

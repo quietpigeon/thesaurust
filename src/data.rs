@@ -82,8 +82,8 @@ impl Default for Meaning {
 pub struct Definition {
     pub definition: Option<String>,
     pub example: Option<String>,
-    synonyms: Option<Vec<String>>,
-    antonyms: Option<Vec<String>>,
+    pub synonyms: Option<Vec<String>>,
+    pub antonyms: Option<Vec<String>>,
 }
 
 impl Default for Definition {
