@@ -14,7 +14,7 @@ use client::get_data;
 use crossterm::event::{self, Event, KeyCode};
 use ratatui::{backend::CrosstermBackend, Terminal};
 use tui::Tui;
-use tui_input::{backend::crossterm::EventHandler, Input};
+use tui_input::{backend::crossterm::EventHandler};
 
 fn main() -> Result<()> {
     let mut app = App::new();
