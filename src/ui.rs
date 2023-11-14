@@ -27,9 +27,8 @@ pub fn render(app: &mut App, f: &mut Frame) {
         .direction(Direction::Horizontal)
         .constraints(
             [
-                Constraint::Percentage(10),
+                Constraint::Percentage(20),
                 Constraint::Percentage(80),
-                Constraint::Percentage(10),
             ].as_ref()
         )
         .horizontal_margin(1)
