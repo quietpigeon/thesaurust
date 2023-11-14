@@ -10,7 +10,7 @@ mod ui;
 
 use anyhow::Result;
 use app::{App, InputMode};
-use client::get_data;
+use client::parse_response;
 use crossterm::event::{self, Event, KeyCode};
 use ratatui::{backend::CrosstermBackend, Terminal};
 use tui::Tui;
@@ -46,7 +46,7 @@ fn main() -> Result<()> {
                         app.input_mode = InputMode::Normal;
 
                         // Fetch data
-                        app.results = get_data(app.input.to_string());
+                        app.results = parse_response(app.input.to_string());
 
                         // Propagate the data into the corresponding stateful lists.
                         App::update_selections(&mut app);

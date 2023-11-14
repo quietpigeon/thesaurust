@@ -2,7 +2,7 @@ use crate::{data::Thesaurus, errors::ApiError};
 
 const DOMAIN: &'static str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
-pub fn get_data(word: String) -> Vec<Thesaurus> {
+pub fn parse_response(word: String) -> Vec<Thesaurus> {
     match fetch_response(word) {
         Ok(t) => {
             let resp: Vec<Thesaurus> = serde_json::from_value(t).unwrap();
