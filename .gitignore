@@ -1,4 +1,4 @@
 /target
-.vs
-.vscode
+.vs/
+.vscode/
 .DS_Store
