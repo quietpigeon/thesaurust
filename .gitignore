@@ -1,4 +1,8 @@
 /target
+
 .vs/
 .vscode/
+
+Cargo.lock
 .DS_Store
+
