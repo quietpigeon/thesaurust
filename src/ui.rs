@@ -109,7 +109,6 @@ pub fn render(app: &mut App, f: &mut Frame) {
         );
     } else {
         f.render_widget(
-            //TODO: Store the banner text as a static variable.
             Paragraph::new(
                 BANNER
             )
