@@ -18,7 +18,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
     // The `upper_frame` consists of the search bar and the help bar.
     let upper_frame = Layout::default()
         .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(60), Constraint::Percentage(40)].as_ref())
+        .constraints([Constraint::Percentage(70), Constraint::Percentage(30)].as_ref())
         .horizontal_margin(1)
         .split(main_frame[0]);
 
