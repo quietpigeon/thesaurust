@@ -143,9 +143,11 @@ pub fn render(app: &mut App, f: &mut Frame) {
         upper_frame[0],
     );
 
+    let default_instructions = "q: Quit, /: Enter, <ENTER>: Search";
     // Controls.
     f.render_widget(
-        Paragraph::new(String::from("<Esc>: Exit"))
+        Paragraph::new(String::from(default_instructions))
+            .alignment(Alignment::Left)
             .style(Style::default().fg(Color::Green))
             .wrap(Wrap { trim: true })
             .block(Block::default().borders(Borders::NONE)),

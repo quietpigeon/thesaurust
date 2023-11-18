@@ -29,7 +29,7 @@ fn main() -> Result<()> {
         if let Event::Key(key) = event::read()? {
             match app.input_mode {
                 InputMode::Normal => match key.code {
-                    KeyCode::Char('q') | KeyCode::Esc => {
+                    KeyCode::Char('q') => {
                         App::quit(&mut app);
                     }
                     KeyCode::Char(':') | KeyCode::Char('j') | KeyCode::Char('e') => {
@@ -65,7 +65,7 @@ fn main() -> Result<()> {
                     KeyCode::Char('k') => {
                         app.selections.up();
                     }
-                    KeyCode::Char('q') | KeyCode::Esc => {
+                    KeyCode::Char('q') => {
                         app.input_mode = InputMode::Normal;
                     }
                     _ => {}
