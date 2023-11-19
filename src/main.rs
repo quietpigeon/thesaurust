@@ -50,6 +50,7 @@ fn main() -> Result<()> {
 
                         // Propagate the data into the corresponding stateful lists.
                         App::update_selections(&mut app);
+                        App::update_definition_list(&mut app);
                     }
                     KeyCode::Esc => {
                         app.input_mode = InputMode::Normal;
@@ -68,8 +69,24 @@ fn main() -> Result<()> {
                     KeyCode::Char('q') => {
                         app.input_mode = InputMode::Normal;
                     }
+                    KeyCode::Enter => {
+                        app.input_mode = InputMode::SelectDefinition;
+                    }
                     _ => {}
                 },
+                InputMode::SelectDefinition => match key.code {
+                    KeyCode::Char('j') => {
+                        app.definition_list.down();
+                    }
+                    KeyCode::Char('k') => {
+                        app.selections.up();
+                    }
+                    KeyCode::Char('q') => {
+                        app.input_mode = InputMode::Normal;
+                        App::update_definition_list(&mut app);
+                    }
+                    _ => {}
+                }
             }
         }
     }
