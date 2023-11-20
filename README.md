@@ -22,6 +22,6 @@ thesaurust
 * `q`: Exit the app.
 ## Roadmap
 - [x] Show an example with the definition (if available)
-- [x] Toggle between multiple definitions
+- [x] Toggle between parts of speech 
+- [x] Toggle between definitions with the same part of speech
 - [ ] Show synonyms and antonyms
-- [ ] Toggle between definitions with the same part of speech
