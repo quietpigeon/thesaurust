@@ -63,7 +63,6 @@ pub fn render(app: &mut App, f: &mut Frame) {
         )
         .split(main_frame[2]);
 
-
     // Index of the item selected by the user in `selections`.
     let mut idx = 0;
     if let Some(i) = app.selections.state.selected() {
@@ -80,7 +79,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 if let Some(e) = definitions[d_idx].example.clone() {
                     example = e;
                 }
-            } 
+            }
         }
 
         // `SELECT` block that shows the part of speech of the word.
@@ -93,16 +92,11 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 .collect();
 
             let selections = List::new(selections)
-                .block(
-                    Block::default()
-                        .borders(Borders::ALL)
-                        .title(match app.input_mode {
-                            InputMode::Selecting => "SELECT",
-                            _ => "Part of speech",
-                        })
-                        .title_alignment(Alignment::Center)
-                )
-                .style(Style::default().fg(Color::Green))
+                .block(Block::default().borders(Borders::ALL).title("Part Of Speech"))
+                .style(match app.input_mode {
+                    InputMode::Selecting => Style::default().fg(Color::Yellow),
+                    _ => Style::default().fg(Color::Green),
+                })
                 .highlight_style(Style::default().fg(Color::Black).bg(Color::Cyan));
 
             // `SELECT` block
@@ -112,7 +106,10 @@ pub fn render(app: &mut App, f: &mut Frame) {
         // Definition block.
         f.render_widget(
             Paragraph::new(String::from(definition))
-                .style(Style::default().fg(Color::Green))
+                .style(match app.input_mode {
+                    InputMode::SelectDefinition=> Style::default().fg(Color::Yellow),
+                    _ => Style::default().fg(Color::Green),
+                })
                 .wrap(Wrap { trim: true })
                 .block(
                     Block::default()
