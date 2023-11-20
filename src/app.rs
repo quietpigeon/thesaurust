@@ -1,4 +1,4 @@
-use crate::{ data::Thesaurus, list::{ StatefulList, StatefulListType }, selection::Selection };
+use crate::{ data::Thesaurus, list::{ StatefulList, StatefulListType } };
 use tui_input::Input;
 
 #[derive(Clone, Debug)]
