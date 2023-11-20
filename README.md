@@ -1,5 +1,6 @@
 # thesaurust
 A simple dictionary application built within the terminal, written in Rust. 
+![Demo](docs/demo.gif)
 ## How it works
 The data is fetched from the API provided by https://dictionaryapi.dev/. Since words can contain more than one meanings, the user can toggle between different meanings based on the part of speech of the definition.
 ## Installation
