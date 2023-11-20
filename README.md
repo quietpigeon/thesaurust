@@ -13,7 +13,10 @@ $ cargo install --path .
 $ thesaurust
 ```
 ## Usage
-* `/`: Enter the word you would like to look up.
+* `/`: Insert the word you would like to look up.
+* `<ENTER>`: Search.
+* `j`, `k`: Select the part of speech and press `<ENTER>`.
+* `l`, `h`: Toggle between multiple definitions.
 * `q`: Exit the app.
 ## Roadmap
 - [x] Show an example with the definition (if available)
