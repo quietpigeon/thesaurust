@@ -1,4 +1,4 @@
-use crate::{data::Thesaurus, list::StatefulList, selection::Selection};
+use crate::{ data::Thesaurus, list::StatefulList, selection::Selection };
 use tui_input::Input;
 
 #[derive(Clone, Debug)]
@@ -6,6 +6,7 @@ pub enum InputMode {
     Normal,
     Editing,
     Selecting,
+    SelectDefinition
 }
 
 impl Default for InputMode {
@@ -21,6 +22,7 @@ pub struct App {
     pub input_mode: InputMode,
     pub results: Vec<Thesaurus>,
     pub selections: StatefulList<Selection>,
+    pub definition_list: StatefulList<String>,
 }
 
 impl App {
@@ -32,6 +34,7 @@ impl App {
         self.should_quit = true;
     }
 
+    //TODO: Refactor.
     /// Update the stateful list when the user enters a new input.
     pub fn update_selections(&mut self) {
         if !self.results.is_empty() {
@@ -44,8 +47,24 @@ impl App {
                     .collect();
                 self.selections = StatefulList::with_items(selections);
 
-                // Select the first item as default/
+                // Select the first item as default.
                 self.selections.state.select(Some(0))
+            }
+        }
+    }
+
+    pub fn update_definition_list(&mut self) {
+        if !self.results.is_empty() {
+            if let Some(idx) = self.selections.state.selected() {
+                let definitions = Thesaurus::unwrap_meanings_at(idx, &self.results[0]).1;
+                let definitions: Vec<String> = definitions
+                    .iter()
+                    .map(|i| i.definition.clone().unwrap_or("default".to_string()))
+                    .collect();
+                self.definition_list = StatefulList::with_items(definitions);
+
+                // Select the first item as default.
+                self.definition_list.state.select(Some(0))
             }
         }
     }
