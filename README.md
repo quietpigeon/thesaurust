@@ -14,8 +14,7 @@ $ thesaurust
 ```
 ## Usage
 * `/`: Enter the word you would like to look up.
-* `j`: Enter selection mode; toggle between different definitions with `j` and `k`.
-* `Esc`: Exit the app.
+* `q`: Exit the app.
 ## Roadmap
 - [x] Show an example with the definition (if available)
 - [x] Toggle between multiple definitions
