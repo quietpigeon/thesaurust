@@ -65,7 +65,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
 
     // Index of the item selected by the user in `selections`.
     let mut idx = 0;
-    if let Some(i) = app.selections.state.selected() {
+    if let Some(i) = app.part_of_speech_list.state.selected() {
         idx = i;
     }
 
@@ -86,9 +86,9 @@ pub fn render(app: &mut App, f: &mut Frame) {
         // They are also used to show whether the word has multiple definitions or not.
         let meanings = app.results[0].meanings.clone();
         if meanings.is_some() {
-            let selections: Vec<ListItem> = app.selections.items
+            let selections: Vec<ListItem> = app.part_of_speech_list.items
                 .iter()
-                .map(|i| ListItem::new(i.content.clone()))
+                .map(|i| ListItem::new(i.clone()))
                 .collect();
 
             let selections = List::new(selections)
@@ -100,7 +100,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 .highlight_style(Style::default().fg(Color::Black).bg(Color::Cyan));
 
             // `SELECT` block
-            f.render_stateful_widget(selections, lower_frame[0], &mut app.selections.state);
+            f.render_stateful_widget(selections, lower_frame[0], &mut app.part_of_speech_list.state);
         }
 
         // Definition block.

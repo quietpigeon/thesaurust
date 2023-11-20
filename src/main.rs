@@ -9,10 +9,10 @@ mod tui;
 mod ui;
 
 use anyhow::Result;
-use app::{App, InputMode};
+use app::{ App, InputMode };
 use client::parse_response;
-use crossterm::event::{self, Event, KeyCode};
-use ratatui::{backend::CrosstermBackend, Terminal};
+use crossterm::event::{ self, Event, KeyCode };
+use ratatui::{ backend::CrosstermBackend, Terminal };
 use tui::Tui;
 use tui_input::{ backend::crossterm::EventHandler };
 
@@ -47,12 +47,11 @@ fn main() -> Result<()> {
                         KeyCode::Enter => {
                             app.input_mode = InputMode::Normal;
 
-                        // Fetch data
-                        app.results = parse_response(app.input.to_string());
+                            // Fetch data
+                            app.results = parse_response(app.input.to_string());
 
                             // Propagate the data into the corresponding stateful lists.
-                            App::update_selections(&mut app);
-                            App::update_definition_list(&mut app);
+                            App::update_stateful_lists(&mut app, list::StatefulListType::All);
                         }
                         KeyCode::Esc => {
                             app.input_mode = InputMode::Normal;
@@ -64,17 +63,20 @@ fn main() -> Result<()> {
                 InputMode::Selecting =>
                     match key.code {
                         KeyCode::Char('j') => {
-                            app.selections.down();
+                            app.part_of_speech_list.down();
                         }
                         KeyCode::Char('k') => {
-                            app.selections.up();
+                            app.part_of_speech_list.up();
                         }
                         KeyCode::Char('q') => {
                             app.input_mode = InputMode::Normal;
                         }
                         KeyCode::Enter => {
                             app.input_mode = InputMode::SelectDefinition;
-                            App::update_definition_list(&mut app);
+                            App::update_stateful_lists(
+                                &mut app,
+                                list::StatefulListType::Definition
+                            );
                         }
                         _ => {}
                     }

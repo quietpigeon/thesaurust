@@ -1,16 +1,31 @@
 use ratatui::widgets::ListState;
 
+#[derive(Clone, Debug)]
+pub enum StatefulListType {
+    PartOfSpeech,
+    Definition,
+    All,
+}
+
+impl Default for StatefulListType {
+    fn default() -> Self {
+        StatefulListType::All
+    }
+}
+
 #[derive(Clone, Debug, Default)]
 pub struct StatefulList<T> {
     pub state: ListState,
     pub items: Vec<T>,
+    pub list_type: StatefulListType,
 }
 
 impl<T> StatefulList<T> {
-    pub fn with_items(items: Vec<T>) -> StatefulList<T> {
+    pub fn with_items(items: Vec<T>, list_type: StatefulListType) -> StatefulList<T> {
         StatefulList {
             state: ListState::default(),
             items,
+            list_type: list_type,
         }
     }
 
