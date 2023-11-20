@@ -2,7 +2,7 @@ use ratatui::{
     layout::{ Direction, Layout },
     prelude::{ Alignment, Constraint },
     style::{ Color, Modifier, Style, Stylize },
-    widgets::{ Block, Borders, List, ListItem, Paragraph, Wrap, Widget, self },
+    widgets::{ Block, Borders, List, ListItem, Paragraph, Wrap },
 };
 
 use crate::{ app::{ App, InputMode }, banner::BANNER, data::{ Thesaurus }, tui::Frame };
