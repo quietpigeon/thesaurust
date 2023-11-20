@@ -100,14 +100,18 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 .highlight_style(Style::default().fg(Color::Black).bg(Color::Cyan));
 
             // `SELECT` block
-            f.render_stateful_widget(selections, lower_frame[0], &mut app.part_of_speech_list.state);
+            f.render_stateful_widget(
+                selections,
+                lower_frame[0],
+                &mut app.part_of_speech_list.state
+            );
         }
 
         // Definition block.
         f.render_widget(
             Paragraph::new(String::from(definition))
                 .style(match app.input_mode {
-                    InputMode::SelectDefinition=> Style::default().fg(Color::Yellow),
+                    InputMode::SelectDefinition => Style::default().fg(Color::Yellow),
                     _ => Style::default().fg(Color::Green),
                 })
                 .wrap(Wrap { trim: true })
@@ -156,7 +160,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
     let default_instructions = "q: Quit";
     // Controls.
     f.render_widget(
-        Paragraph::new(String::from(default_instructions))
+        Paragraph::new(default_instructions)
             .alignment(Alignment::Left)
             .style(Style::default().fg(Color::Green))
             .wrap(Wrap { trim: true })
