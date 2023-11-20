@@ -5,7 +5,7 @@ use tui_input::Input;
 pub enum InputMode {
     Normal,
     Editing,
-    Selecting,
+    SelectPartOfSpeech,
     SelectDefinition,
 }
 

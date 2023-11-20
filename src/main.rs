@@ -33,7 +33,7 @@ fn main() -> Result<()> {
                             App::quit(&mut app);
                         }
                         KeyCode::Char(':') | KeyCode::Char('j') | KeyCode::Char('e') => {
-                            app.input_mode = InputMode::Selecting;
+                            app.input_mode = InputMode::SelectPartOfSpeech;
                         }
                         KeyCode::Char('/') => {
                             app.input_mode = InputMode::Editing;
@@ -59,7 +59,7 @@ fn main() -> Result<()> {
                             app.input.handle_event(&Event::Key(key));
                         }
                     }
-                InputMode::Selecting =>
+                InputMode::SelectPartOfSpeech=>
                     match key.code {
                         KeyCode::Char('j') => {
                             app.part_of_speech_list.down();

@@ -94,7 +94,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
             let selections = List::new(selections)
                 .block(Block::default().borders(Borders::ALL).title("Part Of Speech"))
                 .style(match app.input_mode {
-                    InputMode::Selecting => Style::default().fg(Color::Yellow),
+                    InputMode::SelectPartOfSpeech=> Style::default().fg(Color::Yellow),
                     _ => Style::default().fg(Color::Green),
                 })
                 .highlight_style(Style::default().fg(Color::Black).bg(Color::Cyan));
@@ -160,10 +160,11 @@ pub fn render(app: &mut App, f: &mut Frame) {
 
     // Controls.
     let instructions = match app.input_mode {
-        InputMode::Normal => "/: Insert; j, k: Change part of speech",
+        InputMode::Normal if !app.results.is_empty() => "j, k: Change part of speech, /: Insert",
         InputMode::Editing => "<ENTER>: Search",
-        InputMode::Selecting => "<ENTER>: Select",
+        InputMode::SelectPartOfSpeech=> "<ENTER>: Select",
         InputMode::SelectDefinition => "l, h: Change definition",
+        _ => "/: Insert",
     };
 
     let default_instructions = "q: Quit";
