@@ -63,24 +63,24 @@ pub fn render(app: &mut App, f: &mut Frame) {
         )
         .split(main_frame[2]);
 
-    let mut definition = String::from("");
-    let mut example = String::from("");
 
     // Index of the item selected by the user in `selections`.
-    let idx = app.selections.state.selected();
+    let mut idx = 0;
+    if let Some(i) = app.selections.state.selected() {
+        idx = i;
+    }
 
-    if !app.results.is_empty() && idx.is_some() {
-        let definitions = Thesaurus::unwrap_meanings_at(idx.unwrap(), &app.results[0]).1;
+    let mut definition = String::from("");
+    let mut example = String::from("");
+    if !app.results.is_empty() {
+        let definitions = Thesaurus::unwrap_meanings_at(idx, &app.results[0]).1;
         if let Some(d_idx) = app.definition_list.state.selected() {
             if let Some(d) = definitions[d_idx].definition.clone() {
                 definition = d;
                 if let Some(e) = definitions[d_idx].example.clone() {
                     example = e;
                 }
-            } else {
-                definition = String::from("");
-                example = String::from("");
-            }
+            } 
         }
 
         // `SELECT` block that shows the part of speech of the word.
