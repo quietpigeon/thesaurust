@@ -81,15 +81,18 @@ fn main() -> Result<()> {
                     }
                 InputMode::SelectDefinition =>
                     match key.code {
-                        KeyCode::Char('j') => {
+                        KeyCode::Char('l') => {
                             app.definition_list.down();
                         }
-                        KeyCode::Char('k') => {
+                        KeyCode::Char('h') => {
                             app.definition_list.up();
                         }
                         KeyCode::Char('q') => {
                             app.input_mode = InputMode::Normal;
                             app.definition_list.state.select(Some(0));
+                        }
+                        KeyCode::Char('/') => {
+                            app.input_mode = InputMode::Editing;
                         }
                         _ => {}
                     }

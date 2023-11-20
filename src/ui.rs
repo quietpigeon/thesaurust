@@ -2,7 +2,7 @@ use ratatui::{
     layout::{ Direction, Layout },
     prelude::{ Alignment, Constraint },
     style::{ Color, Modifier, Style, Stylize },
-    widgets::{ Block, Borders, List, ListItem, Paragraph, Wrap },
+    widgets::{ Block, Borders, List, ListItem, Paragraph, Wrap, Widget, self },
 };
 
 use crate::{ app::{ App, InputMode }, banner::BANNER, data::{ Thesaurus }, tui::Frame };
@@ -145,6 +145,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
             banner_frame[0]
         );
     }
+
     // Search bar.
     f.render_widget(
         Paragraph::new(app.input.value())
@@ -157,14 +158,23 @@ pub fn render(app: &mut App, f: &mut Frame) {
         upper_frame[0]
     );
 
-    let default_instructions = "q: Quit";
     // Controls.
-    f.render_widget(
-        Paragraph::new(default_instructions)
-            .alignment(Alignment::Left)
-            .style(Style::default().fg(Color::Green))
-            .wrap(Wrap { trim: true })
-            .block(Block::default().borders(Borders::NONE)),
-        footer[1]
-    );
+    let instructions = match app.input_mode {
+        InputMode::Normal => "/: Insert; j, k: Change part of speech",
+        InputMode::Editing => "<ENTER>: Search",
+        InputMode::Selecting => "<ENTER>: Select",
+        InputMode::SelectDefinition => "l, h: Change definition",
+    };
+
+    let default_instructions = "q: Quit";
+    f.render_widget(create_footer_block(instructions), footer[1]);
+    f.render_widget(create_footer_block(default_instructions), footer[2]);
+}
+
+// Helper function to create footer blocks.
+fn create_footer_block(s: &str) -> Paragraph {
+    Paragraph::new(s)
+        .alignment(Alignment::Left)
+        .style(Style::default().fg(Color::Green))
+        .block(Block::default().borders(Borders::NONE))
 }
