@@ -32,8 +32,13 @@ fn main() -> Result<()> {
                         KeyCode::Char('q') => {
                             App::quit(&mut app);
                         }
-                        KeyCode::Char(':') | KeyCode::Char('j') | KeyCode::Char('e') => {
+                        KeyCode::Char('j') | KeyCode::Char('k') if !app.results.is_empty() => {
                             app.input_mode = InputMode::SelectPartOfSpeech;
+                        }
+                        KeyCode::Char('l') | KeyCode::Char('h') if
+                            app.part_of_speech_list.items.len() == 1
+                        => {
+                            app.input_mode = InputMode::SelectDefinition;
                         }
                         KeyCode::Char('/') => {
                             app.input_mode = InputMode::Editing;
@@ -59,7 +64,7 @@ fn main() -> Result<()> {
                             app.input.handle_event(&Event::Key(key));
                         }
                     }
-                InputMode::SelectPartOfSpeech=>
+                InputMode::SelectPartOfSpeech =>
                     match key.code {
                         KeyCode::Char('j') => {
                             app.part_of_speech_list.down();
@@ -93,6 +98,7 @@ fn main() -> Result<()> {
                         }
                         KeyCode::Char('/') => {
                             app.input_mode = InputMode::Editing;
+                            app.input.reset();
                         }
                         _ => {}
                     }

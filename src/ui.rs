@@ -50,10 +50,10 @@ pub fn render(app: &mut App, f: &mut Frame) {
         .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
         .split(lower_frame[1]);
 
-    // The `footer` consists of a spacer and `controls`.
+    // The `footer` consists of a spacer and two sets of instructions.
     let footer = Layout::default()
         .direction(Direction::Vertical)
-        // Spacer(50%), Controls(25%), Default controls(25%)
+        // Spacer(50%), Instructions(25%), Default instructions(25%)
         .constraints(
             [
                 Constraint::Percentage(50),
@@ -63,7 +63,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
         )
         .split(main_frame[2]);
 
-    // Index of the item selected by the user in `selections`.
+    // Index of the item selected by the user in `part_of_speech_list`.
     let mut idx = 0;
     if let Some(i) = app.part_of_speech_list.state.selected() {
         idx = i;
@@ -82,16 +82,16 @@ pub fn render(app: &mut App, f: &mut Frame) {
             }
         }
 
-        // `SELECT` block that shows the part of speech of the word.
+        // `Part Of Speech` block that shows the part of speech of the word.
         // They are also used to show whether the word has multiple definitions or not.
         let meanings = app.results[0].meanings.clone();
         if meanings.is_some() {
-            let selections: Vec<ListItem> = app.part_of_speech_list.items
+            let parts_of_speech: Vec<ListItem> = app.part_of_speech_list.items
                 .iter()
                 .map(|i| ListItem::new(i.clone()))
                 .collect();
 
-            let selections = List::new(selections)
+            let parts_of_speech = List::new(parts_of_speech)
                 .block(Block::default().borders(Borders::ALL).title("Part Of Speech"))
                 .style(match app.input_mode {
                     InputMode::SelectPartOfSpeech => Style::default().fg(Color::Yellow),
@@ -99,9 +99,9 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 })
                 .highlight_style(Style::default().fg(Color::Black).bg(Color::Cyan));
 
-            // `SELECT` block
+            // `Part Of Speech` block
             f.render_stateful_widget(
-                selections,
+                parts_of_speech,
                 lower_frame[0],
                 &mut app.part_of_speech_list.state
             );
@@ -158,15 +158,8 @@ pub fn render(app: &mut App, f: &mut Frame) {
         upper_frame[0]
     );
 
-    // Controls.
-    let instructions = match app.input_mode {
-        InputMode::Normal if !app.results.is_empty() => "j, k: Change part of speech, /: Insert",
-        InputMode::Editing => "<ENTER>: Search",
-        InputMode::SelectPartOfSpeech => "<ENTER>: Select",
-        InputMode::SelectDefinition => "l, h: Change definition",
-        _ => "/: Insert",
-    };
-
+    // Instructions.
+    let instructions = App::update_instructions(app);
     let default_instructions = "q: Quit";
     f.render_widget(create_footer_block(instructions), footer[1]);
     f.render_widget(create_footer_block(default_instructions), footer[2]);
