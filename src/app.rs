@@ -38,13 +38,13 @@ impl App {
     /// Update the instructions in the footer depending on the `input_mode`.
     pub fn update_instructions(&mut self) -> &str {
         match self.input_mode {
-            InputMode::SelectDefinition | InputMode::Normal if
-                self.part_of_speech_list.items.len() == 1
-            => "l, h: Change definition",
+            InputMode::Normal if self.part_of_speech_list.items.len() == 1 =>
+                "l, h: Change definition, /: Insert",
             InputMode::Normal if !self.results.is_empty() =>
                 "j, k: Change part of speech, /: Insert",
             InputMode::Editing => "<ENTER>: Search",
             InputMode::SelectPartOfSpeech => "<ENTER>: Select",
+            InputMode::SelectDefinition => "l, h: Change definition, /: Insert",
             _ => "/: Insert",
         }
     }
