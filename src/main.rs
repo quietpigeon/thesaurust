@@ -4,7 +4,6 @@ mod client;
 mod data;
 mod errors;
 mod list;
-mod selection;
 mod tui;
 mod ui;
 
