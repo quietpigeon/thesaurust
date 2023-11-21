@@ -39,12 +39,12 @@ impl App {
     pub fn update_instructions(&mut self) -> &str {
         match self.input_mode {
             InputMode::Normal if self.part_of_speech_list.items.len() == 1 =>
-                "l, h: Change definition, /: Insert",
+                "l, h: Change definition; /: Insert",
             InputMode::Normal if !self.results.is_empty() =>
-                "j, k: Change part of speech, /: Insert",
+                "j, k: Change part of speech; /: Insert",
             InputMode::Editing => "<ENTER>: Search",
             InputMode::SelectPartOfSpeech => "<ENTER>: Select",
-            InputMode::SelectDefinition => "l, h: Change definition, /: Insert",
+            InputMode::SelectDefinition => "l, h: Change definition; /: Insert",
             _ => "/: Insert",
         }
     }
