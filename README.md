@@ -5,6 +5,7 @@ A simple dictionary application built within the terminal, written in Rust.
 The data is fetched from the API provided by https://dictionaryapi.dev/. Since words can contain more than one meanings, the user can toggle between different meanings based on the parts of speech the word has.
 ## Installation
 You need to install [Rust](https://www.rust-lang.org/tools/install) before you can proceed.
+<br>
 Clone this repository:
 ```zsh
 git clone https://github.com/QuietPigeon2001/thesaurust
