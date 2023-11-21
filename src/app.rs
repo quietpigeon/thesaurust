@@ -106,3 +106,76 @@ impl App {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::data::Meaning;
+
+    use super::*;
+    use pretty_assertions::{ assert_eq };
+
+    fn mock_app_in(input_mode: InputMode) -> App {
+        let mut mock_app = App::new();
+        mock_app.input_mode = input_mode;
+        return mock_app;
+    }
+
+    fn mock_results() -> Vec<Thesaurus> {
+        vec![Thesaurus {
+            word: Some(String::from("mock")),
+            origin: None,
+            meanings: Some(
+                vec![Meaning {
+                    partOfSpeech: Some(String::from("noun")),
+                    definitions: None,
+                }]
+            ),
+        }]
+    }
+
+    #[test]
+    fn test_instructions_in_normal_mode() {
+        let mut mock_app = mock_app_in(InputMode::Normal);
+        assert_eq!(App::update_instructions(&mut mock_app), "/: Insert");
+    }
+
+    #[test]
+    fn test_instructions_for_word_with_single_part_of_speech() {
+        let mut mock_app = mock_app_in(InputMode::default());
+        let mock_results = mock_results();
+        mock_app.results = mock_results;
+        App::update_part_of_speech_list(&mut mock_app);
+        assert_eq!(1, mock_app.part_of_speech_list.items.len());
+        assert_eq!(App::update_instructions(&mut mock_app), "l, h: Change definition; /: Insert");
+    }
+
+    #[test]
+    fn test_instructions_in_normal_mode_with_results() {
+        let mut mock_app = mock_app_in(InputMode::Normal);
+        let mock_results = mock_results();
+        mock_app.results = mock_results;
+        assert_eq!(true, !mock_app.results.is_empty());
+        assert_eq!(
+            App::update_instructions(&mut mock_app),
+            "j, k: Change part of speech; /: Insert"
+        );
+    }
+
+    #[test]
+    fn test_instructions_in_editing_mode() {
+        let mut mock_app = mock_app_in(InputMode::Editing);
+        assert_eq!(App::update_instructions(&mut mock_app), "<ENTER>: Search");
+    }
+
+    #[test]
+    fn test_instructions_in_part_of_speech_selection_mode() {
+        let mut mock_app = mock_app_in(InputMode::SelectPartOfSpeech);
+        assert_eq!(App::update_instructions(&mut mock_app), "<ENTER>: Select");
+    }
+
+    #[test]
+    fn test_instructions_in_definition_selection_mode() {
+        let mut mock_app = mock_app_in(InputMode::SelectDefinition);
+        assert_eq!(App::update_instructions(&mut mock_app), "l, h: Change definition; /: Insert");
+    }
+}
