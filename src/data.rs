@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use serde_derive::{Deserialize, Serialize};
+use serde_derive::{ Deserialize, Serialize };
 
 /// Components of a response from the Free Dictionary API.
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -23,7 +23,7 @@ impl Default for Thesaurus {
 }
 
 impl Thesaurus {
-    /// A function that unwraps the contents inside `Meaning`. It returns a tuple that contains the `partOfSpeech` and `Vec<Definition>`.   
+    /// A function that unwraps the contents inside `Meaning`. It returns a tuple that contains the `partOfSpeech` and `Vec<Definition>`.
     pub fn unwrap_meanings_at(index: usize, thesaurus: &Thesaurus) -> (String, Vec<Definition>) {
         //TODO: Create unit test to check index and array length.
         if let Some(meanings) = thesaurus.meanings.clone() {
