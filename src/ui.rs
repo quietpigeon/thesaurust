@@ -5,7 +5,8 @@ use ratatui::{
     widgets::{ Block, Borders, List, ListItem, Paragraph, Wrap },
 };
 
-use crate::{ app::{ App, InputMode }, banner::BANNER, data::{ Thesaurus }, tui::Frame };
+use crate::{models::{data::Thesaurus, app::{InputMode, App}}, banner::BANNER, tui::Frame};
+
 
 pub fn render(app: &mut App, f: &mut Frame) {
     // Main frame.
