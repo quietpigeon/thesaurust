@@ -1,4 +1,4 @@
-use crate::{data::Thesaurus, errors::ApiError};
+use crate::models::{data::Thesaurus, errors::ApiError};
 
 const DOMAIN: &'static str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
