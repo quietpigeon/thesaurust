@@ -40,9 +40,9 @@ impl Thesaurus {
     }
 
     /// A function that prompts the user to re-enter the word because the word cannot be found in the API.
-    pub fn inject_error_message() -> Vec<Thesaurus> {
+    pub fn inject_error_message(msg: String) -> Vec<Thesaurus> {
         let definition = Definition {
-            definition: Some(String::from("No definitions found.")),
+            definition: Some(msg),
             example: None,
             synonyms: None,
             antonyms: None,

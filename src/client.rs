@@ -1,4 +1,4 @@
-use crate::models::{data::Thesaurus, errors::ApiError};
+use crate::models::{ data::Thesaurus, errors::ApiError };
 
 const DOMAIN: &'static str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
@@ -8,7 +8,10 @@ pub fn parse_response(word: String) -> Vec<Thesaurus> {
             let resp: Vec<Thesaurus> = serde_json::from_value(t).unwrap();
             resp
         }
-        Err(_) => Thesaurus::inject_error_message(),
+        Err(ApiError::InvalidData) => {
+            Thesaurus::inject_error_message(String::from("Check your spelling."))
+        }
+        Err(ApiError::HttpError(e)) => { Thesaurus::inject_error_message(e.to_string()) }
     }
 }
 
