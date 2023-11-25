@@ -1,9 +1,9 @@
 use std::fmt::Debug;
 
-use serde_derive::{ Deserialize, Serialize };
+use serde_derive::Deserialize;
 
 /// Components of a response from the Free Dictionary API.
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct Thesaurus {
     pub word: Option<String>,
     pub origin: Option<String>,
@@ -62,7 +62,7 @@ impl Thesaurus {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 #[allow(non_snake_case)]
 pub struct Meaning {
     pub partOfSpeech: Option<String>,
@@ -78,7 +78,7 @@ impl Default for Meaning {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct Definition {
     pub definition: Option<String>,
     pub example: Option<String>,
