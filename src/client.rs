@@ -1,6 +1,6 @@
 use serpapi_search_rust::serp_api_search::SerpApiSearch;
 
-use crate::models::{ data::Thesaurus, errors::ApiError, spellcheck::SearchResults };
+use crate::models::{ data::Thesaurus, errors::ApiError, word_suggestion::SearchResults };
 use crate::api_key::API_KEY;
 use std::collections::HashMap;
 
@@ -9,7 +9,7 @@ const DOMAIN: &'static str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 pub fn parse_response(word: String) -> Vec<Thesaurus> {
     match client(word) {
         Ok(t) => t,
-        Err(_) => Thesaurus::inject_error_message(String::from("Unsuccessful response")),
+        Err(_) => Thesaurus::inject_message(String::from("Unsuccessful response")),
     }
 }
 
@@ -22,8 +22,8 @@ async fn client(word: String) -> Result<Vec<Thesaurus>, Box<dyn std::error::Erro
         }
         Err(_) => {
             match search(word).await {
-                Ok(t) => Thesaurus::inject_error_message(t),
-                Err(_) => Thesaurus::inject_error_message(String::from("Serp Api error")),
+                Ok(t) => Thesaurus::inject_message(t),
+                Err(_) => Thesaurus::inject_message(String::from("Serp Api error")),
             }
         }
     };

@@ -8,6 +8,7 @@ pub enum InputMode {
     Editing,
     SelectPartOfSpeech,
     SelectDefinition,
+    Suggesting,
 }
 
 impl Default for InputMode {
@@ -26,6 +27,7 @@ pub struct App {
     pub has_results: bool,
     pub part_of_speech_list: StatefulList<String>,
     pub definition_list: StatefulList<String>,
+    pub enable_serp: bool,
 }
 
 impl App {

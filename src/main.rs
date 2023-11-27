@@ -7,11 +7,11 @@ mod ui;
 
 use anyhow::Result;
 use models::{ app::{ App, InputMode }, list };
-use client::{ parse_response };
+use client::parse_response;
 use crossterm::event::{ self, Event, KeyCode };
 use ratatui::{ backend::CrosstermBackend, Terminal };
 use tui::Tui;
-use tui_input::{ backend::crossterm::EventHandler };
+use tui_input::backend::crossterm::EventHandler;
 
 fn main() -> Result<()> {
     let mut app = App::new();
@@ -96,6 +96,11 @@ fn main() -> Result<()> {
                             app.input_mode = InputMode::Editing;
                             app.input.reset();
                         }
+                        _ => {}
+                    }
+                InputMode::Suggesting => 
+                    match key.code {
+
                         _ => {}
                     }
             }
