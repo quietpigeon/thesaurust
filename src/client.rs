@@ -15,13 +15,13 @@ pub fn parse_response(word: String) -> Vec<Thesaurus> {
 
 #[tokio::main]
 async fn client(word: String) -> Result<Vec<Thesaurus>, Box<dyn std::error::Error>> {
-    let res = match fetch_response(word).await {
+    let res = match fetch_response(word.clone()).await {
         Ok(t) => {
             let resp: Vec<Thesaurus> = serde_json::from_value(t).unwrap();
             resp
         }
         Err(_) => {
-            match search().await {
+            match search(word).await {
                 Ok(t) => Thesaurus::inject_error_message(t),
                 Err(_) => Thesaurus::inject_error_message(String::from("Serp Api error")),
             }
@@ -41,16 +41,16 @@ async fn fetch_response(word: String) -> Result<serde_json::Value, ApiError> {
     }
 }
 
-async fn search() -> Result<String, Box<dyn std::error::Error>> {
+async fn search(word: String) -> Result<String, Box<dyn std::error::Error>> {
     let mut params = HashMap::<String, String>::new();
-    params.insert("q".to_string(), "Coffeee".to_string());
+    params.insert("q".to_string(), word.to_string());
     params.insert("hl".to_string(), "en".to_string());
     params.insert("gl".to_string(), "us".to_string());
 
     let search = SerpApiSearch::google(params, API_KEY.to_string());
 
     let results = search.json().await?;
-    let search_information = &results["search information"];
+    let search_information = &results["search_information"];
 
     let results: SearchResults = serde_json
         ::from_value(search_information.clone())
