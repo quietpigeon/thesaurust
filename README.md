@@ -25,4 +25,5 @@ thesaurust
 - [x] Show an example with the definition (if available)
 - [x] Toggle between parts of speech 
 - [x] Toggle between definitions with the same part of speech
+- [ ] Use a spellchecking API to suggest correct spelling for words
 - [ ] Show synonyms and antonyms
