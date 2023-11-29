@@ -7,21 +7,21 @@ use std::collections::HashMap;
 const DOMAIN: &'static str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
 pub fn parse_response(word: String) -> Vec<Thesaurus> {
-    match client(word) {
+    match fetch_response(word) {
         Ok(t) => t,
         Err(_) => Thesaurus::inject_message(String::from("Unsuccessful response")),
     }
 }
 
 #[tokio::main]
-async fn client(word: String) -> Result<Vec<Thesaurus>, Box<dyn std::error::Error>> {
-    let res = match fetch_response(word.clone()).await {
+async fn fetch_response(word: String) -> Result<Vec<Thesaurus>, Box<dyn std::error::Error>> {
+    let res = match search_dictionary(word.clone()).await {
         Ok(t) => {
             let resp: Vec<Thesaurus> = serde_json::from_value(t).unwrap();
             resp
         }
         Err(_) => {
-            match search(word).await {
+            match suggest_spelling(word).await {
                 Ok(t) => Thesaurus::inject_message(t),
                 Err(_) => Thesaurus::inject_message(String::from("Serp Api error")),
             }
@@ -30,7 +30,7 @@ async fn client(word: String) -> Result<Vec<Thesaurus>, Box<dyn std::error::Erro
     Ok(res)
 }
 
-async fn fetch_response(word: String) -> Result<serde_json::Value, ApiError> {
+async fn search_dictionary(word: String) -> Result<serde_json::Value, ApiError> {
     let url = construct_url(word);
     let response = reqwest::get(&url).await?;
     if response.status().is_success() {
@@ -41,7 +41,7 @@ async fn fetch_response(word: String) -> Result<serde_json::Value, ApiError> {
     }
 }
 
-async fn search(word: String) -> Result<String, Box<dyn std::error::Error>> {
+async fn suggest_spelling(word: String) -> Result<String, Box<dyn std::error::Error>> {
     let mut params = HashMap::<String, String>::new();
     params.insert("q".to_string(), word.to_string());
     params.insert("hl".to_string(), "en".to_string());
