@@ -9,6 +9,7 @@ pub enum InputMode {
     SelectPartOfSpeech,
     SelectDefinition,
     Suggesting,
+    Settings,
 }
 
 impl Default for InputMode {

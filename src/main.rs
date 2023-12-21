@@ -102,10 +102,15 @@ fn main() -> Result<()> {
                     match key.code {
 
                         _ => {}
-                    }
             }
+                InputMode::Settings => 
+                    match key.code {
+                        _ => {}
+                    }
+                
+                
         }
-    }
+    }}
 
     // Exit the user interface.
     tui.exit()?;

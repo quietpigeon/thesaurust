@@ -59,6 +59,11 @@ async fn suggest_spelling(word: String) -> Result<String, Box<dyn std::error::Er
     Ok(results.spelling_fix)
 }
 
+fn parse(value:serde_json::Value, is_suggested: bool) -> (Vec<Thesaurus>, bool) {
+    let r:Vec<Thesaurus> = serde_json::from_value(value).unwrap();
+    (r, is_suggested)
+}
+
 fn construct_url(word: String) -> String {
     format!("{}/{}", DOMAIN, word)
 }
