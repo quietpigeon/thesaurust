@@ -40,7 +40,6 @@ impl App {
         self.should_quit = true;
     }
 
-    /// Update the instructions in the footer depending on the `input_mode`.
     pub fn update_instructions(&mut self) -> &str {
         match self.input_mode {
             InputMode::Normal if self.part_of_speech_list.items.len() == 1 => {
@@ -56,7 +55,6 @@ impl App {
         }
     }
 
-    /// Update the stateful lists.
     pub fn update_stateful_lists(&mut self, list_type: StatefulListType) {
         match list_type {
             StatefulListType::PartOfSpeech => {
@@ -72,7 +70,6 @@ impl App {
         }
     }
 
-    /// Update the part of speech list.
     fn update_part_of_speech_list(&mut self) {
         if !self.results.is_empty() {
             let meanings = self.results[0].meanings.clone();

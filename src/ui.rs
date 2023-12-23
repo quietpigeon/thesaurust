@@ -1,14 +1,16 @@
-use ratatui::{
-    layout::{ Direction, Layout },
-    prelude::{ Alignment, Constraint },
-    style::{ Color, Modifier, Style, Stylize },
-    widgets::{ Block, Borders, List, ListItem, Paragraph, Wrap },
-};
+use ratatui::{ layout::{ Direction, Layout }, prelude::{ Constraint } };
 
 use crate::{
-    models::{ data::Thesaurus, app::{ InputMode, App } },
+    models::{ data::Thesaurus, app::App },
     tui::Frame,
-    components::{ search_bar, definition_block, example_block, banner_block, part_of_speech_block },
+    components::{
+        search_bar,
+        definition_block,
+        example_block,
+        banner_block,
+        part_of_speech_block,
+        footer,
+    },
 };
 
 pub fn render(app: &mut App, f: &mut Frame) {
@@ -55,7 +57,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
         .split(lower_frame[1]);
 
     // The `footer` consists of a spacer and two sets of instructions.
-    let footer = Layout::default()
+    let footer_frame = Layout::default()
         .direction(Direction::Vertical)
         // Spacer(50%), Instructions(25%), Default instructions(25%)
         .constraints(
@@ -72,6 +74,8 @@ pub fn render(app: &mut App, f: &mut Frame) {
     if let Some(i) = app.part_of_speech_list.state.selected() {
         idx = i;
     }
+
+    f.render_widget(search_bar::new(app), upper_frame[0]);
 
     let mut definition = String::from("");
     let mut example = String::from("");
@@ -102,19 +106,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
         f.render_widget(banner_block::new(), banner_frame[0]);
     }
 
-    f.render_widget(search_bar::new(app), upper_frame[0]);
-
-    // Instructions.
     let instructions = App::update_instructions(app);
-    let default_instructions = "q: Quit";
-    f.render_widget(create_footer_block(instructions), footer[1]);
-    f.render_widget(create_footer_block(default_instructions), footer[2]);
-}
-
-// Helper function to create footer blocks.
-fn create_footer_block(s: &str) -> Paragraph {
-    Paragraph::new(s)
-        .alignment(Alignment::Left)
-        .style(Style::default().fg(Color::Green))
-        .block(Block::default().borders(Borders::NONE))
+    f.render_widget(footer::with(instructions), footer_frame[1]);
+    f.render_widget(footer::with("default"), footer_frame[2]);
 }
