@@ -9,7 +9,7 @@ use crate::{
     models::{ data::Thesaurus, app::{ InputMode, App } },
     banner::BANNER,
     tui::Frame,
-    components::{ search_bar, definition_block },
+    components::{ search_bar, definition_block, example_block },
 };
 
 pub fn render(app: &mut App, f: &mut Frame) {
@@ -112,17 +112,8 @@ pub fn render(app: &mut App, f: &mut Frame) {
             );
         }
 
-        // Definition block.
         f.render_widget(definition_block::new(app, definitions, definition), right_frame[0]);
-
-        // Example block.
-        f.render_widget(
-            Paragraph::new(String::from(example).add_modifier(Modifier::ITALIC))
-                .style(Style::default().fg(Color::Green))
-                .wrap(Wrap { trim: true })
-                .block(Block::default().borders(Borders::ALL).title("Example")),
-            right_frame[1]
-        );
+        f.render_widget(example_block::new(example), right_frame[1]);
     } else {
         f.render_widget(
             Paragraph::new(BANNER)
@@ -132,7 +123,6 @@ pub fn render(app: &mut App, f: &mut Frame) {
         );
     }
 
-    // Search bar.
     f.render_widget(search_bar::new(app), upper_frame[0]);
 
     // Instructions.
