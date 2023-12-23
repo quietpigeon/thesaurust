@@ -5,7 +5,12 @@ use ratatui::{
     widgets::{ Block, Borders, List, ListItem, Paragraph, Wrap },
 };
 
-use crate::{ models::{ data::Thesaurus, app::{ InputMode, App } }, banner::BANNER, tui::Frame };
+use crate::{
+    models::{ data::Thesaurus, app::{ InputMode, App } },
+    banner::BANNER,
+    tui::Frame,
+    components::{ search_bar, definition_block },
+};
 
 pub fn render(app: &mut App, f: &mut Frame) {
     // Main frame.
@@ -108,26 +113,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
         }
 
         // Definition block.
-        f.render_widget(
-            Paragraph::new(String::from(definition))
-                .style(match app.input_mode {
-                    InputMode::SelectDefinition => Style::default().fg(Color::Yellow),
-                    _ => Style::default().fg(Color::Green),
-                })
-                .wrap(Wrap { trim: true })
-                .block(
-                    Block::default()
-                        .borders(Borders::ALL)
-                        .title(
-                            format!(
-                                "Definition[{:}/{}]",
-                                app.definition_list.state.selected().unwrap() + 1,
-                                definitions.len()
-                            )
-                        )
-                ),
-            right_frame[0]
-        );
+        f.render_widget(definition_block::new(app, definitions, definition), right_frame[0]);
 
         // Example block.
         f.render_widget(
@@ -147,16 +133,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
     }
 
     // Search bar.
-    f.render_widget(
-        Paragraph::new(app.input.value())
-            .style(match app.input_mode {
-                InputMode::Editing => Style::default().fg(Color::Yellow),
-                _ => Style::default().fg(Color::Green),
-            })
-            .wrap(Wrap { trim: true })
-            .block(Block::default().borders(Borders::ALL).title("Search")),
-        upper_frame[0]
-    );
+    f.render_widget(search_bar::new(app), upper_frame[0]);
 
     // Instructions.
     let instructions = App::update_instructions(app);

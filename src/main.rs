@@ -4,6 +4,7 @@ mod api_key;
 mod models;
 mod tui;
 mod ui;
+mod components;
 
 use anyhow::Result;
 use models::{ app::{ App, InputMode }, list };

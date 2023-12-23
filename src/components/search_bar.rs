@@ -1,4 +1,4 @@
-use ratatui::{widgets::{ Block,Borders, Paragraph, Wrap}, style::{ Color, Style},};
+use ratatui::{ widgets::{ Block, Borders, Paragraph, Wrap }, style::{ Color, Style } };
 use crate::{ models::{ app::{ InputMode, App } } };
 
 pub fn new(app: &mut App) -> Paragraph {
@@ -7,6 +7,6 @@ pub fn new(app: &mut App) -> Paragraph {
             InputMode::Editing => Style::default().fg(Color::Yellow),
             _ => Style::default().fg(Color::Green),
         })
-        .wrap(Wrap { trim: true})
-            .block(Block::default().borders(Borders::ALL).title("Search"))
+        .wrap(Wrap { trim: true })
+        .block(Block::default().borders(Borders::ALL).title("Search"))
 }
