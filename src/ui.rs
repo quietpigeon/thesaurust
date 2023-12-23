@@ -9,7 +9,7 @@ use crate::{
     models::{ data::Thesaurus, app::{ InputMode, App } },
     banner::BANNER,
     tui::Frame,
-    components::{ search_bar, definition_block, example_block },
+    components::{ search_bar, definition_block, example_block, banner_block },
 };
 
 pub fn render(app: &mut App, f: &mut Frame) {
@@ -115,12 +115,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
         f.render_widget(definition_block::new(app, definitions, definition), right_frame[0]);
         f.render_widget(example_block::new(example), right_frame[1]);
     } else {
-        f.render_widget(
-            Paragraph::new(BANNER)
-                .style(Style::default().fg(Color::Green))
-                .alignment(Alignment::Center),
-            banner_frame[0]
-        );
+        f.render_widget(banner_block::new(), banner_frame[0]);
     }
 
     f.render_widget(search_bar::new(app), upper_frame[0]);
