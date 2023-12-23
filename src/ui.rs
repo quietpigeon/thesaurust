@@ -7,9 +7,8 @@ use ratatui::{
 
 use crate::{
     models::{ data::Thesaurus, app::{ InputMode, App } },
-    banner::BANNER,
     tui::Frame,
-    components::{ search_bar, definition_block, example_block, banner_block },
+    components::{ search_bar, definition_block, example_block, banner_block, part_of_speech_block },
 };
 
 pub fn render(app: &mut App, f: &mut Frame) {
@@ -87,28 +86,13 @@ pub fn render(app: &mut App, f: &mut Frame) {
             }
         }
 
-        // `Part Of Speech` block that shows the part of speech of the word.
-        // They are also used to show whether the word has multiple definitions or not.
         let meanings = app.results[0].meanings.clone();
         if meanings.is_some() {
-            let parts_of_speech: Vec<ListItem> = app.part_of_speech_list.items
-                .iter()
-                .map(|i| ListItem::new(i.clone()))
-                .collect();
-
-            let parts_of_speech = List::new(parts_of_speech)
-                .block(Block::default().borders(Borders::ALL).title("Part Of Speech"))
-                .style(match app.input_mode {
-                    InputMode::SelectPartOfSpeech => Style::default().fg(Color::Yellow),
-                    _ => Style::default().fg(Color::Green),
-                })
-                .highlight_style(Style::default().fg(Color::Black).bg(Color::Cyan));
-
-            // `Part Of Speech` block
+            let mut cloned_state = app.part_of_speech_list.state.clone();
             f.render_stateful_widget(
-                parts_of_speech,
+                part_of_speech_block::new(app),
                 lower_frame[0],
-                &mut app.part_of_speech_list.state
+                &mut cloned_state
             );
         }
 
