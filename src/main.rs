@@ -43,6 +43,9 @@ fn main() -> Result<()> {
                             app.input_mode = InputMode::Editing;
                             app.input.reset();
                         }
+                        KeyCode::Char(':') => {
+                            app.input_mode = InputMode::Settings;
+                        }
                         _ => {}
                     }
                 InputMode::Editing =>
@@ -99,19 +102,23 @@ fn main() -> Result<()> {
                         }
                         _ => {}
                     }
-                InputMode::Suggesting => 
-                    match key.code {
-
-                        _ => {}
-            }
-                InputMode::Settings => 
+                InputMode::Suggesting =>
                     match key.code {
                         _ => {}
                     }
-                
-                
+                InputMode::Settings =>
+                    match key.code {
+                        KeyCode::Char('q') => {
+                            app.input_mode = InputMode::Normal;
+                        }
+                        KeyCode::Char('h') | KeyCode::Char('l') => {
+                            app.is_spelling_fix_enabled = !app.is_spelling_fix_enabled;
+                        }
+                        _ => {}
+                    }
+            }
         }
-    }}
+    }
 
     // Exit the user interface.
     tui.exit()?;

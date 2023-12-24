@@ -28,7 +28,7 @@ pub struct App {
     pub has_results: bool,
     pub part_of_speech_list: StatefulList<String>,
     pub definition_list: StatefulList<String>,
-    pub enable_serp: bool,
+    pub is_spelling_fix_enabled: bool,
 }
 
 impl App {
@@ -40,18 +40,19 @@ impl App {
         self.should_quit = true;
     }
 
-    pub fn update_instructions(&mut self) -> &str {
+    pub fn update_instructions(&mut self) -> String {
         match self.input_mode {
             InputMode::Normal if self.part_of_speech_list.items.len() == 1 => {
-                "l, h: Change definition; /: Insert"
+                String::from("l, h: Change definition  /: Insert")
             }
             InputMode::Normal if !self.results.is_empty() => {
-                "j, k: Change part of speech; /: Insert"
+                String::from("j, k: Change part of speech  /: Insert")
             }
-            InputMode::Editing => "<ENTER>: Search",
-            InputMode::SelectPartOfSpeech => "<ENTER>: Select",
-            InputMode::SelectDefinition => "l, h: Change definition; /: Insert",
-            _ => "/: Insert",
+            InputMode::Editing => String::from("<ENTER>: Search"),
+            InputMode::SelectPartOfSpeech => String::from("<ENTER>: Select"),
+            InputMode::SelectDefinition => String::from("l, h: Change definition  /: Insert"),
+            InputMode::Settings => self.toggle_spelling_suggestion(),
+            _ => String::from("/: Insert"),
         }
     }
 
@@ -68,6 +69,10 @@ impl App {
                 self.update_definition_list();
             }
         }
+    }
+
+    fn toggle_spelling_suggestion(&mut self) -> String {
+        format!("Spelling suggestion: {}", self.is_spelling_fix_enabled)
     }
 
     fn update_part_of_speech_list(&mut self) {
@@ -113,6 +118,8 @@ impl App {
 
 #[cfg(test)]
 mod tests {
+    use std::fmt::format;
+
     use crate::models::data::{ Definition, Meaning };
 
     use super::*;
@@ -201,7 +208,7 @@ mod tests {
             vec![mock_meaning_with(Some(mock_part_of_speech()), None)]
         );
         App::update_part_of_speech_list(&mut mock_app);
-        assert_eq!(App::update_instructions(&mut mock_app), "l, h: Change definition; /: Insert");
+        assert_eq!(App::update_instructions(&mut mock_app), "l, h: Change definition  /: Insert");
     }
 
     #[test]
@@ -213,7 +220,7 @@ mod tests {
         assert_eq!(true, !mock_app.results.is_empty());
         assert_eq!(
             App::update_instructions(&mut mock_app),
-            "j, k: Change part of speech; /: Insert"
+            "j, k: Change part of speech  /: Insert"
         );
     }
 
@@ -232,6 +239,20 @@ mod tests {
     #[test]
     fn test_instructions_in_definition_selection_mode() {
         let mut mock_app = mock_app_in(InputMode::SelectDefinition);
-        assert_eq!(App::update_instructions(&mut mock_app), "l, h: Change definition; /: Insert");
+        assert_eq!(App::update_instructions(&mut mock_app), "l, h: Change definition  /: Insert");
+    }
+
+    #[test]
+    fn test_instructions_in_settings_mode_with_spelling_fix_enabled() {
+        let mut mock_app = mock_app_in(InputMode::Settings);
+        mock_app.is_spelling_fix_enabled = true;
+        assert_eq!(App::update_instructions(&mut mock_app), format!("Spelling suggestion: true"));
+    }
+
+    #[test]
+    fn test_instructions_in_settings_mode_with_spelling_fix_disabled() {
+        let mut mock_app = mock_app_in(InputMode::Settings);
+        // mock_app.is_spelling_fix_enabled is false by default.
+        assert_eq!(App::update_instructions(&mut mock_app), format!("Spelling suggestion: false"));
     }
 }

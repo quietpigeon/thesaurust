@@ -1,7 +1,7 @@
 use ratatui::{ layout::{ Direction, Layout }, prelude::{ Constraint } };
 
 use crate::{
-    models::{ data::Thesaurus, app::App },
+    models::{ data::Thesaurus, app::{ App } },
     tui::Frame,
     components::{
         search_bar,
@@ -76,7 +76,6 @@ pub fn render(app: &mut App, f: &mut Frame) {
     }
 
     f.render_widget(search_bar::new(app), upper_frame[0]);
-
     let mut definition = String::from("");
     let mut example = String::from("");
     if !app.results.is_empty() {
@@ -107,6 +106,6 @@ pub fn render(app: &mut App, f: &mut Frame) {
     }
 
     let instructions = App::update_instructions(app);
-    f.render_widget(footer::with(instructions), footer_frame[1]);
+    f.render_widget(footer::with(&instructions), footer_frame[1]);
     f.render_widget(footer::with("default"), footer_frame[2]);
 }
