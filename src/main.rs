@@ -53,7 +53,10 @@ fn main() -> Result<()> {
                         KeyCode::Enter => {
                             app.input_mode = InputMode::Normal;
 
-                            app.results = parse_response(app.input.to_string());
+                            app.results = parse_response(
+                                app.input.to_string(),
+                                app.is_spelling_fix_enabled
+                            );
 
                             App::update_stateful_lists(&mut app, list::StatefulListType::All);
                         }
@@ -109,7 +112,7 @@ fn main() -> Result<()> {
                 InputMode::Settings =>
                     match key.code {
                         KeyCode::Char('q') => {
-                            app.input_mode = InputMode::Normal;
+                            app.input_mode = InputMode::Editing;
                         }
                         KeyCode::Char('h') | KeyCode::Char('l') => {
                             app.is_spelling_fix_enabled = !app.is_spelling_fix_enabled;

@@ -6,24 +6,31 @@ use std::collections::HashMap;
 
 const DOMAIN: &'static str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
-pub fn parse_response(word: String) -> Vec<Thesaurus> {
-    match fetch_response(word) {
+pub fn parse_response(word: String, is_spelling_fix_enabled: bool) -> Vec<Thesaurus> {
+    match fetch_response(word, is_spelling_fix_enabled) {
         Ok(t) => t,
         Err(_) => Thesaurus::inject_message(String::from("Unsuccessful response")),
     }
 }
 
 #[tokio::main]
-async fn fetch_response(word: String) -> Result<Vec<Thesaurus>, Box<dyn std::error::Error>> {
+async fn fetch_response(
+    word: String,
+    is_spelling_fix_enabled: bool
+) -> Result<Vec<Thesaurus>, Box<dyn std::error::Error>> {
     let res = match search_dictionary(word.clone()).await {
         Ok(t) => {
             let resp: Vec<Thesaurus> = serde_json::from_value(t).unwrap();
             resp
         }
         Err(_) => {
-            match suggest_spelling(word).await {
-                Ok(t) => Thesaurus::inject_message(t),
-                Err(_) => Thesaurus::inject_message(String::from("Serp Api error")),
+            if !is_spelling_fix_enabled {
+                Thesaurus::inject_message(String::from("Please double-check your spelling."))
+            } else {
+                match suggest_spelling(word).await {
+                    Ok(t) => Thesaurus::inject_message(t),
+                    Err(_) => Thesaurus::inject_message(String::from("Serp Api error")),
+                }
             }
         }
     };
@@ -59,8 +66,8 @@ async fn suggest_spelling(word: String) -> Result<String, Box<dyn std::error::Er
     Ok(results.spelling_fix)
 }
 
-fn parse(value:serde_json::Value, is_suggested: bool) -> (Vec<Thesaurus>, bool) {
-    let r:Vec<Thesaurus> = serde_json::from_value(value).unwrap();
+fn parse(value: serde_json::Value, is_suggested: bool) -> (Vec<Thesaurus>, bool) {
+    let r: Vec<Thesaurus> = serde_json::from_value(value).unwrap();
     (r, is_suggested)
 }
 

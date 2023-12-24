@@ -118,8 +118,6 @@ impl App {
 
 #[cfg(test)]
 mod tests {
-    use std::fmt::format;
-
     use crate::models::data::{ Definition, Meaning };
 
     use super::*;
