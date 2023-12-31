@@ -16,11 +16,11 @@ cargo install --path .
 thesaurust
 ```
 ## Usage
-* `/`: Insert the word you would like to look up.
-* `<ENTER>`: Search.
-* `j`, `k`: Select the part of speech and press `<ENTER>`.
-* `l`, `h`: Toggle between multiple definitions.
-* `q`: Exit the app.
+* <kbd>/</kbd>: Insert the word you would like to look up.
+* <kbd>Enter</kbd>: Search.
+* <kbd>j</kbd>, <kbd>k</kbd>: Select the part of speech and press <kbd>Enter</kbd>.
+* <kbd>l</kbd>, <kbd>h</kbd>: Toggle between multiple definitions.
+* <kbd>q</kbd>: Exit the app.
 ## Roadmap
 - [x] Show an example with the definition (if available)
 - [x] Toggle between parts of speech 
