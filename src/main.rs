@@ -12,7 +12,7 @@ use client::parse_response;
 use crossterm::event::{ self, Event, KeyCode };
 use ratatui::{ backend::CrosstermBackend, Terminal };
 use tui::Tui;
-use tui_input::{backend::crossterm::EventHandler, Input};
+use tui_input::{ backend::crossterm::EventHandler, Input };
 
 fn main() -> Result<()> {
     let mut app = App::new();
@@ -52,11 +52,12 @@ fn main() -> Result<()> {
                     match key.code {
                         KeyCode::Enter => {
                             app.input_mode = InputMode::Normal;
-                            (app.results, app.is_spelling_suggested) = parse_response(
+                            app.results = parse_response(
                                 app.input.to_string(),
                                 app.is_spelling_fix_enabled
                             );
-                            if app.is_spelling_suggested {
+                            app.suggested_spelling = app.results[0].clone().word.unwrap();
+                            if app.suggested_spelling.len() > 0 {
                                 app.input_mode = InputMode::Suggesting;
                             }
 

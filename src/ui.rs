@@ -79,7 +79,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
 
     match app.input_mode {
         InputMode::Suggesting => {
-            f.render_widget(popup::new(), upper_frame[0]);
+            f.render_widget(popup::new(app), upper_frame[0]);
         }
         _ => {
             f.render_widget(search_bar::new(app), upper_frame[0]);

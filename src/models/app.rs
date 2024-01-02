@@ -29,7 +29,7 @@ pub struct App {
     pub part_of_speech_list: StatefulList<String>,
     pub definition_list: StatefulList<String>,
     pub is_spelling_fix_enabled: bool,
-    pub is_spelling_suggested: bool,
+    pub suggested_spelling: String,
 }
 
 impl App {

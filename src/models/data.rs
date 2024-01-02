@@ -42,7 +42,7 @@ impl Thesaurus {
     /// A function that prompts the user to re-enter the word because the word cannot be found in the API.
     pub fn inject_message(msg: String) -> Vec<Thesaurus> {
         let definition = Definition {
-            definition: Some(msg),
+            definition: None,
             example: None,
             synonyms: None,
             antonyms: None,
@@ -54,7 +54,7 @@ impl Thesaurus {
         };
         let m = vec![meaning];
         let thesaurus = Thesaurus {
-            word: None,
+            word: Some(msg),
             origin: None,
             meanings: Some(m),
         };

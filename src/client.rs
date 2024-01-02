@@ -6,10 +6,10 @@ use std::collections::HashMap;
 
 const DOMAIN: &'static str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
-pub fn parse_response(word: String, is_spelling_fix_enabled: bool) -> (Vec<Thesaurus>, bool) {
+pub fn parse_response(word: String, is_spelling_fix_enabled: bool) -> Vec<Thesaurus> {
     match fetch_response(word, is_spelling_fix_enabled) {
         Ok(t) => t,
-        Err(_) => (Thesaurus::inject_message(String::from("Unsuccessful response")), false),
+        Err(_) => Thesaurus::inject_message(String::from("Unsuccessful response")),
     }
 }
 
@@ -17,22 +17,19 @@ pub fn parse_response(word: String, is_spelling_fix_enabled: bool) -> (Vec<Thesa
 async fn fetch_response(
     word: String,
     is_spelling_fix_enabled: bool
-) -> Result<(Vec<Thesaurus>, bool), Box<dyn std::error::Error>> {
+) -> Result<Vec<Thesaurus>, Box<dyn std::error::Error>> {
     let res = match search_dictionary(word.clone()).await {
         Ok(t) => {
             let resp: Vec<Thesaurus> = serde_json::from_value(t).unwrap();
-            (resp, false)
+            resp
         }
         Err(_) => {
             if !is_spelling_fix_enabled {
-                (
-                    Thesaurus::inject_message(String::from("Please double-check your spelling.")),
-                    false,
-                )
+                Thesaurus::inject_message(String::from("Please double-check your spelling."))
             } else {
                 match suggest_spelling(word).await {
-                    Ok(t) => (Thesaurus::inject_message(t), true),
-                    Err(_) => (Thesaurus::inject_message(String::from("Serp Api error")), true),
+                    Ok(t) => Thesaurus::inject_message(t),
+                    Err(_) => Thesaurus::inject_message(String::from("Serp Api error")),
                 }
             }
         }
