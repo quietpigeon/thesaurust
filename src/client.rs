@@ -6,10 +6,19 @@ use std::collections::HashMap;
 
 const DOMAIN: &'static str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
-pub fn parse_response(word: String, is_spelling_fix_enabled: bool) -> Vec<Thesaurus> {
+pub struct WordInfo {
+    pub t: Vec<Thesaurus>,
+    pub is_spelling_suggested: bool,
+}
+
+pub fn parse_response(word: String, is_spelling_fix_enabled: bool) -> WordInfo {
     match fetch_response(word, is_spelling_fix_enabled) {
         Ok(t) => t,
-        Err(_) => Thesaurus::inject_message(String::from("Unsuccessful response")),
+        Err(_) =>
+            WordInfo {
+                t: Thesaurus::inject_message(String::from("Unsuccessful response")),
+                is_spelling_suggested: false,
+            },
     }
 }
 
@@ -17,19 +26,37 @@ pub fn parse_response(word: String, is_spelling_fix_enabled: bool) -> Vec<Thesau
 async fn fetch_response(
     word: String,
     is_spelling_fix_enabled: bool
-) -> Result<Vec<Thesaurus>, Box<dyn std::error::Error>> {
+) -> Result<WordInfo, Box<dyn std::error::Error>> {
     let res = match search_dictionary(word.clone()).await {
         Ok(t) => {
             let resp: Vec<Thesaurus> = serde_json::from_value(t).unwrap();
-            resp
+            WordInfo {
+                t: resp,
+                is_spelling_suggested: false,
+            }
         }
         Err(_) => {
             if !is_spelling_fix_enabled {
-                Thesaurus::inject_message(String::from("Please double-check your spelling."))
+                WordInfo {
+                    t: Thesaurus::inject_message(
+                        String::from("Please double-check your spelling.")
+                    ),
+                    is_spelling_suggested: false,
+                }
             } else {
                 match suggest_spelling(word).await {
-                    Ok(t) => Thesaurus::inject_message(t),
-                    Err(_) => Thesaurus::inject_message(String::from("Serp Api error")),
+                    Ok(t) => {
+                        WordInfo {
+                            t: Thesaurus::inject_message(t),
+                            is_spelling_suggested: true,
+                        }
+                    }
+                    Err(_) => {
+                        WordInfo {
+                            t: Thesaurus::inject_message(String::from("Serp Api error")),
+                            is_spelling_suggested: false,
+                        }
+                    }
                 }
             }
         }

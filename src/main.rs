@@ -24,6 +24,7 @@ fn main() -> Result<()> {
     // Start the main loop.
     while !app.should_quit {
         tui.draw(&mut app)?;
+        let mut is_word_suggested = false;
         if let Event::Key(key) = event::read()? {
             match app.input_mode {
                 InputMode::Normal =>
@@ -52,12 +53,14 @@ fn main() -> Result<()> {
                     match key.code {
                         KeyCode::Enter => {
                             app.input_mode = InputMode::Normal;
-                            app.results = parse_response(
+                            let results = parse_response(
                                 app.input.to_string(),
                                 app.is_spelling_fix_enabled
                             );
+                            app.results = results.t;
                             app.suggested_spelling = app.results[0].clone().word.unwrap();
-                            if app.suggested_spelling.len() > 0 {
+                            if results.is_spelling_suggested {
+                                //TODO: Need to handle Serp API error.
                                 app.input_mode = InputMode::Suggesting;
                             }
 
@@ -110,7 +113,18 @@ fn main() -> Result<()> {
                     }
                 InputMode::Suggesting =>
                     match key.code {
-                        KeyCode::Char('q') => {
+                        KeyCode::Char('y') | KeyCode::Enter => {
+                            app.input_mode = InputMode::Normal;
+                            let results = parse_response(
+                                app.suggested_spelling.clone(),
+                                app.is_spelling_fix_enabled
+                            );
+                            if !results.is_spelling_suggested {
+                                app.results = results.t;
+                                App::update_stateful_lists(&mut app, list::StatefulListType::All);
+                            }
+                        }
+                        KeyCode::Char('n') | KeyCode::Char('q') => {
                             app.input_mode = InputMode::Normal;
                         }
                         _ => {}
