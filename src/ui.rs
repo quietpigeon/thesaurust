@@ -1,7 +1,8 @@
 use ratatui::{ layout::{ Direction, Layout }, prelude::{ Constraint } };
+use tui_input::Input;
 
 use crate::{
-    models::{ data::Thesaurus, app::{ App } },
+    models::{ data::Thesaurus, app::{ App, InputMode } },
     tui::Frame,
     components::{
         search_bar,
@@ -10,6 +11,7 @@ use crate::{
         banner_block,
         part_of_speech_block,
         footer,
+        popup,
     },
 };
 
@@ -75,34 +77,44 @@ pub fn render(app: &mut App, f: &mut Frame) {
         idx = i;
     }
 
-    f.render_widget(search_bar::new(app), upper_frame[0]);
-    let mut definition = String::from("");
-    let mut example = String::from("");
-    if !app.results.is_empty() {
-        let definitions = Thesaurus::unwrap_meanings_at(idx, &app.results[0]).1;
-        if let Some(d_idx) = app.definition_list.state.selected() {
-            if let Some(d) = definitions[d_idx].definition.clone() {
-                definition = d;
-                if let Some(e) = definitions[d_idx].example.clone() {
-                    example = e;
+    match app.input_mode {
+        InputMode::Suggesting => {
+            f.render_widget(popup::new(), upper_frame[0]);
+        }
+        _ => {
+            f.render_widget(search_bar::new(app), upper_frame[0]);
+            let mut definition = String::from("");
+            let mut example = String::from("");
+            if !app.results.is_empty() {
+                let definitions = Thesaurus::unwrap_meanings_at(idx, &app.results[0]).1;
+                if let Some(d_idx) = app.definition_list.state.selected() {
+                    if let Some(d) = definitions[d_idx].definition.clone() {
+                        definition = d;
+                        if let Some(e) = definitions[d_idx].example.clone() {
+                            example = e;
+                        }
+                    }
                 }
+
+                let meanings = app.results[0].meanings.clone();
+                if meanings.is_some() {
+                    let mut cloned_state = app.part_of_speech_list.state.clone();
+                    f.render_stateful_widget(
+                        part_of_speech_block::new(app),
+                        lower_frame[0],
+                        &mut cloned_state
+                    );
+                }
+
+                f.render_widget(
+                    definition_block::new(app, definitions, definition),
+                    right_frame[0]
+                );
+                f.render_widget(example_block::new(example), right_frame[1]);
+            } else {
+                f.render_widget(banner_block::new(), banner_frame[0]);
             }
         }
-
-        let meanings = app.results[0].meanings.clone();
-        if meanings.is_some() {
-            let mut cloned_state = app.part_of_speech_list.state.clone();
-            f.render_stateful_widget(
-                part_of_speech_block::new(app),
-                lower_frame[0],
-                &mut cloned_state
-            );
-        }
-
-        f.render_widget(definition_block::new(app, definitions, definition), right_frame[0]);
-        f.render_widget(example_block::new(example), right_frame[1]);
-    } else {
-        f.render_widget(banner_block::new(), banner_frame[0]);
     }
 
     let instructions = App::update_instructions(app);
