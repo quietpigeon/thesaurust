@@ -12,7 +12,7 @@ use client::parse_response;
 use crossterm::event::{ self, Event, KeyCode };
 use ratatui::{ backend::CrosstermBackend, Terminal };
 use tui::Tui;
-use tui_input::{ backend::crossterm::EventHandler, Input };
+use tui_input::{ backend::crossterm::EventHandler };
 
 fn main() -> Result<()> {
     let mut app = App::new();
@@ -24,7 +24,6 @@ fn main() -> Result<()> {
     // Start the main loop.
     while !app.should_quit {
         tui.draw(&mut app)?;
-        let mut is_word_suggested = false;
         if let Event::Key(key) = event::read()? {
             match app.input_mode {
                 InputMode::Normal =>
@@ -60,7 +59,6 @@ fn main() -> Result<()> {
                             app.results = results.t;
                             app.suggested_spelling = app.results[0].clone().word.unwrap();
                             if results.is_spelling_suggested {
-                                //TODO: Need to handle Serp API error.
                                 app.input_mode = InputMode::Suggesting;
                             }
 
@@ -119,6 +117,7 @@ fn main() -> Result<()> {
                                 app.suggested_spelling.clone(),
                                 app.is_spelling_fix_enabled
                             );
+                            // Prevents Serp API from suggesting the same word repeatedly.
                             if !results.is_spelling_suggested {
                                 app.results = results.t;
                                 App::update_stateful_lists(&mut app, list::StatefulListType::All);

@@ -1,5 +1,4 @@
 use ratatui::{ layout::{ Direction, Layout }, prelude::{ Constraint } };
-use tui_input::Input;
 
 use crate::{
     models::{ data::Thesaurus, app::{ App, InputMode } },

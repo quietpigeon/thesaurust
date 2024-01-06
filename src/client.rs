@@ -88,14 +88,9 @@ async fn suggest_spelling(word: String) -> Result<String, Box<dyn std::error::Er
 
     let results: SearchResults = serde_json
         ::from_value(search_information.clone())
-        .unwrap_or(SearchResults { spelling_fix: String::from("Feature not available.") });
+        .unwrap_or(SearchResults { spelling_fix: String::from("") });
 
     Ok(results.spelling_fix)
-}
-
-fn parse(value: serde_json::Value, is_suggested: bool) -> (Vec<Thesaurus>, bool) {
-    let r: Vec<Thesaurus> = serde_json::from_value(value).unwrap();
-    (r, is_suggested)
 }
 
 fn construct_url(word: String) -> String {
