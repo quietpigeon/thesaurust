@@ -16,8 +16,11 @@ pub fn new(app: &mut App) -> Paragraph<'static> {
 
 fn popup_message(app: &mut App) -> String {
     let message = app.suggested_spelling.clone();
-    if message.len() == 0 {
-        return String::from("Similar spelling not found.");
+    if app.is_spelling_fix_enabled {
+        if message.len() == 0 {
+            return String::from("Similar spelling not found.");
+        }
+        return format!("Did you mean {}?", message);
     }
-    return format!("Did you mean {}?", message);
+    return message
 }

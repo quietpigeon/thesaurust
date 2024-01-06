@@ -59,6 +59,7 @@ fn main() -> Result<()> {
                             app.results = results.t;
                             app.suggested_spelling = app.results[0].clone().word.unwrap();
                             if results.is_spelling_suggested {
+                                //TODO:Error handling for non-spellchecking mode. 
                                 app.input_mode = InputMode::Suggesting;
                             }
 
