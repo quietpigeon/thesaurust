@@ -1,5 +1,6 @@
 /target
 
+/src/api_key.rs
 /src/.DS_Store
 
 .vs/
