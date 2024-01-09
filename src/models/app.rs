@@ -49,10 +49,11 @@ impl App {
             InputMode::Normal if !self.results.is_empty() => {
                 String::from("j, k: Change part of speech  /: Insert")
             }
-            InputMode::Editing => String::from("<ENTER>: Search"),
+            InputMode::Editing => String::from("<ENTER>: Search  <ESC>: Exit"),
             InputMode::SelectPartOfSpeech => String::from("<ENTER>: Select"),
             InputMode::SelectDefinition => String::from("l, h: Change definition  /: Insert"),
             InputMode::Settings => self.toggle_spelling_suggestion(),
+            InputMode::Suggesting => String::from("<ENTER>: Continue"),
             _ => String::from("/: Insert"),
         }
     }
@@ -226,7 +227,7 @@ mod tests {
     #[test]
     fn test_instructions_in_editing_mode() {
         let mut mock_app = mock_app_in(InputMode::Editing);
-        assert_eq!(App::update_instructions(&mut mock_app), "<ENTER>: Search");
+        assert_eq!(App::update_instructions(&mut mock_app), "<ENTER>: Search  <ESC>: Exit");
     }
 
     #[test]
@@ -253,5 +254,11 @@ mod tests {
         let mut mock_app = mock_app_in(InputMode::Settings);
         // mock_app.is_spelling_fix_enabled is false by default.
         assert_eq!(App::update_instructions(&mut mock_app), format!("Spelling suggestion: false"));
+    }
+
+    #[test]
+    fn test_instructions_in_suggesting_mode() {
+        let mut mock_app = mock_app_in(InputMode::Suggesting);
+        assert_eq!(App::update_instructions(&mut mock_app), format!("<ENTER>: Continue"));
     }
 }
