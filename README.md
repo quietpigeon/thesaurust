@@ -15,6 +15,20 @@ Navigate to the repository and run the following commands:
 cargo install --path .
 thesaurust
 ```
+## Installation (with spellchecking)
+You need to have an API key from [SerpApi](https://serpapi.com/) before you can enable this feature. It is free of charge with a limited number of usage.
+<br>
+Go to [api_key.rs](docs/api_key.rs) and enter your API key:
+```zsh
+pub const API_KEY: &str = "YOUR_API_KEY";
+```
+Then, you can proceed to [installation](#installation).
+<br>
+To enable spellchecking in the app, press <kbd>:</kbd> after launching the app. At the footer, you will see something like
+```zsh
+Spelling suggestion: false
+```
+Toggle to `Spelling suggestion` to `true` with <kbd>l</kbd> or <kbd>h</kbd>, then press <kbd>q</kbd> to exit.
 ## Usage
 * <kbd>/</kbd>: Insert the word you would like to look up.
 * <kbd>Enter</kbd>: Search.
@@ -25,5 +39,5 @@ thesaurust
 - [x] Show an example with the definition (if available)
 - [x] Toggle between parts of speech 
 - [x] Toggle between definitions with the same part of speech
-- [ ] Use a spellchecking API to suggest correct spelling for words
+- [x] Use a spellchecking API to suggest correct spelling for words
 - [ ] Show synonyms and antonyms
