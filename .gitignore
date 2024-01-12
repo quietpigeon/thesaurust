@@ -1,5 +1,7 @@
 /target
 
+/src/.DS_Store
+
 .vs/
 .vscode/
 

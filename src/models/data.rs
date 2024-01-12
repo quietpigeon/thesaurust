@@ -1,9 +1,9 @@
 use std::fmt::Debug;
 
-use serde_derive::{ Deserialize, Serialize };
+use serde_derive::Deserialize;
 
 /// Components of a response from the Free Dictionary API.
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct Thesaurus {
     pub word: Option<String>,
     pub origin: Option<String>,
@@ -40,9 +40,9 @@ impl Thesaurus {
     }
 
     /// A function that prompts the user to re-enter the word because the word cannot be found in the API.
-    pub fn inject_error_message() -> Vec<Thesaurus> {
+    pub fn inject_message(msg: String) -> Vec<Thesaurus> {
         let definition = Definition {
-            definition: Some(String::from("No definitions found.")),
+            definition: None,
             example: None,
             synonyms: None,
             antonyms: None,
@@ -54,7 +54,7 @@ impl Thesaurus {
         };
         let m = vec![meaning];
         let thesaurus = Thesaurus {
-            word: None,
+            word: Some(msg),
             origin: None,
             meanings: Some(m),
         };
@@ -62,7 +62,7 @@ impl Thesaurus {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 #[allow(non_snake_case)]
 pub struct Meaning {
     pub partOfSpeech: Option<String>,
@@ -78,7 +78,7 @@ impl Default for Meaning {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct Definition {
     pub definition: Option<String>,
     pub example: Option<String>,

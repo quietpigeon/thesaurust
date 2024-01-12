@@ -1,7 +1,7 @@
 #[derive(Debug)]
 pub enum ApiError {
     HttpError(reqwest::Error),
-    InvalidData,
+    InvalidInput,
 }
 
 impl From<reqwest::Error> for ApiError {

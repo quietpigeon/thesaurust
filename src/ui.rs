@@ -1,12 +1,18 @@
-use ratatui::{
-    layout::{ Direction, Layout },
-    prelude::{ Alignment, Constraint },
-    style::{ Color, Modifier, Style, Stylize },
-    widgets::{ Block, Borders, List, ListItem, Paragraph, Wrap },
+use ratatui::{ layout::{ Direction, Layout }, prelude::{ Constraint } };
+
+use crate::{
+    models::{ data::Thesaurus, app::{ App, InputMode } },
+    tui::Frame,
+    components::{
+        search_bar,
+        definition_block,
+        example_block,
+        banner_block,
+        part_of_speech_block,
+        footer,
+        popup,
+    },
 };
-
-use crate::{models::{data::Thesaurus, app::{InputMode, App}}, banner::BANNER, tui::Frame};
-
 
 pub fn render(app: &mut App, f: &mut Frame) {
     // Main frame.
@@ -52,7 +58,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
         .split(lower_frame[1]);
 
     // The `footer` consists of a spacer and two sets of instructions.
-    let footer = Layout::default()
+    let footer_frame = Layout::default()
         .direction(Direction::Vertical)
         // Spacer(50%), Instructions(25%), Default instructions(25%)
         .constraints(
@@ -70,106 +76,47 @@ pub fn render(app: &mut App, f: &mut Frame) {
         idx = i;
     }
 
-    let mut definition = String::from("");
-    let mut example = String::from("");
-    if !app.results.is_empty() {
-        let definitions = Thesaurus::unwrap_meanings_at(idx, &app.results[0]).1;
-        if let Some(d_idx) = app.definition_list.state.selected() {
-            if let Some(d) = definitions[d_idx].definition.clone() {
-                definition = d;
-                if let Some(e) = definitions[d_idx].example.clone() {
-                    example = e;
+    match app.input_mode {
+        InputMode::Suggesting => {
+            f.render_widget(popup::new(app), upper_frame[0]);
+        }
+        _ => {
+            f.render_widget(search_bar::new(app), upper_frame[0]);
+            let mut definition = String::from("");
+            let mut example = String::from("");
+            if !app.results.is_empty() {
+                let definitions = Thesaurus::unwrap_meanings_at(idx, &app.results[0]).1;
+                if let Some(d_idx) = app.definition_list.state.selected() {
+                    if let Some(d) = definitions[d_idx].definition.clone() {
+                        definition = d;
+                        if let Some(e) = definitions[d_idx].example.clone() {
+                            example = e;
+                        }
+                    }
                 }
+
+                let meanings = app.results[0].meanings.clone();
+                if meanings.is_some() {
+                    let mut cloned_state = app.part_of_speech_list.state.clone();
+                    f.render_stateful_widget(
+                        part_of_speech_block::new(app),
+                        lower_frame[0],
+                        &mut cloned_state
+                    );
+                }
+
+                f.render_widget(
+                    definition_block::new(app, definitions, definition),
+                    right_frame[0]
+                );
+                f.render_widget(example_block::new(example), right_frame[1]);
+            } else {
+                f.render_widget(banner_block::new(), banner_frame[0]);
             }
         }
-
-        // `Part Of Speech` block that shows the part of speech of the word.
-        // They are also used to show whether the word has multiple definitions or not.
-        let meanings = app.results[0].meanings.clone();
-        if meanings.is_some() {
-            let parts_of_speech: Vec<ListItem> = app.part_of_speech_list.items
-                .iter()
-                .map(|i| ListItem::new(i.clone()))
-                .collect();
-
-            let parts_of_speech = List::new(parts_of_speech)
-                .block(Block::default().borders(Borders::ALL).title("Part Of Speech"))
-                .style(match app.input_mode {
-                    InputMode::SelectPartOfSpeech => Style::default().fg(Color::Yellow),
-                    _ => Style::default().fg(Color::Green),
-                })
-                .highlight_style(Style::default().fg(Color::Black).bg(Color::Cyan));
-
-            // `Part Of Speech` block
-            f.render_stateful_widget(
-                parts_of_speech,
-                lower_frame[0],
-                &mut app.part_of_speech_list.state
-            );
-        }
-
-        // Definition block.
-        f.render_widget(
-            Paragraph::new(String::from(definition))
-                .style(match app.input_mode {
-                    InputMode::SelectDefinition => Style::default().fg(Color::Yellow),
-                    _ => Style::default().fg(Color::Green),
-                })
-                .wrap(Wrap { trim: true })
-                .block(
-                    Block::default()
-                        .borders(Borders::ALL)
-                        .title(
-                            format!(
-                                "Definition[{:}/{}]",
-                                app.definition_list.state.selected().unwrap() + 1,
-                                definitions.len()
-                            )
-                        )
-                ),
-            right_frame[0]
-        );
-
-        // Example block.
-        f.render_widget(
-            Paragraph::new(String::from(example).add_modifier(Modifier::ITALIC))
-                .style(Style::default().fg(Color::Green))
-                .wrap(Wrap { trim: true })
-                .block(Block::default().borders(Borders::ALL).title("Example")),
-            right_frame[1]
-        );
-    } else {
-        f.render_widget(
-            Paragraph::new(BANNER)
-                .style(Style::default().fg(Color::Green))
-                .alignment(Alignment::Center),
-            banner_frame[0]
-        );
     }
 
-    // Search bar.
-    f.render_widget(
-        Paragraph::new(app.input.value())
-            .style(match app.input_mode {
-                InputMode::Editing => Style::default().fg(Color::Yellow),
-                _ => Style::default().fg(Color::Green),
-            })
-            .wrap(Wrap { trim: true })
-            .block(Block::default().borders(Borders::ALL).title("Search")),
-        upper_frame[0]
-    );
-
-    // Instructions.
     let instructions = App::update_instructions(app);
-    let default_instructions = "q: Quit";
-    f.render_widget(create_footer_block(instructions), footer[1]);
-    f.render_widget(create_footer_block(default_instructions), footer[2]);
-}
-
-// Helper function to create footer blocks.
-fn create_footer_block(s: &str) -> Paragraph {
-    Paragraph::new(s)
-        .alignment(Alignment::Left)
-        .style(Style::default().fg(Color::Green))
-        .block(Block::default().borders(Borders::NONE))
+    f.render_widget(footer::with(&instructions), footer_frame[1]);
+    f.render_widget(footer::with("default"), footer_frame[2]);
 }
