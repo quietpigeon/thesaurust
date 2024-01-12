@@ -16,6 +16,8 @@ cargo install --path .
 thesaurust
 ```
 ## Installation (with spellchecking)
+![Demo](docs/spellcheck_demo.gif)
+<br>
 You need to have an API key from [SerpApi](https://serpapi.com/) before you can enable this feature. It is free of charge with a limited number of usage.
 <br>
 Go to [api_key.rs](docs/api_key.rs) and enter your API key:
