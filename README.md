@@ -17,15 +17,15 @@ thesaurust
 ```
 ## Installation (with spellchecking)
 ![Demo](docs/spellcheck_demo.gif)
-<br>
+### Prerequisites
 You need to have an API key from [SerpApi](https://serpapi.com/) before you can enable this feature. It is free of charge with a limited number of usage.
 <br>
-Go to [api_key.rs](docs/api_key.rs) and enter your API key:
+Go to [api_key.rs](src/api_key.rs) and enter your API key:
 ```zsh
 pub const API_KEY: &str = "YOUR_API_KEY";
 ```
 Then, you can proceed to [installation](#installation).
-<br>
+### Enabling spellchecking
 To enable spellchecking in the app, press <kbd>:</kbd> after launching the app. At the footer, you will see something like
 ```zsh
 Spelling suggestion: false
