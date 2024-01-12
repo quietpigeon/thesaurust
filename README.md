@@ -1,3 +1,15 @@
+<details>
+<summary>Table of Contents</summary>
+
+- [thesaurust](#thesaurust)
+  - [Installation](#installation)
+  - [Installation (with spellchecking)](#installation-with-spellchecking)
+    - [Prerequisites](#prerequisites)
+    - [Enabling spellchecking](#enabling-spellchecking)
+  - [Usage](#usage)
+  - [Roadmap](#roadmap)
+</details>
+
 # thesaurust
 A simple dictionary application built within the terminal, written in Rust. 
 ![Demo](docs/demo.gif)
