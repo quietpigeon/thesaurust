@@ -30,6 +30,7 @@ pub struct App {
     pub definition_list: StatefulList<String>,
     pub is_spelling_fix_enabled: bool,
     pub suggested_spelling: String,
+    pub synonym_list: StatefulList<String>,
 }
 
 impl App {
@@ -97,7 +98,6 @@ impl App {
         }
     }
 
-    /// Update the definition list.
     fn update_definition_list(&mut self) {
         if !self.results.is_empty() {
             if let Some(idx) = self.part_of_speech_list.state.selected() {
@@ -116,7 +116,8 @@ impl App {
             }
         }
     }
-}
+
+    fn update_synonym_list(&mut self) {}
 
 #[cfg(test)]
 mod tests {
