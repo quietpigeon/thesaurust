@@ -1,4 +1,4 @@
-use ratatui::{ layout::{ Direction, Layout }, prelude::{ Constraint } };
+use ratatui::{ layout::{ Direction, Layout }, prelude:: Constraint };
 
 use crate::{
     models::{ data::Thesaurus, app::{ App, InputMode } },
@@ -9,6 +9,7 @@ use crate::{
         example_block,
         banner_block,
         part_of_speech_block,
+        synonym_block,
         footer,
         popup, synonym_block,
     },

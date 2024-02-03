@@ -89,6 +89,7 @@ fn main() -> Result<()> {
                                 &mut app,
                                 list::StatefulListType::Definition
                             );
+                            App::update_stateful_lists(&mut app, list::StatefulListType::Synonym)
                         }
                         _ => {}
                     }
