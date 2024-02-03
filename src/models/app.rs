@@ -117,7 +117,28 @@ impl App {
         }
     }
 
-    fn update_synonym_list(&mut self) {}
+    fn update_synonym_list(&mut self) {
+        if !self.results.is_empty() {
+            if let Some(pos_idx) = self.part_of_speech_list.state.selected() {
+                let definitions = Thesaurus::unwrap_meanings_at(pos_idx, &self.results[0]).1;
+                if let Some(def_idx) = self.definition_list.state.selected() {
+                    let definition = &definitions[def_idx];
+                    if let synonyms = definition.clone().synonyms {
+                        let synonyms: Vec<String> = synonyms
+                            .unwrap()
+                            .iter()
+                            .map(|i| i.clone())
+                            .collect();
+                        self.synonym_list = StatefulList::with_items(synonyms, StatefulListType::Synonym);
+                }
+                    // Select the first item as default.
+                    self.synonym_list.state.select(Some(0))
+                    }
+            };
+
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
