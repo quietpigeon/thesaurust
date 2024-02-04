@@ -96,9 +96,11 @@ fn main() -> Result<()> {
                     match key.code {
                         KeyCode::Char('l') => {
                             app.definition_list.down();
+                            App::update_stateful_lists(&mut app, list::StatefulListType::Synonym)
                         }
                         KeyCode::Char('h') => {
                             app.definition_list.up();
+                            App::update_stateful_lists(&mut app, list::StatefulListType::Synonym)
                         }
                         KeyCode::Char('q') => {
                             app.input_mode = InputMode::Normal;

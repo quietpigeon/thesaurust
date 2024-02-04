@@ -2,7 +2,7 @@ use ratatui::{ widgets::{ Block, Borders, List, ListItem }, style::{ Color, Styl
 
 use crate::models::app::{ App };
 
-fn new(app: &mut App) -> List {
+pub fn new(app: &mut App) -> List {
     let cloned_list = app.synonym_list.clone();
     let synonyms: Vec<ListItem> = cloned_list.items
         .iter()

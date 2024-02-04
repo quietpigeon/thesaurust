@@ -67,9 +67,13 @@ impl App {
             StatefulListType::Definition => {
                 self.update_definition_list();
             }
+            StatefulListType::Synonym => {
+                self.update_synonym_list();
+            }
             _ => {
                 self.update_part_of_speech_list();
                 self.update_definition_list();
+                self.update_synonym_list();
             }
         }
     }
@@ -123,19 +127,20 @@ impl App {
                 let definitions = Thesaurus::unwrap_meanings_at(pos_idx, &self.results[0]).1;
                 if let Some(def_idx) = self.definition_list.state.selected() {
                     let definition = &definitions[def_idx];
-                    if let synonyms = definition.clone().synonyms {
+                    let synonyms = definition.clone().synonyms;
+                    {
                         let synonyms: Vec<String> = synonyms
                             .unwrap()
                             .iter()
                             .map(|i| i.clone())
                             .collect();
-                        self.synonym_list = StatefulList::with_items(synonyms, StatefulListType::Synonym);
-                }
-                    // Select the first item as default.
-                    self.synonym_list.state.select(Some(0))
+                        self.synonym_list = StatefulList::with_items(
+                            synonyms,
+                            StatefulListType::Synonym
+                        );
                     }
+                }
             };
-
         }
     }
 }

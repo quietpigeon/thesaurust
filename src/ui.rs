@@ -10,7 +10,7 @@ use crate::{
         banner_block,
         part_of_speech_block,
         footer,
-        popup,
+        popup, synonym_block,
     },
 };
 
@@ -23,7 +23,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
             [
                 Constraint::Length(3),
                 Constraint::Length(9),
-                Constraint::Length(4),
+                Constraint::Length(5),
                 Constraint::Min(1),
             ].as_ref()
         )
@@ -110,6 +110,8 @@ pub fn render(app: &mut App, f: &mut Frame) {
                     right_frame[0]
                 );
                 f.render_widget(example_block::new(example), right_frame[1]);
+                let mut cloned_state = app.synonym_list.state.clone();
+                f.render_stateful_widget(synonym_block::new(app), footer_frame[0], &mut cloned_state);
             } else {
                 f.render_widget(banner_block::new(), banner_frame[0]);
             }
