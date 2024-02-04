@@ -11,7 +11,7 @@ use crate::{
         part_of_speech_block,
         synonym_block,
         footer,
-        popup, synonym_block,
+        popup,
     },
 };
 
