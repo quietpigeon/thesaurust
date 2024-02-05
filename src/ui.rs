@@ -1,18 +1,18 @@
-use ratatui::{ layout::{ Direction, Layout }, prelude:: Constraint };
+use ratatui::{
+    layout::{Direction, Layout},
+    prelude::Constraint,
+};
 
 use crate::{
-    models::{ data::Thesaurus, app::{ App, InputMode } },
-    tui::Frame,
     components::{
-        search_bar,
-        definition_block,
-        example_block,
-        banner_block,
-        part_of_speech_block,
-        synonym_block,
-        footer,
-        popup,
+        banner_block, definition_block, example_block, footer, part_of_speech_block, popup,
+        search_bar, synonym_block,
     },
+    models::{
+        app::{App, InputMode},
+        data::Thesaurus,
+    },
+    tui::Frame,
 };
 
 pub fn render(app: &mut App, f: &mut Frame) {
@@ -26,7 +26,8 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 Constraint::Length(9),
                 Constraint::Length(9),
                 Constraint::Min(1),
-            ].as_ref()
+            ]
+            .as_ref(),
         )
         .split(f.size());
 
@@ -65,7 +66,8 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 Constraint::Percentage(80),
                 Constraint::Percentage(10),
                 Constraint::Percentage(10),
-            ].as_ref()
+            ]
+            .as_ref(),
         )
         .horizontal_margin(1)
         .split(main_frame[2]);
@@ -73,10 +75,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
     let bottom_frame = Layout::default()
         .direction(Direction::Horizontal)
         // Synonyms(50%), Antonyms(50%)
-        .constraints([
-                     Constraint::Percentage(50),
-                     Constraint::Percentage(50),
-        ].as_ref())
+        .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
         .split(footer_frame[0]);
 
     // Index of the item selected by the user in `part_of_speech_list`.
@@ -110,17 +109,21 @@ pub fn render(app: &mut App, f: &mut Frame) {
                     f.render_stateful_widget(
                         part_of_speech_block::new(app),
                         lower_frame[0],
-                        &mut cloned_state
+                        &mut cloned_state,
                     );
                 }
 
                 f.render_widget(
                     definition_block::new(app, definitions, definition),
-                    right_frame[0]
+                    right_frame[0],
                 );
                 f.render_widget(example_block::new(example), right_frame[1]);
                 let mut cloned_state = app.synonym_list.state.clone();
-                f.render_stateful_widget(synonym_block::new(app), bottom_frame[0], &mut cloned_state);
+                f.render_stateful_widget(
+                    synonym_block::new(app),
+                    bottom_frame[0],
+                    &mut cloned_state,
+                );
             } else {
                 f.render_widget(banner_block::new(), banner_frame[0]);
             }
