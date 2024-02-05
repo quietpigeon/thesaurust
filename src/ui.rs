@@ -24,7 +24,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
             [
                 Constraint::Length(3),
                 Constraint::Length(9),
-                Constraint::Length(5),
+                Constraint::Length(9),
                 Constraint::Min(1),
             ].as_ref()
         )
@@ -37,7 +37,6 @@ pub fn render(app: &mut App, f: &mut Frame) {
         .horizontal_margin(1)
         .split(main_frame[0]);
 
-    // The `lower_frame` consists of the `part_of_speech` block and the `definitions` block.
     let lower_frame = Layout::default()
         .direction(Direction::Horizontal)
         // Part of speech (20%), right frame (80%)
@@ -45,7 +44,6 @@ pub fn render(app: &mut App, f: &mut Frame) {
         .horizontal_margin(1)
         .split(main_frame[1]);
 
-    // The frame for banner.
     let banner_frame = Layout::default()
         .constraints([Constraint::Percentage(100)])
         .margin(1)
@@ -64,12 +62,22 @@ pub fn render(app: &mut App, f: &mut Frame) {
         // Spacer(50%), Instructions(25%), Default instructions(25%)
         .constraints(
             [
-                Constraint::Percentage(50),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
+                Constraint::Percentage(80),
+                Constraint::Percentage(10),
+                Constraint::Percentage(10),
             ].as_ref()
         )
+        .horizontal_margin(1)
         .split(main_frame[2]);
+
+    let bottom_frame = Layout::default()
+        .direction(Direction::Horizontal)
+        // Synonyms(50%), Antonyms(50%)
+        .constraints([
+                     Constraint::Percentage(50),
+                     Constraint::Percentage(50),
+        ].as_ref())
+        .split(footer_frame[0]);
 
     // Index of the item selected by the user in `part_of_speech_list`.
     let mut idx = 0;
@@ -112,7 +120,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 );
                 f.render_widget(example_block::new(example), right_frame[1]);
                 let mut cloned_state = app.synonym_list.state.clone();
-                f.render_stateful_widget(synonym_block::new(app), footer_frame[0], &mut cloned_state);
+                f.render_stateful_widget(synonym_block::new(app), bottom_frame[0], &mut cloned_state);
             } else {
                 f.render_widget(banner_block::new(), banner_frame[0]);
             }
