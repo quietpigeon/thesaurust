@@ -1,5 +1,7 @@
+use std::rc::Rc;
+
 use ratatui::{
-    layout::{Direction, Layout},
+    layout::{Direction, Layout, Rect},
     prelude::Constraint,
 };
 
@@ -50,14 +52,12 @@ pub fn render(app: &mut App, f: &mut Frame) {
         .margin(1)
         .split(main_frame[1]);
 
-    // The `right_frame` consists of the `definition` block and the `example` block.
     let right_frame = Layout::default()
         .direction(Direction::Vertical)
         // Definitions(50%), Examples(50%)
         .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
         .split(lower_frame[1]);
 
-    // The `footer` consists of a spacer and two sets of instructions.
     let footer_frame = Layout::default()
         .direction(Direction::Vertical)
         // Spacer(50%), Instructions(25%), Default instructions(25%)
@@ -78,59 +78,72 @@ pub fn render(app: &mut App, f: &mut Frame) {
         .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
         .split(footer_frame[0]);
 
-    // Index of the item selected by the user in `part_of_speech_list`.
-    let mut idx = 0;
-    if let Some(i) = app.part_of_speech_list.state.selected() {
-        idx = i;
-    }
-
     match app.input_mode {
         InputMode::Suggesting => {
             f.render_widget(popup::new(app), upper_frame[0]);
         }
         _ => {
             f.render_widget(search_bar::new(app), upper_frame[0]);
-            let mut definition = String::from("");
-            let mut example = String::from("");
             if !app.results.is_empty() {
-                let definitions = Thesaurus::unwrap_meanings_at(idx, &app.results[0]).1;
-                if let Some(d_idx) = app.definition_list.state.selected() {
-                    if let Some(d) = definitions[d_idx].definition.clone() {
-                        definition = d;
-                        if let Some(e) = definitions[d_idx].example.clone() {
-                            example = e;
-                        }
-                    }
-                }
-
-                let meanings = app.results[0].meanings.clone();
-                if meanings.is_some() {
-                    let mut cloned_state = app.part_of_speech_list.state.clone();
-                    f.render_stateful_widget(
-                        part_of_speech_block::new(app),
-                        lower_frame[0],
-                        &mut cloned_state,
-                    );
-                }
-
-                f.render_widget(
-                    definition_block::new(app, definitions, definition),
-                    right_frame[0],
-                );
-                f.render_widget(example_block::new(example), right_frame[1]);
-                let mut cloned_state = app.synonym_list.state.clone();
-                f.render_stateful_widget(
-                    synonym_block::new(app),
-                    bottom_frame[0],
-                    &mut cloned_state,
-                );
+                render_part_of_speech_block(app, f, lower_frame[0]);
+                render_right_frame_components(app, f, right_frame);
+                render_synonym_block(app, f, bottom_frame[0])
             } else {
                 f.render_widget(banner_block::new(), banner_frame[0]);
             }
         }
     }
+    render_instructions(app, f, footer_frame);
+}
 
+fn render_synonym_block(app: &mut App, f: &mut Frame, area: Rect) {
+    let mut cloned_state = app.synonym_list.state.clone();
+    f.render_stateful_widget(synonym_block::new(app), area, &mut cloned_state);
+}
+
+fn render_right_frame_components(app: &mut App, f: &mut Frame, right_frame: Rc<[Rect]>) {
+    let mut pos_list_idx = 0;
+    if let Some(i) = app.part_of_speech_list.state.selected() {
+        pos_list_idx = i;
+    }
+    let (definition, example) = get_definition_and_example(app);
+    render_definition_block(app, pos_list_idx, definition, f, right_frame[0]);
+    f.render_widget(example_block::new(example), right_frame[1]);
+}
+
+fn render_definition_block(app: &mut App, idx: usize, d: String, f: &mut Frame, area: Rect) {
+    let definitions = Thesaurus::unwrap_meanings_at(idx, &app.results[0]).1;
+    f.render_widget(definition_block::new(app, definitions, d), area);
+}
+
+fn render_part_of_speech_block(app: &mut App, f: &mut Frame, area: Rect) {
+    let meanings = app.results[0].meanings.clone();
+    if meanings.is_some() {
+        let mut cloned_state = app.part_of_speech_list.state.clone();
+        f.render_stateful_widget(part_of_speech_block::new(app), area, &mut cloned_state);
+    }
+}
+
+fn render_instructions(app: &mut App, f: &mut Frame, frame: Rc<[Rect]>) {
     let instructions = App::update_instructions(app);
-    f.render_widget(footer::with(&instructions), footer_frame[1]);
-    f.render_widget(footer::with("default"), footer_frame[2]);
+    f.render_widget(footer::with(&instructions), frame[1]);
+    f.render_widget(footer::with("default"), frame[2]);
+}
+
+fn get_definition_and_example(app: &mut App) -> (String, String) {
+    let mut pos_list_idx = 0;
+    if let Some(i) = app.part_of_speech_list.state.selected() {
+        pos_list_idx = i;
+    }
+    let definitions = Thesaurus::unwrap_meanings_at(pos_list_idx, &app.results[0]).1;
+    if let Some(definition_list_idx) = app.definition_list.state.selected() {
+        if let Some(d) = definitions[definition_list_idx].definition.clone() {
+            let definition = d;
+            if let Some(e) = definitions[definition_list_idx].example.clone() {
+                let example = e;
+                return (definition, example);
+            }
+        }
+    }
+    return ("".to_string(), "".to_string());
 }
