@@ -1,5 +1,11 @@
-use ratatui::{ widgets::{ Block, Borders, Paragraph, Wrap }, style::{ Color, Style } };
-use crate::{ models::{ app::{ App, InputMode }, data::Definition } };
+use crate::models::{
+    app::{App, InputMode},
+    data::Definition,
+};
+use ratatui::{
+    style::{Color, Style},
+    widgets::{Block, Borders, Paragraph, Wrap},
+};
 
 pub fn new(app: &mut App, definitions: Vec<Definition>, definition: String) -> Paragraph {
     Paragraph::new(String::from(definition))
@@ -8,15 +14,9 @@ pub fn new(app: &mut App, definitions: Vec<Definition>, definition: String) -> P
             _ => Style::default().fg(Color::Green),
         })
         .wrap(Wrap { trim: true })
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .title(
-                    format!(
-                        "Definition[{:}/{}]",
-                        app.definition_list.state.selected().unwrap() + 1,
-                        definitions.len()
-                    )
-                )
-        )
+        .block(Block::default().borders(Borders::ALL).title(format!(
+            "Definition[{:}/{}]",
+            app.definition_list.state.selected().unwrap() + 1,
+            definitions.len()
+        )))
 }
