@@ -33,25 +33,10 @@ pub fn render(app: &mut App, f: &mut Frame) {
         )
         .split(f.size());
 
-    let upper_frame = Layout::default()
-        .direction(Direction::Horizontal)
-        // Search bar (100%)
-        .constraints([Constraint::Percentage(100)].as_ref())
-        .horizontal_margin(1)
-        .split(main_frame[0]);
-
+    let upper_frame = create_upper_layout(main_frame[0]);
     let lower_frame = create_lower_layout(main_frame[1]);
-    let banner_frame = Layout::default()
-        .constraints([Constraint::Percentage(100)])
-        .margin(1)
-        .split(main_frame[1]);
-
-    let right_frame = Layout::default()
-        .direction(Direction::Vertical)
-        // Definitions(50%), Examples(50%)
-        .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
-        .split(lower_frame[1]);
-
+    let banner_frame = create_banner_layout(main_frame[1]);
+    let right_frame = create_right_layout(lower_frame[1]);
     let footer_frame = create_footer_layout(main_frame[2]);
     let bottom_frame = create_bottom_layout(footer_frame[0]);
 
@@ -74,6 +59,30 @@ pub fn render(app: &mut App, f: &mut Frame) {
 }
 
 /// HELPER
+fn create_banner_layout(area: Rect) -> Rc<[Rect]> {
+    Layout::default()
+        .constraints([Constraint::Percentage(100)])
+        .margin(1)
+        .split(area)
+}
+
+fn create_right_layout(area: Rect) -> Rc<[Rect]> {
+    Layout::default()
+        .direction(Direction::Vertical)
+        // Definitions(50%), Examples(50%)
+        .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
+        .split(area)
+}
+
+fn create_upper_layout(area: Rect) -> Rc<[Rect]> {
+    Layout::default()
+        .direction(Direction::Horizontal)
+        // Search bar (100%)
+        .constraints([Constraint::Percentage(100)].as_ref())
+        .horizontal_margin(1)
+        .split(area)
+}
+
 fn create_footer_layout(area: Rect) -> Rc<[Rect]> {
     Layout::default()
         .direction(Direction::Vertical)
