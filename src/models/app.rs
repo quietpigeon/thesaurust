@@ -128,10 +128,12 @@ impl App {
                     let definition = &definitions[def_idx];
                     let synonyms = definition.clone().synonyms;
                     {
-                        let synonyms: Vec<String> =
-                            synonyms.unwrap().iter().map(|i| i.clone()).collect();
-                        self.synonym_list =
-                            StatefulList::with_items(synonyms, StatefulListType::Synonym);
+                        if synonyms.is_some() {
+                            let synonyms: Vec<String> =
+                                synonyms.unwrap().iter().map(|i| i.clone()).collect();
+                            self.synonym_list =
+                                StatefulList::with_items(synonyms, StatefulListType::Synonym);
+                        }
                     }
                 }
             };
