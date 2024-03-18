@@ -38,7 +38,6 @@ pub fn render(app: &mut App, f: &mut Frame) {
     let banner_frame = create_banner_layout(main_frame[1]);
     let right_frame = create_right_layout(lower_frame[1]);
     let footer_frame = create_footer_layout(main_frame[2]);
-    let bottom_frame = create_bottom_layout(footer_frame[0]);
 
     match app.input_mode {
         InputMode::Suggesting => {
@@ -49,7 +48,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
             if !app.results.is_empty() {
                 render_part_of_speech_block(app, f, lower_frame[0]);
                 render_right_frame_components(app, f, right_frame);
-                render_synonym_block(app, f, bottom_frame[0])
+                render_synonym_block(app, f, lower_frame[2])
             } else {
                 f.render_widget(banner_block::new(), banner_frame[0]);
             }
@@ -102,8 +101,15 @@ fn create_footer_layout(area: Rect) -> Rc<[Rect]> {
 fn create_lower_layout(area: Rect) -> Rc<[Rect]> {
     Layout::default()
         .direction(Direction::Horizontal)
-        // Part of speech (20%), right frame (80%)
-        .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())
+        // Part of speech (20%), Definitions & Examples (60%), Synonyms (20%)
+        .constraints(
+            [
+                Constraint::Percentage(20),
+                Constraint::Percentage(60),
+                Constraint::Percentage(20),
+            ]
+            .as_ref(),
+        )
         .horizontal_margin(1)
         .split(area)
 }
