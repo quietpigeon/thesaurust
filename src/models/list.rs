@@ -4,6 +4,7 @@ use ratatui::widgets::ListState;
 pub enum StatefulListType {
     PartOfSpeech,
     Definition,
+    Synonym,
     All,
 }
 

@@ -1,6 +1,9 @@
 use tui_input::Input;
 
-use crate::models::{ data::Thesaurus, list::{ StatefulList, StatefulListType } };
+use crate::models::{
+    data::Thesaurus,
+    list::{StatefulList, StatefulListType},
+};
 
 #[derive(Clone, Debug)]
 pub enum InputMode {
@@ -30,6 +33,7 @@ pub struct App {
     pub definition_list: StatefulList<String>,
     pub is_spelling_fix_enabled: bool,
     pub suggested_spelling: String,
+    pub synonym_list: StatefulList<String>,
 }
 
 impl App {
@@ -66,9 +70,13 @@ impl App {
             StatefulListType::Definition => {
                 self.update_definition_list();
             }
+            StatefulListType::Synonym => {
+                self.update_synonym_list();
+            }
             _ => {
                 self.update_part_of_speech_list();
                 self.update_definition_list();
+                self.update_synonym_list();
             }
         }
     }
@@ -86,10 +94,8 @@ impl App {
                     .iter()
                     .map(|i| i.partOfSpeech.clone().unwrap_or(String::from("")))
                     .collect();
-                self.part_of_speech_list = StatefulList::with_items(
-                    part_of_speech_list,
-                    StatefulListType::PartOfSpeech
-                );
+                self.part_of_speech_list =
+                    StatefulList::with_items(part_of_speech_list, StatefulListType::PartOfSpeech);
 
                 // Select the first item as default.
                 self.part_of_speech_list.state.select(Some(0))
@@ -97,7 +103,6 @@ impl App {
         }
     }
 
-    /// Update the definition list.
     fn update_definition_list(&mut self) {
         if !self.results.is_empty() {
             if let Some(idx) = self.part_of_speech_list.state.selected() {
@@ -106,13 +111,27 @@ impl App {
                     .iter()
                     .map(|i| i.definition.clone().unwrap_or(String::from("")))
                     .collect();
-                self.definition_list = StatefulList::with_items(
-                    definitions,
-                    StatefulListType::Definition
-                );
+                self.definition_list =
+                    StatefulList::with_items(definitions, StatefulListType::Definition);
 
                 // Select the first item as default.
                 self.definition_list.state.select(Some(0))
+            }
+        }
+    }
+
+    fn update_synonym_list(&mut self) {
+        if !self.results.is_empty() {
+            let pos_idx = self.part_of_speech_list.state.selected().unwrap_or(0);
+            let definitions = Thesaurus::unwrap_meanings_at(pos_idx, &self.results[0]).1;
+            let def_idx = self.definition_list.state.selected().unwrap_or(0);
+            let definition = &definitions[def_idx];
+            let synonyms = definition.clone().synonyms;
+            if synonyms.is_some() {
+                let synonyms: Vec<String> = synonyms.unwrap().iter().map(|i| i.clone()).collect();
+                self.synonym_list = StatefulList::with_items(synonyms, StatefulListType::Synonym);
+            } else {
+                self.synonym_list = StatefulList::with_items(Vec::new(), StatefulListType::Synonym);
             }
         }
     }
@@ -120,7 +139,7 @@ impl App {
 
 #[cfg(test)]
 mod tests {
-    use crate::models::data::{ Definition, Meaning };
+    use crate::models::data::{Definition, Meaning};
 
     use super::*;
     use pretty_assertions::assert_eq;
@@ -165,7 +184,7 @@ mod tests {
         let mock_parts_of_speech = vec![
             String::from("noun"),
             String::from("verb"),
-            String::from("adjective")
+            String::from("adjective"),
         ];
         let mock_meanings = mock_parts_of_speech
             .clone()
@@ -174,7 +193,10 @@ mod tests {
             .collect();
         mock_app.results = mock_results_with(mock_meanings);
         App::update_stateful_lists(&mut mock_app, StatefulListType::PartOfSpeech);
-        assert_eq!(mock_parts_of_speech.len(), mock_app.part_of_speech_list.items.len());
+        assert_eq!(
+            mock_parts_of_speech.len(),
+            mock_app.part_of_speech_list.items.len()
+        );
         assert_eq!(Some(0), mock_app.part_of_speech_list.state.selected())
     }
 
@@ -184,11 +206,12 @@ mod tests {
         let mock_definitions = vec![
             mock_definition_with(Some(String::from("Definition 1"))),
             mock_definition_with(Some(String::from("Definition 2"))),
-            mock_definition_with(Some(String::from("Definition 3")))
+            mock_definition_with(Some(String::from("Definition 3"))),
         ];
-        let mock_meanings = vec![
-            mock_meaning_with(Some(mock_part_of_speech()), Some(mock_definitions.clone()))
-        ];
+        let mock_meanings = vec![mock_meaning_with(
+            Some(mock_part_of_speech()),
+            Some(mock_definitions.clone()),
+        )];
         mock_app.results = mock_results_with(mock_meanings);
         App::update_stateful_lists(&mut mock_app, StatefulListType::All);
         assert_eq!(mock_definitions.len(), mock_app.definition_list.items.len());
@@ -204,19 +227,20 @@ mod tests {
     #[test]
     fn test_instructions_for_word_with_single_part_of_speech() {
         let mut mock_app = mock_app_in(InputMode::default());
-        mock_app.results = mock_results_with(
-            vec![mock_meaning_with(Some(mock_part_of_speech()), None)]
-        );
+        mock_app.results =
+            mock_results_with(vec![mock_meaning_with(Some(mock_part_of_speech()), None)]);
         App::update_part_of_speech_list(&mut mock_app);
-        assert_eq!(App::update_instructions(&mut mock_app), "l, h: Change definition  /: Insert");
+        assert_eq!(
+            App::update_instructions(&mut mock_app),
+            "l, h: Change definition  /: Insert"
+        );
     }
 
     #[test]
     fn test_instructions_in_normal_mode_with_results() {
         let mut mock_app = mock_app_in(InputMode::Normal);
-        mock_app.results = mock_results_with(
-            vec![mock_meaning_with(Some(mock_part_of_speech()), None)]
-        );
+        mock_app.results =
+            mock_results_with(vec![mock_meaning_with(Some(mock_part_of_speech()), None)]);
         assert_eq!(true, !mock_app.results.is_empty());
         assert_eq!(
             App::update_instructions(&mut mock_app),
@@ -227,7 +251,10 @@ mod tests {
     #[test]
     fn test_instructions_in_editing_mode() {
         let mut mock_app = mock_app_in(InputMode::Editing);
-        assert_eq!(App::update_instructions(&mut mock_app), "<ENTER>: Search  <ESC>: Exit");
+        assert_eq!(
+            App::update_instructions(&mut mock_app),
+            "<ENTER>: Search  <ESC>: Exit"
+        );
     }
 
     #[test]
@@ -239,26 +266,38 @@ mod tests {
     #[test]
     fn test_instructions_in_definition_selection_mode() {
         let mut mock_app = mock_app_in(InputMode::SelectDefinition);
-        assert_eq!(App::update_instructions(&mut mock_app), "l, h: Change definition  /: Insert");
+        assert_eq!(
+            App::update_instructions(&mut mock_app),
+            "l, h: Change definition  /: Insert"
+        );
     }
 
     #[test]
     fn test_instructions_in_settings_mode_with_spelling_fix_enabled() {
         let mut mock_app = mock_app_in(InputMode::Settings);
         mock_app.is_spelling_fix_enabled = true;
-        assert_eq!(App::update_instructions(&mut mock_app), format!("Spelling suggestion: true"));
+        assert_eq!(
+            App::update_instructions(&mut mock_app),
+            format!("Spelling suggestion: true")
+        );
     }
 
     #[test]
     fn test_instructions_in_settings_mode_with_spelling_fix_disabled() {
         let mut mock_app = mock_app_in(InputMode::Settings);
         // mock_app.is_spelling_fix_enabled is false by default.
-        assert_eq!(App::update_instructions(&mut mock_app), format!("Spelling suggestion: false"));
+        assert_eq!(
+            App::update_instructions(&mut mock_app),
+            format!("Spelling suggestion: false")
+        );
     }
 
     #[test]
     fn test_instructions_in_suggesting_mode() {
         let mut mock_app = mock_app_in(InputMode::Suggesting);
-        assert_eq!(App::update_instructions(&mut mock_app), format!("<ENTER>: Continue"));
+        assert_eq!(
+            App::update_instructions(&mut mock_app),
+            format!("<ENTER>: Continue")
+        );
     }
 }

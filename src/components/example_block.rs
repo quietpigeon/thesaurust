@@ -10,3 +10,4 @@ pub fn new(example: String) -> Paragraph<'static> {
         .wrap(Wrap { trim: true })
         .block(Block::default().borders(Borders::ALL).title("Example"))
 }
+
