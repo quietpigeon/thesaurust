@@ -127,13 +127,14 @@ impl App {
                 if let Some(def_idx) = self.definition_list.state.selected() {
                     let definition = &definitions[def_idx];
                     let synonyms = definition.clone().synonyms;
-                    {
-                        if synonyms.is_some() {
-                            let synonyms: Vec<String> =
-                                synonyms.unwrap().iter().map(|i| i.clone()).collect();
-                            self.synonym_list =
-                                StatefulList::with_items(synonyms, StatefulListType::Synonym);
-                        }
+                    if synonyms.is_some() {
+                        let synonyms: Vec<String> =
+                            synonyms.unwrap().iter().map(|i| i.clone()).collect();
+                        self.synonym_list =
+                            StatefulList::with_items(synonyms, StatefulListType::Synonym);
+                    } else {
+                        self.synonym_list =
+                            StatefulList::with_items(Vec::new(), StatefulListType::Synonym);
                     }
                 }
             };
