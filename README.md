@@ -54,4 +54,4 @@ Toggle to `Spelling suggestion` to `true` with <kbd>l</kbd> or <kbd>h</kbd>, the
 - [x] Toggle between parts of speech 
 - [x] Toggle between definitions with the same part of speech
 - [x] Use a spellchecking API to suggest correct spelling for words
-- [ ] Show synonyms and antonyms
+- [x] Show synonyms
