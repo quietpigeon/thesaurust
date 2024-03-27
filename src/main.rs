@@ -58,7 +58,6 @@ fn main() -> Result<()> {
                         app.results = results.t;
                         app.suggested_spelling = app.results[0].clone().word.unwrap();
                         if results.is_spelling_suggested {
-                            //TODO:Error handling for non-spellchecking mode.
                             app.input_mode = InputMode::Suggesting;
                         }
 
@@ -100,6 +99,7 @@ fn main() -> Result<()> {
                     KeyCode::Char('q') => {
                         app.input_mode = InputMode::Normal;
                         app.definition_list.state.select(Some(0));
+                        App::update_stateful_lists(&mut app, list::StatefulListType::Synonym)
                     }
                     KeyCode::Char('/') => {
                         app.input_mode = InputMode::Editing;
