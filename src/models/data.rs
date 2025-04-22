@@ -1,12 +1,10 @@
-use std::fmt::Debug;
-
 use serde_derive::Deserialize;
+use std::fmt::Debug;
 
 /// Components of a response from the Free Dictionary API.
 #[derive(Clone, Deserialize, Debug)]
 pub struct Thesaurus {
     pub word: Option<String>,
-    pub origin: Option<String>,
 
     // A word can have multiple meanings, hence it is represented as an array of meanings.
     pub meanings: Option<Vec<Meaning>>,
@@ -16,7 +14,6 @@ impl Default for Thesaurus {
     fn default() -> Self {
         Thesaurus {
             word: None,
-            origin: None,
             meanings: None,
         }
     }
@@ -45,7 +42,6 @@ impl Thesaurus {
             definition: None,
             example: None,
             synonyms: None,
-            antonyms: None,
         };
         let d = vec![definition];
         let meaning = Meaning {
@@ -55,44 +51,22 @@ impl Thesaurus {
         let m = vec![meaning];
         let thesaurus = Thesaurus {
             word: Some(msg),
-            origin: None,
             meanings: Some(m),
         };
         vec![thesaurus]
     }
 }
 
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Default, Clone, Deserialize, Debug)]
 #[allow(non_snake_case)]
 pub struct Meaning {
     pub partOfSpeech: Option<String>,
     pub definitions: Option<Vec<Definition>>,
 }
 
-impl Default for Meaning {
-    fn default() -> Self {
-        Meaning {
-            partOfSpeech: None,
-            definitions: None,
-        }
-    }
-}
-
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Default, Clone, Deserialize, Debug)]
 pub struct Definition {
     pub definition: Option<String>,
     pub example: Option<String>,
     pub synonyms: Option<Vec<String>>,
-    pub antonyms: Option<Vec<String>>,
-}
-
-impl Default for Definition {
-    fn default() -> Self {
-        Definition {
-            definition: None,
-            example: None,
-            synonyms: None,
-            antonyms: None,
-        }
-    }
 }
