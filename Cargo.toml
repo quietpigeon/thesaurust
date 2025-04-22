@@ -19,6 +19,7 @@ crossterm = "0.27.0"
 anyhow = "1.0.75"
 tui-input = "0.8.0"
 serpapi-search-rust = "0.1.0"
+dotenvy = "0.15.7"
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"
