@@ -19,3 +19,7 @@ dotenvy = "0.15.7"
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"
+
+[package.metadata.cargo-machete]
+ignored = ["serde"]
+
