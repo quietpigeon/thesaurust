@@ -31,7 +31,7 @@ pub fn render(app: &mut App, f: &mut Frame) {
             ]
             .as_ref(),
         )
-        .split(f.size());
+        .split(f.area());
 
     let upper_frame = create_upper_layout(main_frame[0]);
     let lower_frame = create_lower_layout(main_frame[1]);

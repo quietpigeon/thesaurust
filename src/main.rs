@@ -7,9 +7,12 @@ mod ui;
 
 use anyhow::Result;
 use client::parse_response;
-use crossterm::event::{self, Event, KeyCode};
 use models::app::{App, InputMode};
-use ratatui::{backend::CrosstermBackend, Terminal};
+use ratatui::{
+    backend::CrosstermBackend,
+    crossterm::event::{self, Event, KeyCode},
+    Terminal,
+};
 use tui::Tui;
 use tui_input::backend::crossterm::EventHandler;
 
