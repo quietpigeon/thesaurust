@@ -1,19 +1,19 @@
 use std::rc::Rc;
 
-use ratatui::{ layout::{ Direction, Layout, Rect }, prelude::Constraint };
+use ratatui::{
+    layout::{Direction, Layout, Rect},
+    prelude::Constraint,
+};
 
 use crate::{
     components::{
-        banner_block,
-        definition_block,
-        example_block,
-        footer,
-        part_of_speech_block,
-        popup,
-        search_bar,
-        synonym_block,
+        banner_block, definition_block, example_block, footer, part_of_speech_block, popup,
+        search_bar, synonym_block,
     },
-    models::{ app::{ App, InputMode }, data::Thesaurus },
+    models::{
+        app::{App, InputMode},
+        data::Thesaurus,
+    },
     tui::Frame,
 };
 
@@ -28,7 +28,8 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 Constraint::Length(9),
                 Constraint::Length(9),
                 Constraint::Min(1),
-            ].as_ref()
+            ]
+            .as_ref(),
         )
         .split(f.size());
 
@@ -90,7 +91,8 @@ fn create_footer_layout(area: Rect) -> Rc<[Rect]> {
                 Constraint::Percentage(80),
                 Constraint::Percentage(10),
                 Constraint::Percentage(10),
-            ].as_ref()
+            ]
+            .as_ref(),
         )
         .horizontal_margin(1)
         .split(area)
@@ -105,7 +107,8 @@ fn create_lower_layout(area: Rect) -> Rc<[Rect]> {
                 Constraint::Percentage(20),
                 Constraint::Percentage(60),
                 Constraint::Percentage(20),
-            ].as_ref()
+            ]
+            .as_ref(),
         )
         .horizontal_margin(1)
         .split(area)
@@ -123,7 +126,10 @@ fn render_right_frame_components(app: &mut App, f: &mut Frame, right_frame: Rc<[
     let d = definitions[definition_list_idx].clone();
     let definition = d.definition.unwrap_or("".to_string());
     let example = d.example.unwrap_or("".to_string());
-    f.render_widget(definition_block::new(app, definitions, definition), right_frame[0]);
+    f.render_widget(
+        definition_block::new(app, definitions, &definition),
+        right_frame[0],
+    );
     f.render_widget(example_block::new(example), right_frame[1]);
 }
 

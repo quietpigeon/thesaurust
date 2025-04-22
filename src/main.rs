@@ -8,10 +8,7 @@ mod ui;
 use anyhow::Result;
 use client::parse_response;
 use crossterm::event::{self, Event, KeyCode};
-use models::{
-    app::{App, InputMode},
-    list,
-};
+use models::app::{App, InputMode};
 use ratatui::{backend::CrosstermBackend, Terminal};
 use tui::Tui;
 use tui_input::backend::crossterm::EventHandler;
@@ -60,8 +57,7 @@ fn main() -> Result<()> {
                         if results.is_spelling_suggested {
                             app.input_mode = InputMode::Suggesting;
                         }
-
-                        App::update_stateful_lists(&mut app, list::StatefulListType::All);
+                        App::update_all(&mut app);
                     }
                     KeyCode::Esc => {
                         app.input_mode = InputMode::Normal;
@@ -82,24 +78,24 @@ fn main() -> Result<()> {
                     }
                     KeyCode::Enter => {
                         app.input_mode = InputMode::SelectDefinition;
-                        App::update_stateful_lists(&mut app, list::StatefulListType::Definition);
-                        App::update_stateful_lists(&mut app, list::StatefulListType::Synonym);
+                        App::update_definition_list(&mut app);
+                        App::update_synonym_list(&mut app);
                     }
                     _ => {}
                 },
                 InputMode::SelectDefinition => match key.code {
                     KeyCode::Char('l') => {
                         app.definition_list.down();
-                        App::update_stateful_lists(&mut app, list::StatefulListType::Synonym);
+                        App::update_synonym_list(&mut app);
                     }
                     KeyCode::Char('h') => {
                         app.definition_list.up();
-                        App::update_stateful_lists(&mut app, list::StatefulListType::Synonym);
+                        App::update_synonym_list(&mut app);
                     }
                     KeyCode::Char('q') => {
                         app.input_mode = InputMode::Normal;
                         app.definition_list.state.select(Some(0));
-                        App::update_stateful_lists(&mut app, list::StatefulListType::Synonym);
+                        App::update_synonym_list(&mut app);
                     }
                     KeyCode::Char('/') => {
                         app.input_mode = InputMode::Editing;
@@ -117,7 +113,7 @@ fn main() -> Result<()> {
                         // Prevents Serp API from suggesting the same word repeatedly.
                         if !results.is_spelling_suggested {
                             app.results = results.t;
-                            App::update_stateful_lists(&mut app, list::StatefulListType::All);
+                            App::update_all(&mut app);
                         }
                     }
                     KeyCode::Char('n') | KeyCode::Char('q') => {
