@@ -3,7 +3,7 @@ use serpapi_search_rust::serp_api_search::SerpApiSearch;
 use std::collections::HashMap;
 use std::env;
 
-const DOMAIN: &'static str = "https://api.dictionaryapi.dev/api/v2/entries/en";
+const DOMAIN: &str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
 pub struct WordInfo {
     pub t: Vec<Thesaurus>,

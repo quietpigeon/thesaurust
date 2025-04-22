@@ -2,21 +2,12 @@ use serde_derive::Deserialize;
 use std::fmt::Debug;
 
 /// Components of a response from the Free Dictionary API.
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Default, Clone, Deserialize, Debug)]
 pub struct Thesaurus {
     pub word: Option<String>,
 
     // A word can have multiple meanings, hence it is represented as an array of meanings.
     pub meanings: Option<Vec<Meaning>>,
-}
-
-impl Default for Thesaurus {
-    fn default() -> Self {
-        Thesaurus {
-            word: None,
-            meanings: None,
-        }
-    }
 }
 
 impl Thesaurus {
@@ -27,12 +18,12 @@ impl Thesaurus {
             let meaning = meanings[index].clone();
             if let Some(part_of_speech) = meaning.partOfSpeech.clone() {
                 let definitions = meaning.definitions.clone().unwrap();
-                return (part_of_speech, definitions);
+                (part_of_speech, definitions)
             } else {
-                return (String::from(""), Vec::<Definition>::default());
-            };
+                (String::from(""), Vec::<Definition>::default())
+            }
         } else {
-            return (String::from(""), Vec::<Definition>::default());
+            (String::from(""), Vec::<Definition>::default())
         }
     }
 

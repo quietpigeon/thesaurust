@@ -1,20 +1,15 @@
 use crate::models::{data::Thesaurus, list::StatefulList};
 use tui_input::Input;
 
-#[derive(Clone, Debug)]
+#[derive(Default, Clone, Debug)]
 pub enum InputMode {
+    #[default]
     Normal,
     Editing,
     SelectPartOfSpeech,
     SelectDefinition,
     Suggesting,
     Settings,
-}
-
-impl Default for InputMode {
-    fn default() -> Self {
-        InputMode::Normal
-    }
 }
 
 /// Application.
@@ -98,7 +93,7 @@ impl App {
             let definition = &definitions[def_idx];
             let synonyms = definition.clone().synonyms;
             if synonyms.is_some() {
-                let synonyms: Vec<String> = synonyms.unwrap().iter().map(|i| i.clone()).collect();
+                let synonyms: Vec<String> = synonyms.unwrap().clone();
                 self.synonym_list = StatefulList::with_items(synonyms);
             } else {
                 self.synonym_list = StatefulList::with_items(Vec::new());
