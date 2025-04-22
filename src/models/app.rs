@@ -52,52 +52,62 @@ impl App {
         }
     }
 
-    pub(crate) fn update_part_of_speech_list(&mut self) {
-        if !self.results.is_empty() {
-            let meanings = self.results[0].meanings.clone();
-            if meanings.is_some() {
-                let part_of_speech_list: Vec<String> = meanings
-                    .unwrap()
-                    .iter()
-                    .map(|i| i.partOfSpeech.clone().unwrap_or(String::from("")))
-                    .collect();
-                self.part_of_speech_list = StatefulList::with_items(part_of_speech_list);
-
-                // Select the first item as default.
-                self.part_of_speech_list.state.select(Some(0))
-            }
-        }
+    pub(crate) fn update_all(&mut self) {
+        // NOTE: The order of the functions must not be changed.
+        self.update_part_of_speech_list();
+        self.update_definition_list();
+        self.update_synonym_list();
     }
 
     pub(crate) fn update_definition_list(&mut self) {
-        if !self.results.is_empty() {
-            if let Some(idx) = self.part_of_speech_list.state.selected() {
-                let definitions = Thesaurus::unwrap_meanings_at(idx, &self.results[0]).1;
-                let definitions: Vec<String> = definitions
-                    .iter()
-                    .map(|i| i.definition.clone().unwrap_or(String::from("")))
-                    .collect();
-                self.definition_list = StatefulList::with_items(definitions);
+        if self.results.is_empty() {
+            return;
+        }
+        if let Some(idx) = self.part_of_speech_list.state.selected() {
+            let definitions = Thesaurus::unwrap_meanings_at(idx, &self.results[0]).1;
+            let definitions: Vec<String> = definitions
+                .iter()
+                .map(|i| i.definition.clone().unwrap_or(String::from("")))
+                .collect();
+            self.definition_list = StatefulList::with_items(definitions);
 
-                // Select the first item as default.
-                self.definition_list.state.select(Some(0))
-            }
+            // Select the first item as default.
+            self.definition_list.state.select(Some(0))
         }
     }
 
     pub(crate) fn update_synonym_list(&mut self) {
-        if !self.results.is_empty() {
-            let pos_idx = self.part_of_speech_list.state.selected().unwrap_or(0);
-            let definitions = Thesaurus::unwrap_meanings_at(pos_idx, &self.results[0]).1;
-            let def_idx = self.definition_list.state.selected().unwrap_or(0);
-            let definition = &definitions[def_idx];
-            let synonyms = definition.clone().synonyms;
-            if synonyms.is_some() {
-                let synonyms: Vec<String> = synonyms.unwrap().clone();
-                self.synonym_list = StatefulList::with_items(synonyms);
-            } else {
-                self.synonym_list = StatefulList::with_items(Vec::new());
-            }
+        if self.results.is_empty() {
+            return;
+        }
+        let pos_idx = self.part_of_speech_list.state.selected().unwrap_or(0);
+        let definitions = Thesaurus::unwrap_meanings_at(pos_idx, &self.results[0]).1;
+        let def_idx = self.definition_list.state.selected().unwrap_or(0);
+        let definition = &definitions[def_idx];
+        let synonyms = definition.clone().synonyms;
+        if synonyms.is_some() {
+            let synonyms: Vec<String> = synonyms.unwrap().clone();
+            self.synonym_list = StatefulList::with_items(synonyms);
+        } else {
+            self.synonym_list = StatefulList::with_items(Vec::new());
+        }
+    }
+
+    fn update_part_of_speech_list(&mut self) {
+        if self.results.is_empty() {
+            return;
+        }
+        let meanings = self.results[0].meanings.clone();
+        if meanings.is_some() {
+            let part_of_speech_list: Vec<String> = meanings
+                .unwrap()
+                .iter()
+                .map(|i| i.partOfSpeech.clone().unwrap_or(String::from("")))
+                .collect();
+            self.part_of_speech_list = StatefulList::with_items(part_of_speech_list);
+
+            // Select the first item as default.
+            self.part_of_speech_list.state.select(Some(0))
         }
     }
 
@@ -108,9 +118,8 @@ impl App {
 
 #[cfg(test)]
 mod tests {
-    use crate::models::data::{Definition, Meaning};
-
     use super::*;
+    use crate::models::data::{Definition, Meaning};
     use pretty_assertions::assert_eq;
 
     fn mock_app_in(input_mode: InputMode) -> App {
@@ -133,8 +142,7 @@ mod tests {
     fn mock_definition_with(d: Option<String>) -> Definition {
         Definition {
             definition: d,
-            example: None,
-            synonyms: None,
+            ..Default::default()
         }
     }
 
@@ -168,7 +176,7 @@ mod tests {
     }
 
     #[test]
-    fn test_update_definition_list() {
+    fn test_update_all() {
         let mut mock_app = mock_app_in(InputMode::default());
         let mock_definitions = vec![
             mock_definition_with(Some(String::from("Definition 1"))),
@@ -180,9 +188,7 @@ mod tests {
             Some(mock_definitions.clone()),
         )];
         mock_app.results = mock_results_with(mock_meanings);
-        App::update_definition_list(&mut mock_app);
-        App::update_synonym_list(&mut mock_app);
-        App::update_part_of_speech_list(&mut mock_app);
+        App::update_all(&mut mock_app);
 
         assert_eq!(mock_definitions.len(), mock_app.definition_list.items.len());
         assert_eq!(Some(0), mock_app.definition_list.state.selected());

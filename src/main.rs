@@ -57,10 +57,7 @@ fn main() -> Result<()> {
                         if results.is_spelling_suggested {
                             app.input_mode = InputMode::Suggesting;
                         }
-
-                        App::update_definition_list(&mut app);
-                        App::update_synonym_list(&mut app);
-                        App::update_part_of_speech_list(&mut app);
+                        App::update_all(&mut app);
                     }
                     KeyCode::Esc => {
                         app.input_mode = InputMode::Normal;
@@ -116,10 +113,7 @@ fn main() -> Result<()> {
                         // Prevents Serp API from suggesting the same word repeatedly.
                         if !results.is_spelling_suggested {
                             app.results = results.t;
-
-                            App::update_definition_list(&mut app);
-                            App::update_synonym_list(&mut app);
-                            App::update_part_of_speech_list(&mut app);
+                            App::update_all(&mut app);
                         }
                     }
                     KeyCode::Char('n') | KeyCode::Char('q') => {
