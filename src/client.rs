@@ -5,16 +5,16 @@ use std::env;
 
 const DOMAIN: &str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
-pub struct WordInfo {
+pub(crate) struct WordInfo {
     pub t: Vec<Thesaurus>,
     pub is_spelling_suggested: bool,
 }
 
-pub fn parse_response(word: String, is_spelling_fix_enabled: bool) -> WordInfo {
+pub(crate) fn parse_response(word: &str, is_spelling_fix_enabled: &bool) -> WordInfo {
     match fetch_response(word, is_spelling_fix_enabled) {
         Ok(t) => t,
         Err(_) => WordInfo {
-            t: Thesaurus::inject_message(String::from("Unsuccessful response")),
+            t: Thesaurus::inject_message("Unsuccessful response"),
             is_spelling_suggested: false,
         },
     }
@@ -22,10 +22,10 @@ pub fn parse_response(word: String, is_spelling_fix_enabled: bool) -> WordInfo {
 
 #[tokio::main]
 async fn fetch_response(
-    word: String,
-    is_spelling_fix_enabled: bool,
+    word: &str,
+    is_spelling_fix_enabled: &bool,
 ) -> Result<WordInfo, Box<dyn std::error::Error>> {
-    let res = match search_dictionary(word.clone()).await {
+    let res = match search_dictionary(word).await {
         Ok(t) => {
             let resp: Vec<Thesaurus> = serde_json::from_value(t).unwrap();
             WordInfo {
@@ -36,19 +36,17 @@ async fn fetch_response(
         Err(_) => {
             if !is_spelling_fix_enabled {
                 WordInfo {
-                    t: Thesaurus::inject_message(String::from(
-                        "Please double-check your spelling.",
-                    )),
+                    t: Thesaurus::inject_message("Please double-check your spelling."),
                     is_spelling_suggested: false,
                 }
             } else {
                 match suggest_spelling(word).await {
                     Ok(t) => WordInfo {
-                        t: Thesaurus::inject_message(t),
+                        t: Thesaurus::inject_message(&t),
                         is_spelling_suggested: true,
                     },
                     Err(_) => WordInfo {
-                        t: Thesaurus::inject_message(String::from("Serp Api error")),
+                        t: Thesaurus::inject_message("Serp Api error"),
                         is_spelling_suggested: false,
                     },
                 }
@@ -58,7 +56,7 @@ async fn fetch_response(
     Ok(res)
 }
 
-async fn search_dictionary(word: String) -> Result<serde_json::Value, ApiError> {
+async fn search_dictionary(word: &str) -> Result<serde_json::Value, ApiError> {
     let url = format!("{}/{}", DOMAIN, word);
     let response = reqwest::get(&url).await?;
     if response.status().is_success() {
@@ -69,7 +67,7 @@ async fn search_dictionary(word: String) -> Result<serde_json::Value, ApiError> 
     }
 }
 
-async fn suggest_spelling(word: String) -> Result<String, Box<dyn std::error::Error>> {
+async fn suggest_spelling(word: &str) -> Result<String, Box<dyn std::error::Error>> {
     let params = HashMap::from([
         ("q".to_string(), word.to_string()),
         ("hl".to_string(), "en".to_string()),

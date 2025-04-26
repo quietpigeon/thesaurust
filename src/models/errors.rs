@@ -1,5 +1,5 @@
 #[derive(Debug)]
-pub enum ApiError {
+pub(crate) enum ApiError {
     HttpError,
     InvalidInput,
 }

@@ -1,6 +1,10 @@
-use ratatui::{ widgets::{ Block, Borders, Paragraph }, style::{ Color, Style }, layout::Alignment };
+use ratatui::{
+    layout::Alignment,
+    style::{Color, Style},
+    widgets::{Block, Borders, Paragraph},
+};
 
-pub fn with(instructions: &str) -> Paragraph {
+pub(crate) fn with(instructions: &str) -> Paragraph {
     match instructions {
         "default" => block_with("q: Quit"),
         _ => block_with(instructions),

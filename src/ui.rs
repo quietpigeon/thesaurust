@@ -1,23 +1,15 @@
+use crate::components::{
+    banner_block, definition_block, example_block, footer, part_of_speech_block, popup, search_bar,
+    synonym_block,
+};
+use crate::models::app::{App, InputMode};
+use crate::models::data::Thesaurus;
+use crate::tui::Frame;
+use ratatui::layout::{Direction, Layout, Rect};
+use ratatui::prelude::Constraint;
 use std::rc::Rc;
 
-use ratatui::{
-    layout::{Direction, Layout, Rect},
-    prelude::Constraint,
-};
-
-use crate::{
-    components::{
-        banner_block, definition_block, example_block, footer, part_of_speech_block, popup,
-        search_bar, synonym_block,
-    },
-    models::{
-        app::{App, InputMode},
-        data::Thesaurus,
-    },
-    tui::Frame,
-};
-
-pub fn render(app: &mut App, f: &mut Frame) {
+pub(crate) fn render(app: &mut App, f: &mut Frame) {
     // Main frame.
     let main_frame = Layout::default()
         .direction(Direction::Vertical)
@@ -127,10 +119,10 @@ fn render_right_frame_components(app: &mut App, f: &mut Frame, right_frame: Rc<[
     let definition = d.definition.unwrap_or("".to_string());
     let example = d.example.unwrap_or("".to_string());
     f.render_widget(
-        definition_block::new(app, definitions, &definition),
+        definition_block::new(app, &definitions, &definition),
         right_frame[0],
     );
-    f.render_widget(example_block::new(example), right_frame[1]);
+    f.render_widget(example_block::new(&example), right_frame[1]);
 }
 
 fn render_part_of_speech_block(app: &mut App, f: &mut Frame, area: Rect) {

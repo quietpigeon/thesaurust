@@ -7,9 +7,9 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph, Wrap},
 };
 
-pub fn new<'a>(
+pub(crate) fn new<'a>(
     app: &'a mut App,
-    definitions: Vec<Definition>,
+    definitions: &[Definition],
     definition: &'a String,
 ) -> Paragraph<'a> {
     Paragraph::new(definition.to_string())

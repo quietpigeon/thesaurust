@@ -3,7 +3,7 @@ use std::fmt::Debug;
 
 /// Components of a response from the Free Dictionary API.
 #[derive(Default, Clone, Deserialize, Debug)]
-pub struct Thesaurus {
+pub(crate) struct Thesaurus {
     pub word: Option<String>,
 
     // A word can have multiple meanings, hence it is represented as an array of meanings.
@@ -12,7 +12,10 @@ pub struct Thesaurus {
 
 impl Thesaurus {
     /// A function that unwraps the contents inside `Meaning`. It returns a tuple that contains the `partOfSpeech` and `Vec<Definition>`.
-    pub fn unwrap_meanings_at(index: usize, thesaurus: &Thesaurus) -> (String, Vec<Definition>) {
+    pub(crate) fn unwrap_meanings_at(
+        index: usize,
+        thesaurus: &Thesaurus,
+    ) -> (String, Vec<Definition>) {
         //TODO: Create unit test to check index and array length.
         if let Some(meanings) = thesaurus.meanings.clone() {
             let meaning = meanings[index].clone();
@@ -28,13 +31,13 @@ impl Thesaurus {
     }
 
     /// A function that prompts the user to re-enter the word because the word cannot be found in the API.
-    pub fn inject_message(msg: String) -> Vec<Thesaurus> {
+    pub(crate) fn inject_message(msg: &str) -> Vec<Thesaurus> {
         let meaning = Meaning {
             partOfSpeech: Some(String::from("/")),
-            definitions: Some(vec![Definition::default()]),
+            ..Default::default()
         };
         let thesaurus = Thesaurus {
-            word: Some(msg),
+            word: Some(msg.to_string()),
             meanings: Some(vec![meaning]),
         };
         vec![thesaurus]
@@ -43,13 +46,13 @@ impl Thesaurus {
 
 #[derive(Default, Clone, Deserialize, Debug)]
 #[allow(non_snake_case)]
-pub struct Meaning {
+pub(crate) struct Meaning {
     pub partOfSpeech: Option<String>,
     pub definitions: Option<Vec<Definition>>,
 }
 
 #[derive(Default, Clone, Deserialize, Debug)]
-pub struct Definition {
+pub(crate) struct Definition {
     pub definition: Option<String>,
     pub example: Option<String>,
     pub synonyms: Option<Vec<String>>,

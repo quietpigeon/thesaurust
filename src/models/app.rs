@@ -2,7 +2,7 @@ use crate::models::{data::Thesaurus, list::StatefulList};
 use tui_input::Input;
 
 #[derive(Default, Clone, Debug)]
-pub enum InputMode {
+pub(crate) enum InputMode {
     #[default]
     Normal,
     Editing,
@@ -14,7 +14,7 @@ pub enum InputMode {
 
 /// Application.
 #[derive(Clone, Debug, Default)]
-pub struct App {
+pub(crate) struct App {
     pub should_quit: bool,
     pub input: Input,
     pub input_mode: InputMode,
@@ -27,15 +27,15 @@ pub struct App {
 }
 
 impl App {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self::default()
     }
 
-    pub fn quit(&mut self) {
+    pub(crate) fn quit(&mut self) {
         self.should_quit = true;
     }
 
-    pub fn update_instructions(&mut self) -> String {
+    pub(crate) fn update_instructions(&mut self) -> String {
         match self.input_mode {
             InputMode::Normal if self.part_of_speech_list.items.len() == 1 => {
                 String::from("l, h: Change definition  /: Insert")

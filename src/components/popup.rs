@@ -6,7 +6,7 @@ use ratatui::{
 
 use crate::models::app::App;
 
-pub fn new(app: &mut App) -> Paragraph<'static> {
+pub(crate) fn new(app: &mut App) -> Paragraph<'static> {
     Paragraph::new(popup_message(app))
         .style(Style::default().fg(Color::Green))
         .alignment(Alignment::Center)
@@ -18,9 +18,11 @@ fn popup_message(app: &mut App) -> String {
     let message = app.suggested_spelling.clone();
     if app.is_spelling_fix_enabled {
         if message.is_empty() {
-            return String::from("Similar spelling not found.");
-        }
-        return format!("Did you mean {}?", message);
+            String::from("Similar spelling not found.")
+        } else {
+            format!("Did you mean {}?", message)
+        };
     }
+
     message
 }

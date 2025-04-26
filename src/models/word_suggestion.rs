@@ -2,6 +2,6 @@ use serde_derive::{Deserialize, Serialize};
 use std::fmt::Debug;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
-pub struct SearchResults {
+pub(crate) struct SearchResults {
     pub spelling_fix: String,
 }
