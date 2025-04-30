@@ -66,8 +66,8 @@ impl App {
         if let Some(idx) = self.part_of_speech_list.state.selected() {
             let definitions = Thesaurus::unwrap_meanings_at(idx, &self.results[0]).1;
             let definitions: Vec<String> = definitions
-                .iter()
-                .map(|i| i.definition.clone().unwrap_or(String::from("")))
+                .into_iter()
+                .map(|i| i.definition.unwrap_or_default())
                 .collect();
             self.definition_list = StatefulList::with_items(definitions);
 
@@ -85,9 +85,9 @@ impl App {
         let def_idx = self.definition_list.state.selected().unwrap_or(0);
         let definition = &definitions[def_idx];
         let synonyms = definition.clone().synonyms;
-        if synonyms.is_some() {
-            let synonyms: Vec<String> = synonyms.unwrap().clone();
-            self.synonym_list = StatefulList::with_items(synonyms);
+
+        if let Some(s) = synonyms {
+            self.synonym_list = StatefulList::with_items(s);
         } else {
             self.synonym_list = StatefulList::with_items(Vec::new());
         }
@@ -98,11 +98,10 @@ impl App {
             return;
         }
         let meanings = self.results[0].meanings.clone();
-        if meanings.is_some() {
-            let part_of_speech_list: Vec<String> = meanings
-                .unwrap()
-                .iter()
-                .map(|i| i.partOfSpeech.clone().unwrap_or(String::from("")))
+        if let Some(m) = meanings {
+            let part_of_speech_list: Vec<String> = m
+                .into_iter()
+                .map(|i| i.partOfSpeech.unwrap_or_default())
                 .collect();
             self.part_of_speech_list = StatefulList::with_items(part_of_speech_list);
 
@@ -118,8 +117,8 @@ impl App {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::models::data::{Definition, Meaning};
+    use super::{App, InputMode};
+    use crate::models::data::{Definition, Meaning, Thesaurus};
     use pretty_assertions::assert_eq;
 
     fn mock_app_in(input_mode: InputMode) -> App {

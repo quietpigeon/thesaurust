@@ -1,10 +1,9 @@
-use ratatui::crossterm::event::{Event, KeyCode, KeyEvent};
-use tui_input::backend::crossterm::EventHandler;
-
 use crate::{
     client::parse_response,
     models::app::{App, InputMode},
 };
+use ratatui::crossterm::event::{Event, KeyCode, KeyEvent};
+use tui_input::backend::crossterm::EventHandler;
 
 pub(crate) fn key_handler(app: &mut App, key: KeyEvent) {
     match app.input_mode {
@@ -33,9 +32,11 @@ pub(crate) fn key_handler(app: &mut App, key: KeyEvent) {
                 let results =
                     parse_response(app.input.to_string().as_str(), &app.is_spelling_fix_enabled);
                 app.results = results.t;
-                app.suggested_spelling = app.results[0].clone().word.unwrap();
-                if results.is_spelling_suggested {
-                    app.input_mode = InputMode::Suggesting;
+                if let Some(word) = app.results[0].clone().word {
+                    if results.is_spelling_suggested {
+                        app.suggested_spelling = word;
+                        app.input_mode = InputMode::Suggesting;
+                    }
                 }
                 App::update_all(app);
             }

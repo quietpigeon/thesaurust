@@ -1,9 +1,9 @@
-use crate::models::{data::Thesaurus, errors::ApiError, word_suggestion::SearchResults};
+use crate::models::{data::Thesaurus, errors::Error, word_suggestion::SearchResults};
 use serpapi_search_rust::serp_api_search::SerpApiSearch;
 use std::collections::HashMap;
 use std::env;
 
-const DOMAIN: &str = "https://api.dictionaryapi.dev/api/v2/entries/en";
+static DOMAIN: &str = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
 pub(crate) struct WordInfo {
     pub t: Vec<Thesaurus>,
@@ -21,13 +21,10 @@ pub(crate) fn parse_response(word: &str, is_spelling_fix_enabled: &bool) -> Word
 }
 
 #[tokio::main]
-async fn fetch_response(
-    word: &str,
-    is_spelling_fix_enabled: &bool,
-) -> Result<WordInfo, Box<dyn std::error::Error>> {
+async fn fetch_response(word: &str, is_spelling_fix_enabled: &bool) -> Result<WordInfo, Error> {
     let res = match search_dictionary(word).await {
         Ok(t) => {
-            let resp: Vec<Thesaurus> = serde_json::from_value(t).unwrap();
+            let resp: Vec<Thesaurus> = serde_json::from_value(t)?;
             WordInfo {
                 t: resp,
                 is_spelling_suggested: false,
@@ -53,21 +50,22 @@ async fn fetch_response(
             }
         }
     };
+
     Ok(res)
 }
 
-async fn search_dictionary(word: &str) -> Result<serde_json::Value, ApiError> {
+async fn search_dictionary(word: &str) -> Result<serde_json::Value, Error> {
     let url = format!("{}/{}", DOMAIN, word);
     let response = reqwest::get(&url).await?;
     if response.status().is_success() {
         let results: serde_json::Value = response.json().await?;
         Ok(results)
     } else {
-        Err(ApiError::InvalidInput)
+        Err(Error::StatusError(response.status()))
     }
 }
 
-async fn suggest_spelling(word: &str) -> Result<String, Box<dyn std::error::Error>> {
+async fn suggest_spelling(word: &str) -> Result<String, Error> {
     let params = HashMap::from([
         ("q".to_string(), word.to_string()),
         ("hl".to_string(), "en".to_string()),
@@ -75,7 +73,7 @@ async fn suggest_spelling(word: &str) -> Result<String, Box<dyn std::error::Erro
     ]);
     let api_key = env::var("API_KEY").unwrap_or_default();
     let search = SerpApiSearch::google(params, api_key);
-    let results = search.json().await?;
+    let results = search.json().await.map_err(|_| Error::SerpError)?;
     let search_information = &results["search_information"];
     let results: SearchResults =
         serde_json::from_value(search_information.clone()).unwrap_or(SearchResults {

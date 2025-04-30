@@ -19,14 +19,12 @@ impl Thesaurus {
         //TODO: Create unit test to check index and array length.
         if let Some(meanings) = thesaurus.meanings.clone() {
             let meaning = meanings[index].clone();
-            if let Some(part_of_speech) = meaning.partOfSpeech.clone() {
-                let definitions = meaning.definitions.clone().unwrap();
-                (part_of_speech, definitions)
-            } else {
-                (String::from(""), Vec::<Definition>::default())
+            match (meaning.partOfSpeech.clone(), meaning.definitions.clone()) {
+                (Some(p), Some(d)) => (p, d),
+                _ => (String::default(), Vec::<Definition>::default()),
             }
         } else {
-            (String::from(""), Vec::<Definition>::default())
+            (String::default(), Vec::<Definition>::default())
         }
     }
 
