@@ -1,9 +1,11 @@
+use crate::models::{
+    app::App,
+    input_mode::{InputMode, SelectPartOfSpeechMode},
+};
 use ratatui::{
     style::{Color, Style},
     widgets::{Block, Borders, List, ListItem},
 };
-
-use crate::models::app::{App, InputMode};
 
 pub(crate) fn new(app: &mut App) -> List {
     let parts_of_speech: Vec<ListItem> = app
@@ -20,7 +22,9 @@ pub(crate) fn new(app: &mut App) -> List {
                 .title("Part Of Speech"),
         )
         .style(match app.input_mode {
-            InputMode::SelectPartOfSpeech => Style::default().fg(Color::Yellow),
+            InputMode::SelectPartOfSpeech(SelectPartOfSpeechMode) => {
+                Style::default().fg(Color::Yellow)
+            }
             _ => Style::default().fg(Color::Green),
         })
         .highlight_style(Style::default().fg(Color::Black).bg(Color::Cyan))

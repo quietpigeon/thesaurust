@@ -1,9 +1,13 @@
 use crate::{
     client::parse_response,
-    models::app::{App, InputMode},
+    models::{app::App, input_mode::InputMode},
 };
 use ratatui::crossterm::event::{Event, KeyCode, KeyEvent};
 use tui_input::backend::crossterm::EventHandler;
+
+pub(crate) trait KeyHandler {
+    fn handle(key_code: KeyEvent);
+}
 
 pub(crate) fn key_handler(app: &mut App, key: KeyEvent) {
     match app.input_mode {

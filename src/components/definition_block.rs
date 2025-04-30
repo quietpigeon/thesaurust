@@ -1,6 +1,7 @@
 use crate::models::{
-    app::{App, InputMode},
+    app::App,
     data::Definition,
+    input_mode::{InputMode, SelectDefinitionMode},
 };
 use ratatui::{
     style::{Color, Style},
@@ -14,7 +15,7 @@ pub(crate) fn new<'a>(
 ) -> Paragraph<'a> {
     Paragraph::new(definition.to_string())
         .style(match app.input_mode {
-            InputMode::SelectDefinition => Style::default().fg(Color::Yellow),
+            InputMode::SelectDefinition(SelectDefinitionMode) => Style::default().fg(Color::Yellow),
             _ => Style::default().fg(Color::Green),
         })
         .wrap(Wrap { trim: true })

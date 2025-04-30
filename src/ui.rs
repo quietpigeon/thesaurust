@@ -2,8 +2,9 @@ use crate::components::{
     banner_block, definition_block, example_block, footer, part_of_speech_block, popup, search_bar,
     synonym_block,
 };
-use crate::models::app::{App, InputMode};
+use crate::models::app::App;
 use crate::models::data::Thesaurus;
+use crate::models::input_mode::{InputMode, SuggestionMode};
 use crate::tui::Frame;
 use ratatui::layout::{Direction, Layout, Rect};
 use ratatui::prelude::Constraint;
@@ -32,7 +33,7 @@ pub(crate) fn render(app: &mut App, f: &mut Frame) {
     let footer_frame = create_footer_layout(main_frame[2]);
 
     match app.input_mode {
-        InputMode::Suggesting => {
+        InputMode::Suggesting(SuggestionMode) => {
             f.render_widget(popup::new(app), upper_frame[0]);
         }
         _ => {
@@ -116,8 +117,8 @@ fn render_right_frame_components(app: &mut App, f: &mut Frame, right_frame: Rc<[
     let definition_list_idx = app.definition_list.state.selected().unwrap_or(0);
     let definitions = Thesaurus::unwrap_meanings_at(pos_list_idx, &app.results[0]).1;
     let d = definitions[definition_list_idx].clone();
-    let definition = d.definition.unwrap_or("".to_string());
-    let example = d.example.unwrap_or("".to_string());
+    let definition = d.definition.unwrap_or_default();
+    let example = d.example.unwrap_or_default();
     f.render_widget(
         definition_block::new(app, &definitions, &definition),
         right_frame[0],
