@@ -1,11 +1,6 @@
 use crate::models::{data::Thesaurus, input_mode::InputMode, list::StatefulList};
 use tui_input::Input;
 
-use super::input_mode::{
-    EditingMode, NormalMode, SelectDefinitionMode, SelectPartOfSpeechMode, SettingsMode,
-    SuggestionMode,
-};
-
 /// Application.
 #[derive(Clone, Debug, Default)]
 pub(crate) struct App {
@@ -31,21 +26,17 @@ impl App {
 
     pub(crate) fn update_instructions(&mut self) -> String {
         match self.input_mode {
-            InputMode::Normal(NormalMode) if self.part_of_speech_list.items.len() == 1 => {
+            InputMode::Normal if self.part_of_speech_list.items.len() == 1 => {
                 String::from("l, h: Change definition  /: Insert")
             }
-            InputMode::Normal(NormalMode) if !self.results.is_empty() => {
+            InputMode::Normal if !self.results.is_empty() => {
                 String::from("j, k: Change part of speech  /: Insert")
             }
-            InputMode::Editing(EditingMode) => String::from("<ENTER>: Search  <ESC>: Exit"),
-            InputMode::SelectPartOfSpeech(SelectPartOfSpeechMode) => {
-                String::from("<ENTER>: Select")
-            }
-            InputMode::SelectDefinition(SelectDefinitionMode) => {
-                String::from("l, h: Change definition  /: Insert")
-            }
-            InputMode::Settings(SettingsMode) => self.toggle_spelling_suggestion(),
-            InputMode::Suggesting(SuggestionMode) => String::from("<ENTER>: Continue"),
+            InputMode::Editing => String::from("<ENTER>: Search  <ESC>: Exit"),
+            InputMode::SelectPartOfSpeech => String::from("<ENTER>: Select"),
+            InputMode::SelectDefinition => String::from("l, h: Change definition  /: Insert"),
+            InputMode::Settings => self.toggle_spelling_suggestion(),
+            InputMode::Suggesting => String::from("<ENTER>: Continue"),
             _ => String::from("/: Insert"),
         }
     }
@@ -116,13 +107,7 @@ impl App {
 #[cfg(test)]
 mod tests {
     use super::{App, InputMode};
-    use crate::models::{
-        data::{Definition, Meaning, Thesaurus},
-        input_mode::{
-            EditingMode, NormalMode, SelectDefinitionMode, SelectPartOfSpeechMode, SettingsMode,
-            SuggestionMode,
-        },
-    };
+    use crate::models::data::{Definition, Meaning, Thesaurus};
     use pretty_assertions::assert_eq;
 
     fn mock_app_in(input_mode: InputMode) -> App {
@@ -199,7 +184,7 @@ mod tests {
 
     #[test]
     fn test_instructions_in_normal_mode() {
-        let mut mock_app = mock_app_in(InputMode::Normal(NormalMode));
+        let mut mock_app = mock_app_in(InputMode::Normal);
         assert_eq!(App::update_instructions(&mut mock_app), "/: Insert");
     }
 
@@ -217,7 +202,7 @@ mod tests {
 
     #[test]
     fn test_instructions_in_normal_mode_with_results() {
-        let mut mock_app = mock_app_in(InputMode::Normal(NormalMode));
+        let mut mock_app = mock_app_in(InputMode::Normal);
         mock_app.results =
             mock_results_with(vec![mock_meaning_with(Some(mock_part_of_speech()), None)]);
         assert_eq!(true, !mock_app.results.is_empty());
@@ -229,7 +214,7 @@ mod tests {
 
     #[test]
     fn test_instructions_in_editing_mode() {
-        let mut mock_app = mock_app_in(InputMode::Editing(EditingMode));
+        let mut mock_app = mock_app_in(InputMode::Editing);
         assert_eq!(
             App::update_instructions(&mut mock_app),
             "<ENTER>: Search  <ESC>: Exit"
@@ -238,13 +223,13 @@ mod tests {
 
     #[test]
     fn test_instructions_in_part_of_speech_selection_mode() {
-        let mut mock_app = mock_app_in(InputMode::SelectPartOfSpeech(SelectPartOfSpeechMode));
+        let mut mock_app = mock_app_in(InputMode::SelectPartOfSpeech);
         assert_eq!(App::update_instructions(&mut mock_app), "<ENTER>: Select");
     }
 
     #[test]
     fn test_instructions_in_definition_selection_mode() {
-        let mut mock_app = mock_app_in(InputMode::SelectDefinition(SelectDefinitionMode));
+        let mut mock_app = mock_app_in(InputMode::SelectDefinition);
         assert_eq!(
             App::update_instructions(&mut mock_app),
             "l, h: Change definition  /: Insert"
@@ -253,7 +238,7 @@ mod tests {
 
     #[test]
     fn test_instructions_in_settings_mode_with_spelling_fix_enabled() {
-        let mut mock_app = mock_app_in(InputMode::Settings(SettingsMode));
+        let mut mock_app = mock_app_in(InputMode::Settings);
         mock_app.is_spelling_fix_enabled = true;
         assert_eq!(
             App::update_instructions(&mut mock_app),
@@ -263,7 +248,7 @@ mod tests {
 
     #[test]
     fn test_instructions_in_settings_mode_with_spelling_fix_disabled() {
-        let mut mock_app = mock_app_in(InputMode::Settings(SettingsMode));
+        let mut mock_app = mock_app_in(InputMode::Settings);
         // mock_app.is_spelling_fix_enabled is false by default.
         assert_eq!(
             App::update_instructions(&mut mock_app),
@@ -273,7 +258,7 @@ mod tests {
 
     #[test]
     fn test_instructions_in_suggesting_mode() {
-        let mut mock_app = mock_app_in(InputMode::Suggesting(SuggestionMode));
+        let mut mock_app = mock_app_in(InputMode::Suggesting);
         assert_eq!(
             App::update_instructions(&mut mock_app),
             format!("<ENTER>: Continue")

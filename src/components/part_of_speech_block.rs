@@ -1,7 +1,4 @@
-use crate::models::{
-    app::App,
-    input_mode::{InputMode, SelectPartOfSpeechMode},
-};
+use crate::models::{app::App, input_mode::InputMode};
 use ratatui::{
     style::{Color, Style},
     widgets::{Block, Borders, List, ListItem},
@@ -22,9 +19,7 @@ pub(crate) fn new(app: &mut App) -> List {
                 .title("Part Of Speech"),
         )
         .style(match app.input_mode {
-            InputMode::SelectPartOfSpeech(SelectPartOfSpeechMode) => {
-                Style::default().fg(Color::Yellow)
-            }
+            InputMode::SelectPartOfSpeech => Style::default().fg(Color::Yellow),
             _ => Style::default().fg(Color::Green),
         })
         .highlight_style(Style::default().fg(Color::Black).bg(Color::Cyan))

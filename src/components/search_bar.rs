@@ -1,7 +1,4 @@
-use crate::models::{
-    app::App,
-    input_mode::{EditingMode, InputMode},
-};
+use crate::models::{app::App, input_mode::InputMode};
 use ratatui::{
     style::{Color, Style},
     widgets::{Block, Borders, Paragraph, Wrap},
@@ -10,7 +7,7 @@ use ratatui::{
 pub(crate) fn new(app: &mut App) -> Paragraph {
     Paragraph::new(app.input.value())
         .style(match app.input_mode {
-            InputMode::Editing(EditingMode) => Style::default().fg(Color::Yellow),
+            InputMode::Editing => Style::default().fg(Color::Yellow),
             _ => Style::default().fg(Color::Green),
         })
         .wrap(Wrap { trim: true })

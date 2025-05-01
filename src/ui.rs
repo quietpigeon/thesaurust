@@ -4,7 +4,7 @@ use crate::components::{
 };
 use crate::models::app::App;
 use crate::models::data::Thesaurus;
-use crate::models::input_mode::{InputMode, SuggestionMode};
+use crate::models::input_mode::InputMode;
 use crate::tui::Frame;
 use ratatui::layout::{Direction, Layout, Rect};
 use ratatui::prelude::Constraint;
@@ -33,7 +33,7 @@ pub(crate) fn render(app: &mut App, f: &mut Frame) {
     let footer_frame = create_footer_layout(main_frame[2]);
 
     match app.input_mode {
-        InputMode::Suggesting(SuggestionMode) => {
+        InputMode::Suggesting => {
             f.render_widget(popup::new(app), upper_frame[0]);
         }
         _ => {
