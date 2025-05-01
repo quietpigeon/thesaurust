@@ -1,13 +1,17 @@
-#[derive(Debug)]
-pub(crate) enum ApiError {
-    HttpError,
-    InvalidInput,
-}
+use reqwest::StatusCode;
+use thiserror::Error;
 
-// TODO: Use thiserror for better error handling.
-#[allow(unused_variables)]
-impl From<reqwest::Error> for ApiError {
-    fn from(err: reqwest::Error) -> Self {
-        ApiError::HttpError
-    }
+#[derive(Debug, Error)]
+pub(crate) enum Error {
+    #[error("http request failed: {0}")]
+    HttpRequest(#[from] reqwest::Error),
+
+    #[error("failed to read json: {0}")]
+    JsonRead(#[from] serde_json::Error),
+
+    #[error("unexpected status code: {0}")]
+    BadStatus(StatusCode),
+
+    #[error("unexpected response from serp api")]
+    SerpApi,
 }

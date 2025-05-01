@@ -1,9 +1,8 @@
+use crate::models::{app::App, input_mode::InputMode};
 use ratatui::{
     style::{Color, Style},
     widgets::{Block, Borders, List, ListItem},
 };
-
-use crate::models::app::{App, InputMode};
 
 pub(crate) fn new(app: &mut App) -> List {
     let parts_of_speech: Vec<ListItem> = app
