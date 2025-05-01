@@ -61,7 +61,7 @@ async fn search_dictionary(word: &str) -> Result<serde_json::Value, Error> {
         let results: serde_json::Value = response.json().await?;
         Ok(results)
     } else {
-        Err(Error::StatusError(response.status()))
+        Err(Error::BadStatus(response.status()))
     }
 }
 
@@ -73,7 +73,7 @@ async fn suggest_spelling(word: &str) -> Result<String, Error> {
     ]);
     let api_key = env::var("API_KEY").unwrap_or_default();
     let search = SerpApiSearch::google(params, api_key);
-    let results = search.json().await.map_err(|_| Error::SerpError)?;
+    let results = search.json().await.map_err(|_| Error::SerpApi)?;
     let search_information = &results["search_information"];
     let results: SearchResults =
         serde_json::from_value(search_information.clone()).unwrap_or(SearchResults {
