@@ -1,13 +1,12 @@
 use ratatui::{
-    widgets::{ Block, Borders, Paragraph, Wrap },
-    style::{ Color, Style, Stylize, Modifier },
+    style::{Color, Modifier, Style, Stylize},
+    widgets::{Block, Borders, Paragraph, Wrap},
 };
 
-pub fn new(example: String) -> Paragraph<'static> {
-    Paragraph::new(example)
+pub(crate) fn new(example: &str) -> Paragraph<'static> {
+    Paragraph::new(example.to_string())
         .add_modifier(Modifier::ITALIC)
         .style(Style::default().fg(Color::Green))
         .wrap(Wrap { trim: true })
         .block(Block::default().borders(Borders::ALL).title("Example"))
 }
-

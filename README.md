@@ -32,9 +32,9 @@ thesaurust
 ### Prerequisites
 You need to have an API key from [SerpApi](https://serpapi.com/) before you can enable this feature. It is free of charge with a limited number of usage.
 <br>
-Go to [api_key.rs](src/api_key.rs) and enter your API key:
+Create `.env` in the root directory and put your API key there:
 ```zsh
-pub const API_KEY: &str = "YOUR_API_KEY";
+API_KEY=<API_KEY>
 ```
 Then, you can proceed to [installation](#installation).
 ### Enabling spellchecking

@@ -1,98 +1,57 @@
+use serde_derive::Deserialize;
 use std::fmt::Debug;
 
-use serde_derive::Deserialize;
-
 /// Components of a response from the Free Dictionary API.
-#[derive(Clone, Deserialize, Debug)]
-pub struct Thesaurus {
+#[derive(Default, Clone, Deserialize, Debug)]
+pub(crate) struct Thesaurus {
     pub word: Option<String>,
-    pub origin: Option<String>,
 
     // A word can have multiple meanings, hence it is represented as an array of meanings.
     pub meanings: Option<Vec<Meaning>>,
 }
 
-impl Default for Thesaurus {
-    fn default() -> Self {
-        Thesaurus {
-            word: None,
-            origin: None,
-            meanings: None,
-        }
-    }
-}
-
 impl Thesaurus {
     /// A function that unwraps the contents inside `Meaning`. It returns a tuple that contains the `partOfSpeech` and `Vec<Definition>`.
-    pub fn unwrap_meanings_at(index: usize, thesaurus: &Thesaurus) -> (String, Vec<Definition>) {
+    pub(crate) fn unwrap_meanings_at(
+        index: usize,
+        thesaurus: &Thesaurus,
+    ) -> (String, Vec<Definition>) {
         //TODO: Create unit test to check index and array length.
         if let Some(meanings) = thesaurus.meanings.clone() {
             let meaning = meanings[index].clone();
-            if let Some(part_of_speech) = meaning.partOfSpeech.clone() {
-                let definitions = meaning.definitions.clone().unwrap();
-                return (part_of_speech, definitions);
-            } else {
-                return (String::from(""), Vec::<Definition>::default());
-            };
+            match (meaning.partOfSpeech.clone(), meaning.definitions.clone()) {
+                (Some(p), Some(d)) => (p, d),
+                _ => (String::default(), Vec::<Definition>::default()),
+            }
         } else {
-            return (String::from(""), Vec::<Definition>::default());
+            (String::default(), Vec::<Definition>::default())
         }
     }
 
     /// A function that prompts the user to re-enter the word because the word cannot be found in the API.
-    pub fn inject_message(msg: String) -> Vec<Thesaurus> {
-        let definition = Definition {
-            definition: None,
-            example: None,
-            synonyms: None,
-            antonyms: None,
-        };
-        let d = vec![definition];
+    pub(crate) fn inject_message(msg: &str) -> Vec<Thesaurus> {
         let meaning = Meaning {
             partOfSpeech: Some(String::from("/")),
-            definitions: Some(d),
+            ..Default::default()
         };
-        let m = vec![meaning];
         let thesaurus = Thesaurus {
-            word: Some(msg),
-            origin: None,
-            meanings: Some(m),
+            word: Some(msg.to_string()),
+            meanings: Some(vec![meaning]),
         };
         vec![thesaurus]
     }
 }
 
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Default, Clone, Deserialize, Debug)]
 #[allow(non_snake_case)]
-pub struct Meaning {
+pub(crate) struct Meaning {
     pub partOfSpeech: Option<String>,
     pub definitions: Option<Vec<Definition>>,
 }
 
-impl Default for Meaning {
-    fn default() -> Self {
-        Meaning {
-            partOfSpeech: None,
-            definitions: None,
-        }
-    }
-}
-
-#[derive(Clone, Deserialize, Debug)]
-pub struct Definition {
+#[derive(Default, Clone, Deserialize, Debug)]
+pub(crate) struct Definition {
     pub definition: Option<String>,
     pub example: Option<String>,
     pub synonyms: Option<Vec<String>>,
-    pub antonyms: Option<Vec<String>>,
-}
-
-impl Default for Definition {
-    fn default() -> Self {
-        Definition {
-            definition: None,
-            example: None,
-            synonyms: None,
-            antonyms: None,
-        }
-    }
 }

@@ -1,23 +1,16 @@
+use crate::components::{
+    banner_block, definition_block, example_block, footer, part_of_speech_block, popup, search_bar,
+    synonym_block,
+};
+use crate::models::app::App;
+use crate::models::data::Thesaurus;
+use crate::models::input_mode::InputMode;
+use crate::tui::Frame;
+use ratatui::layout::{Direction, Layout, Rect};
+use ratatui::prelude::Constraint;
 use std::rc::Rc;
 
-use ratatui::{ layout::{ Direction, Layout, Rect }, prelude::Constraint };
-
-use crate::{
-    components::{
-        banner_block,
-        definition_block,
-        example_block,
-        footer,
-        part_of_speech_block,
-        popup,
-        search_bar,
-        synonym_block,
-    },
-    models::{ app::{ App, InputMode }, data::Thesaurus },
-    tui::Frame,
-};
-
-pub fn render(app: &mut App, f: &mut Frame) {
+pub(crate) fn render(app: &mut App, f: &mut Frame) {
     // Main frame.
     let main_frame = Layout::default()
         .direction(Direction::Vertical)
@@ -28,9 +21,10 @@ pub fn render(app: &mut App, f: &mut Frame) {
                 Constraint::Length(9),
                 Constraint::Length(9),
                 Constraint::Min(1),
-            ].as_ref()
+            ]
+            .as_ref(),
         )
-        .split(f.size());
+        .split(f.area());
 
     let upper_frame = create_upper_layout(main_frame[0]);
     let lower_frame = create_lower_layout(main_frame[1]);
@@ -90,7 +84,8 @@ fn create_footer_layout(area: Rect) -> Rc<[Rect]> {
                 Constraint::Percentage(80),
                 Constraint::Percentage(10),
                 Constraint::Percentage(10),
-            ].as_ref()
+            ]
+            .as_ref(),
         )
         .horizontal_margin(1)
         .split(area)
@@ -105,7 +100,8 @@ fn create_lower_layout(area: Rect) -> Rc<[Rect]> {
                 Constraint::Percentage(20),
                 Constraint::Percentage(60),
                 Constraint::Percentage(20),
-            ].as_ref()
+            ]
+            .as_ref(),
         )
         .horizontal_margin(1)
         .split(area)
@@ -121,10 +117,13 @@ fn render_right_frame_components(app: &mut App, f: &mut Frame, right_frame: Rc<[
     let definition_list_idx = app.definition_list.state.selected().unwrap_or(0);
     let definitions = Thesaurus::unwrap_meanings_at(pos_list_idx, &app.results[0]).1;
     let d = definitions[definition_list_idx].clone();
-    let definition = d.definition.unwrap_or("".to_string());
-    let example = d.example.unwrap_or("".to_string());
-    f.render_widget(definition_block::new(app, definitions, definition), right_frame[0]);
-    f.render_widget(example_block::new(example), right_frame[1]);
+    let definition = d.definition.unwrap_or_default();
+    let example = d.example.unwrap_or_default();
+    f.render_widget(
+        definition_block::new(app, &definitions, &definition),
+        right_frame[0],
+    );
+    f.render_widget(example_block::new(&example), right_frame[1]);
 }
 
 fn render_part_of_speech_block(app: &mut App, f: &mut Frame, area: Rect) {

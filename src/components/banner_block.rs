@@ -1,7 +1,12 @@
-use ratatui::{ widgets::{ Paragraph }, style::{ Color, Style }, layout::Alignment };
-
 use crate::banner::BANNER;
+use ratatui::{
+    layout::Alignment,
+    style::{Color, Style},
+    widgets::Paragraph,
+};
 
-pub fn new() -> Paragraph<'static> {
-    Paragraph::new(BANNER).style(Style::default().fg(Color::Green)).alignment(Alignment::Center)
+pub(crate) fn new() -> Paragraph<'static> {
+    Paragraph::new(BANNER)
+        .style(Style::default().fg(Color::Green))
+        .alignment(Alignment::Center)
 }

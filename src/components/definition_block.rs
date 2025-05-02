@@ -1,14 +1,15 @@
-use crate::models::{
-    app::{App, InputMode},
-    data::Definition,
-};
+use crate::models::{app::App, data::Definition, input_mode::InputMode};
 use ratatui::{
     style::{Color, Style},
     widgets::{Block, Borders, Paragraph, Wrap},
 };
 
-pub fn new(app: &mut App, definitions: Vec<Definition>, definition: String) -> Paragraph {
-    Paragraph::new(String::from(definition))
+pub(crate) fn new<'a>(
+    app: &'a mut App,
+    definitions: &[Definition],
+    definition: &'a String,
+) -> Paragraph<'a> {
+    Paragraph::new(definition.to_string())
         .style(match app.input_mode {
             InputMode::SelectDefinition => Style::default().fg(Color::Yellow),
             _ => Style::default().fg(Color::Green),

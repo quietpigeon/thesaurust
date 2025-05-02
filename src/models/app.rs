@@ -1,34 +1,13 @@
+use crate::models::{data::Thesaurus, input_mode::InputMode, list::StatefulList};
 use tui_input::Input;
-
-use crate::models::{
-    data::Thesaurus,
-    list::{StatefulList, StatefulListType},
-};
-
-#[derive(Clone, Debug)]
-pub enum InputMode {
-    Normal,
-    Editing,
-    SelectPartOfSpeech,
-    SelectDefinition,
-    Suggesting,
-    Settings,
-}
-
-impl Default for InputMode {
-    fn default() -> Self {
-        InputMode::Normal
-    }
-}
 
 /// Application.
 #[derive(Clone, Debug, Default)]
-pub struct App {
+pub(crate) struct App {
     pub should_quit: bool,
     pub input: Input,
     pub input_mode: InputMode,
     pub results: Vec<Thesaurus>,
-    pub has_results: bool,
     pub part_of_speech_list: StatefulList<String>,
     pub definition_list: StatefulList<String>,
     pub is_spelling_fix_enabled: bool,
@@ -37,15 +16,15 @@ pub struct App {
 }
 
 impl App {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self::default()
     }
 
-    pub fn quit(&mut self) {
+    pub(crate) fn quit(&mut self) {
         self.should_quit = true;
     }
 
-    pub fn update_instructions(&mut self) -> String {
+    pub(crate) fn update_instructions(&mut self) -> String {
         match self.input_mode {
             InputMode::Normal if self.part_of_speech_list.items.len() == 1 => {
                 String::from("l, h: Change definition  /: Insert")
@@ -62,86 +41,73 @@ impl App {
         }
     }
 
-    pub fn update_stateful_lists(&mut self, list_type: StatefulListType) {
-        match list_type {
-            StatefulListType::PartOfSpeech => {
-                self.update_part_of_speech_list();
-            }
-            StatefulListType::Definition => {
-                self.update_definition_list();
-            }
-            StatefulListType::Synonym => {
-                self.update_synonym_list();
-            }
-            _ => {
-                self.update_part_of_speech_list();
-                self.update_definition_list();
-                self.update_synonym_list();
-            }
+    pub(crate) fn update_all(&mut self) {
+        // NOTE: The order of the functions must not be changed.
+        self.update_part_of_speech_list();
+        self.update_definition_list();
+        self.update_synonym_list();
+    }
+
+    pub(crate) fn update_definition_list(&mut self) {
+        if self.results.is_empty() {
+            return;
+        }
+        if let Some(idx) = self.part_of_speech_list.state.selected() {
+            let definitions = Thesaurus::unwrap_meanings_at(idx, &self.results[0]).1;
+            let definitions: Vec<String> = definitions
+                .into_iter()
+                .map(|i| i.definition.unwrap_or_default())
+                .collect();
+            self.definition_list = StatefulList::with_items(definitions);
+
+            // Select the first item as default.
+            self.definition_list.state.select(Some(0))
+        }
+    }
+
+    pub(crate) fn update_synonym_list(&mut self) {
+        if self.results.is_empty() {
+            return;
+        }
+        let pos_idx = self.part_of_speech_list.state.selected().unwrap_or(0);
+        let definitions = Thesaurus::unwrap_meanings_at(pos_idx, &self.results[0]).1;
+        let def_idx = self.definition_list.state.selected().unwrap_or(0);
+        let definition = &definitions[def_idx];
+        let synonyms = definition.clone().synonyms;
+
+        if let Some(s) = synonyms {
+            self.synonym_list = StatefulList::with_items(s);
+        } else {
+            self.synonym_list = StatefulList::with_items(Vec::new());
+        }
+    }
+
+    fn update_part_of_speech_list(&mut self) {
+        if self.results.is_empty() {
+            return;
+        }
+        let meanings = self.results[0].meanings.clone();
+        if let Some(m) = meanings {
+            let part_of_speech_list: Vec<String> = m
+                .into_iter()
+                .map(|i| i.partOfSpeech.unwrap_or_default())
+                .collect();
+            self.part_of_speech_list = StatefulList::with_items(part_of_speech_list);
+
+            // Select the first item as default.
+            self.part_of_speech_list.state.select(Some(0))
         }
     }
 
     fn toggle_spelling_suggestion(&mut self) -> String {
         format!("Spelling suggestion: {}", self.is_spelling_fix_enabled)
     }
-
-    fn update_part_of_speech_list(&mut self) {
-        if !self.results.is_empty() {
-            let meanings = self.results[0].meanings.clone();
-            if meanings.is_some() {
-                let part_of_speech_list: Vec<String> = meanings
-                    .unwrap()
-                    .iter()
-                    .map(|i| i.partOfSpeech.clone().unwrap_or(String::from("")))
-                    .collect();
-                self.part_of_speech_list =
-                    StatefulList::with_items(part_of_speech_list, StatefulListType::PartOfSpeech);
-
-                // Select the first item as default.
-                self.part_of_speech_list.state.select(Some(0))
-            }
-        }
-    }
-
-    fn update_definition_list(&mut self) {
-        if !self.results.is_empty() {
-            if let Some(idx) = self.part_of_speech_list.state.selected() {
-                let definitions = Thesaurus::unwrap_meanings_at(idx, &self.results[0]).1;
-                let definitions: Vec<String> = definitions
-                    .iter()
-                    .map(|i| i.definition.clone().unwrap_or(String::from("")))
-                    .collect();
-                self.definition_list =
-                    StatefulList::with_items(definitions, StatefulListType::Definition);
-
-                // Select the first item as default.
-                self.definition_list.state.select(Some(0))
-            }
-        }
-    }
-
-    fn update_synonym_list(&mut self) {
-        if !self.results.is_empty() {
-            let pos_idx = self.part_of_speech_list.state.selected().unwrap_or(0);
-            let definitions = Thesaurus::unwrap_meanings_at(pos_idx, &self.results[0]).1;
-            let def_idx = self.definition_list.state.selected().unwrap_or(0);
-            let definition = &definitions[def_idx];
-            let synonyms = definition.clone().synonyms;
-            if synonyms.is_some() {
-                let synonyms: Vec<String> = synonyms.unwrap().iter().map(|i| i.clone()).collect();
-                self.synonym_list = StatefulList::with_items(synonyms, StatefulListType::Synonym);
-            } else {
-                self.synonym_list = StatefulList::with_items(Vec::new(), StatefulListType::Synonym);
-            }
-        }
-    }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::models::data::{Definition, Meaning};
-
-    use super::*;
+    use super::{App, InputMode};
+    use crate::models::data::{Definition, Meaning, Thesaurus};
     use pretty_assertions::assert_eq;
 
     fn mock_app_in(input_mode: InputMode) -> App {
@@ -164,16 +130,13 @@ mod tests {
     fn mock_definition_with(d: Option<String>) -> Definition {
         Definition {
             definition: d,
-            example: None,
-            synonyms: None,
-            antonyms: None,
+            ..Default::default()
         }
     }
 
     fn mock_results_with(m: Vec<Meaning>) -> Vec<Thesaurus> {
         vec![Thesaurus {
             word: Some(String::from("mock")),
-            origin: None,
             meanings: Some(m),
         }]
     }
@@ -192,7 +155,7 @@ mod tests {
             .map(|i| mock_meaning_with(Some(i.to_string()), None))
             .collect();
         mock_app.results = mock_results_with(mock_meanings);
-        App::update_stateful_lists(&mut mock_app, StatefulListType::PartOfSpeech);
+        App::update_part_of_speech_list(&mut mock_app);
         assert_eq!(
             mock_parts_of_speech.len(),
             mock_app.part_of_speech_list.items.len()
@@ -201,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn test_update_definition_list() {
+    fn test_update_all() {
         let mut mock_app = mock_app_in(InputMode::default());
         let mock_definitions = vec![
             mock_definition_with(Some(String::from("Definition 1"))),
@@ -213,7 +176,8 @@ mod tests {
             Some(mock_definitions.clone()),
         )];
         mock_app.results = mock_results_with(mock_meanings);
-        App::update_stateful_lists(&mut mock_app, StatefulListType::All);
+        App::update_all(&mut mock_app);
+
         assert_eq!(mock_definitions.len(), mock_app.definition_list.items.len());
         assert_eq!(Some(0), mock_app.definition_list.state.selected());
     }

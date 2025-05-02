@@ -1,8 +1,8 @@
-pub mod search_bar;
-pub mod definition_block;
-pub mod example_block;
-pub mod banner_block;
-pub mod part_of_speech_block;
-pub mod footer;
-pub mod popup;
-pub mod synonym_block;
+pub(crate) mod banner_block;
+pub(crate) mod definition_block;
+pub(crate) mod example_block;
+pub(crate) mod footer;
+pub(crate) mod part_of_speech_block;
+pub(crate) mod popup;
+pub(crate) mod search_bar;
+pub(crate) mod synonym_block;
