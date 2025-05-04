@@ -1,10 +1,7 @@
-use ratatui::{
-    layout::Alignment,
-    style::{Color, Style},
-    widgets::{Block, Borders, Paragraph, Wrap},
-};
-
 use crate::models::app::App;
+use ratatui::layout::Alignment;
+use ratatui::style::{Color, Style};
+use ratatui::widgets::{Block, Borders, Paragraph, Wrap};
 
 pub(crate) fn new(app: &mut App) -> Paragraph<'static> {
     Paragraph::new(popup_message(app))
@@ -15,14 +12,5 @@ pub(crate) fn new(app: &mut App) -> Paragraph<'static> {
 }
 
 fn popup_message(app: &mut App) -> String {
-    let message = app.suggested_spelling.clone();
-    if app.is_spelling_fix_enabled {
-        if message.is_empty() {
-            String::from("Similar spelling not found.")
-        } else {
-            format!("Did you mean {}?", message)
-        };
-    }
-
-    message
+    String::from("Similar spelling not found.")
 }

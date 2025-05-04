@@ -1,4 +1,4 @@
-use crate::models::{app::App, data::Definition, input_mode::InputMode};
+use crate::models::{app::App, input_mode::InputMode, thesaurus::Definition};
 use ratatui::{
     style::{Color, Style},
     widgets::{Block, Borders, Paragraph, Wrap},
