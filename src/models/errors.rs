@@ -17,4 +17,10 @@ pub(crate) enum Error {
 
     #[error(transparent)]
     TerminalBackend(#[from] std::io::Error),
+
+    #[error("no suggestions found")]
+    GetSuggestion,
+
+    #[error("word does not exist")]
+    GetWord,
 }

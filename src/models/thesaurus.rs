@@ -27,19 +27,6 @@ impl Thesaurus {
             (String::default(), Vec::<Definition>::default())
         }
     }
-
-    /// A function that prompts the user to re-enter the word because the word cannot be found in the API.
-    pub(crate) fn inject_message(msg: &str) -> Vec<Thesaurus> {
-        let meaning = Meaning {
-            partOfSpeech: Some(String::from("/")),
-            ..Default::default()
-        };
-        let thesaurus = Thesaurus {
-            word: Some(msg.to_string()),
-            meanings: Some(vec![meaning]),
-        };
-        vec![thesaurus]
-    }
 }
 
 #[derive(Default, Clone, Deserialize, Debug)]

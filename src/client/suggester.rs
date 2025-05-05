@@ -2,12 +2,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::models::errors::Error;
 
-pub(crate) struct Suggestions(Vec<Suggestion>);
+pub(crate) struct Suggestions(pub(crate) Vec<Suggestion>);
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
-struct Suggestion {
-    word: Option<String>,
-    score: Option<i32>,
+pub(crate) struct Suggestion {
+    pub(crate) word: Option<String>,
+    pub(crate) score: Option<i32>,
 }
 
 #[tokio::main]

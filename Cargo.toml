@@ -18,6 +18,7 @@ serpapi-search-rust = "0.1.0"
 dotenvy = "0.15.7"
 thiserror = "2.0.12"
 mockito = "1.7.0"
+apply = "0.3.0"
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"

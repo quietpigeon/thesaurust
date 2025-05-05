@@ -1,5 +1,6 @@
-use crate::client;
+use crate::client::spellcheck;
 use crate::models::{app::App, errors::Error, input_mode::InputMode};
+use apply::Apply;
 use ratatui::crossterm::event::{Event, KeyCode, KeyEvent};
 use tui_input::backend::crossterm::EventHandler;
 
@@ -41,7 +42,8 @@ fn handle_editing(app: &mut App, key: &KeyEvent) -> Result<(), Error> {
     match key.code {
         KeyCode::Enter => {
             app.input_mode = InputMode::Normal;
-            let results = client::look_up(&app.input.to_string())?;
+            let word = app.input.to_string().apply_ref(|w| spellcheck(w))?;
+            let results = crate::client::look_up(&word)?;
             app.results = results.0;
             App::update_all(app);
         }
