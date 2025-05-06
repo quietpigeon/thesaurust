@@ -1,4 +1,4 @@
-use crate::models::{data::Thesaurus, input_mode::InputMode, list::StatefulList};
+use crate::models::{input_mode::InputMode, list::StatefulList, thesaurus::Thesaurus};
 use tui_input::Input;
 
 /// Application.
@@ -11,7 +11,6 @@ pub(crate) struct App {
     pub part_of_speech_list: StatefulList<String>,
     pub definition_list: StatefulList<String>,
     pub is_spelling_fix_enabled: bool,
-    pub suggested_spelling: String,
     pub synonym_list: StatefulList<String>,
 }
 
@@ -36,7 +35,6 @@ impl App {
             InputMode::SelectPartOfSpeech => String::from("<ENTER>: Select"),
             InputMode::SelectDefinition => String::from("l, h: Change definition  /: Insert"),
             InputMode::Settings => self.toggle_spelling_suggestion(),
-            InputMode::Suggesting => String::from("<ENTER>: Continue"),
             _ => String::from("/: Insert"),
         }
     }
@@ -107,13 +105,14 @@ impl App {
 #[cfg(test)]
 mod tests {
     use super::{App, InputMode};
-    use crate::models::data::{Definition, Meaning, Thesaurus};
+    use crate::models::thesaurus::{Definition, Meaning, Thesaurus};
     use pretty_assertions::assert_eq;
 
     fn mock_app_in(input_mode: InputMode) -> App {
         let mut mock_app = App::new();
         mock_app.input_mode = input_mode;
-        return mock_app;
+
+        mock_app
     }
 
     fn mock_part_of_speech() -> String {
@@ -253,15 +252,6 @@ mod tests {
         assert_eq!(
             App::update_instructions(&mut mock_app),
             format!("Spelling suggestion: false")
-        );
-    }
-
-    #[test]
-    fn test_instructions_in_suggesting_mode() {
-        let mut mock_app = mock_app_in(InputMode::Suggesting);
-        assert_eq!(
-            App::update_instructions(&mut mock_app),
-            format!("<ENTER>: Continue")
         );
     }
 }

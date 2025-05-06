@@ -5,6 +5,5 @@ pub(crate) enum InputMode {
     Editing,
     SelectPartOfSpeech,
     SelectDefinition,
-    Suggesting,
     Settings,
 }

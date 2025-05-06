@@ -1,14 +1,17 @@
-use crate::components::{
-    banner_block, definition_block, example_block, footer, part_of_speech_block, popup, search_bar,
-    synonym_block,
-};
 use crate::models::app::App;
-use crate::models::data::Thesaurus;
-use crate::models::input_mode::InputMode;
+use crate::models::thesaurus::Thesaurus;
 use crate::tui::Frame;
 use ratatui::layout::{Direction, Layout, Rect};
 use ratatui::prelude::Constraint;
 use std::rc::Rc;
+
+mod banner_block;
+mod definition_block;
+mod example_block;
+mod footer;
+mod part_of_speech_block;
+mod search_bar;
+mod synonym_block;
 
 pub(crate) fn render(app: &mut App, f: &mut Frame) {
     // Main frame.
@@ -32,25 +35,18 @@ pub(crate) fn render(app: &mut App, f: &mut Frame) {
     let right_frame = create_right_layout(lower_frame[1]);
     let footer_frame = create_footer_layout(main_frame[2]);
 
-    match app.input_mode {
-        InputMode::Suggesting => {
-            f.render_widget(popup::new(app), upper_frame[0]);
-        }
-        _ => {
-            f.render_widget(search_bar::new(app), upper_frame[0]);
-            if !app.results.is_empty() {
-                render_part_of_speech_block(app, f, lower_frame[0]);
-                render_right_frame_components(app, f, right_frame);
-                render_synonym_block(app, f, lower_frame[2]);
-            } else {
-                f.render_widget(banner_block::new(), banner_frame[0]);
-            }
-        }
+    f.render_widget(search_bar::new(app), upper_frame[0]);
+    if !app.results.is_empty() {
+        render_part_of_speech_block(app, f, lower_frame[0]);
+        render_right_frame_components(app, f, right_frame);
+        render_synonym_block(app, f, lower_frame[2]);
+    } else {
+        f.render_widget(banner_block::new(), banner_frame[0]);
     }
+
     render_instructions(app, f, footer_frame);
 }
 
-/// HELPER
 fn create_banner_layout(area: Rect) -> Rc<[Rect]> {
     Layout::default()
         .constraints([Constraint::Percentage(100)])

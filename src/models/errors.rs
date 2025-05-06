@@ -12,6 +12,15 @@ pub(crate) enum Error {
     #[error("unexpected status code: {0}")]
     BadStatus(StatusCode),
 
-    #[error("unexpected response from serp api")]
-    SerpApi,
+    #[error(transparent)]
+    Tui(#[from] anyhow::Error),
+
+    #[error(transparent)]
+    TerminalBackend(#[from] std::io::Error),
+
+    #[error("no suggestions found")]
+    GetSuggestion,
+
+    #[error("word does not exist")]
+    GetWord,
 }

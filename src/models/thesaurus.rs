@@ -4,6 +4,7 @@ use std::fmt::Debug;
 /// Components of a response from the Free Dictionary API.
 #[derive(Default, Clone, Deserialize, Debug)]
 pub(crate) struct Thesaurus {
+    #[allow(unused)]
     pub word: Option<String>,
 
     // A word can have multiple meanings, hence it is represented as an array of meanings.
@@ -26,19 +27,6 @@ impl Thesaurus {
         } else {
             (String::default(), Vec::<Definition>::default())
         }
-    }
-
-    /// A function that prompts the user to re-enter the word because the word cannot be found in the API.
-    pub(crate) fn inject_message(msg: &str) -> Vec<Thesaurus> {
-        let meaning = Meaning {
-            partOfSpeech: Some(String::from("/")),
-            ..Default::default()
-        };
-        let thesaurus = Thesaurus {
-            word: Some(msg.to_string()),
-            meanings: Some(vec![meaning]),
-        };
-        vec![thesaurus]
     }
 }
 
