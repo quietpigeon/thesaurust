@@ -6,6 +6,7 @@ use suggester::{suggest_handler, Suggestions};
 mod dictionary;
 mod suggester;
 
+/// Sends word to dictionary API.
 pub(crate) fn look_up(word: &str) -> Result<WordDef, Error> {
     look_up_handler(word, DICTATIONARY_DOMAIN)
 }

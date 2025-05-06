@@ -1,12 +1,17 @@
-use crate::components::definition_block;
-use crate::components::example_block;
-use crate::components::{banner_block, footer, part_of_speech_block, search_bar, synonym_block};
 use crate::models::app::App;
 use crate::models::thesaurus::Thesaurus;
 use crate::tui::Frame;
 use ratatui::layout::{Direction, Layout, Rect};
 use ratatui::prelude::Constraint;
 use std::rc::Rc;
+
+mod banner_block;
+mod definition_block;
+mod example_block;
+mod footer;
+mod part_of_speech_block;
+mod search_bar;
+mod synonym_block;
 
 pub(crate) fn render(app: &mut App, f: &mut Frame) {
     // Main frame.
@@ -42,7 +47,6 @@ pub(crate) fn render(app: &mut App, f: &mut Frame) {
     render_instructions(app, f, footer_frame);
 }
 
-/// HELPER
 fn create_banner_layout(area: Rect) -> Rc<[Rect]> {
     Layout::default()
         .constraints([Constraint::Percentage(100)])

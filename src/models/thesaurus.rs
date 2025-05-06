@@ -4,6 +4,7 @@ use std::fmt::Debug;
 /// Components of a response from the Free Dictionary API.
 #[derive(Default, Clone, Deserialize, Debug)]
 pub(crate) struct Thesaurus {
+    #[allow(unused)]
     pub word: Option<String>,
 
     // A word can have multiple meanings, hence it is represented as an array of meanings.
