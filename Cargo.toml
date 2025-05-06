@@ -1,14 +1,14 @@
 [package]
 name = "cargo-thesaurust"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
-authors = ["Moreen Ho"]
-homepage = "https://moreenh.me/"
+authors = ["Moreen Ho <pigeon@quietpigeon.com>"]
+homepage = "https://moreenh.me/projects/cargo-thesaurust"
 description = "A terminal-based dictionary app."
 readme = "README.md"
-repository = "https://github.com/quietpigeon/thesaurust"
+repository = "https://github.com/quietpigeon/cargo-thesaurust"
 license = "MIT"
-keywords = ["ratatui", "dictionary", "tui", "terminal"]
+keywords = ["ratatui", "dictionary", "tui", "terminal", "thesaurus"]
 exclude = ["docs/*"]
 
 [[bin]]

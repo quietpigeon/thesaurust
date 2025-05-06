@@ -33,7 +33,7 @@ git clone https://github.com/QuietPigeon2001/thesaurust
 Navigate to the repository and run the following commands:
 
 ```zsh
-cargo install --path .
+cargo install --locked cargo-thesaurust 
 thesaurust
 ```
 
@@ -52,6 +52,6 @@ thesaurust
 - [x] Toggle between definitions with the same part of speech
 - [x] Use a spellchecking API to suggest correct spelling for words
 - [x] Show synonyms
-- [ ] Publish crate
+- [x] Publish crate
 - [ ] Loading screens
 - [ ] Allow users to select similarly spelled words
