@@ -1,5 +1,5 @@
 [package]
-name = "thesaurust"
+name = "cargo-thesaurust"
 version = "0.1.0"
 edition = "2021"
 authors = ["Moreen Ho"]
@@ -11,7 +11,9 @@ license = "MIT"
 keywords = ["ratatui", "dictionary", "tui", "terminal"]
 exclude = ["docs/*"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "thesaurust"
+path = "src/main.rs"
 
 [dependencies]
 reqwest = { version = "0.12.15", features = ["json"] }
