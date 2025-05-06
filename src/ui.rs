@@ -1,7 +1,6 @@
 use crate::components::definition_block;
-use crate::components::{
-    banner_block, example_block, footer, part_of_speech_block, search_bar, synonym_block,
-};
+use crate::components::example_block;
+use crate::components::{banner_block, footer, part_of_speech_block, search_bar, synonym_block};
 use crate::models::app::App;
 use crate::models::thesaurus::Thesaurus;
 use crate::tui::Frame;

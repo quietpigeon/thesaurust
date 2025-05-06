@@ -16,11 +16,10 @@ pub(crate) fn key_handler(app: &mut App, key: KeyEvent) -> Result<(), Error> {
 
 fn handle_normal(app: &mut App, key: &KeyEvent) -> Result<(), Error> {
     match key.code {
-        KeyCode::Char('q') => {
-            App::quit(app);
-        }
+        KeyCode::Char('q') => App::quit(app),
+        KeyCode::Char(':') => app.input_mode = InputMode::Settings,
         KeyCode::Char('j') | KeyCode::Char('k') if !app.results.is_empty() => {
-            app.input_mode = InputMode::SelectPartOfSpeech;
+            app.input_mode = InputMode::SelectPartOfSpeech
         }
         KeyCode::Char('l') | KeyCode::Char('h') if app.part_of_speech_list.items.len() == 1 => {
             app.input_mode = InputMode::SelectDefinition;
@@ -28,9 +27,6 @@ fn handle_normal(app: &mut App, key: &KeyEvent) -> Result<(), Error> {
         KeyCode::Char('/') => {
             app.input_mode = InputMode::Editing;
             app.input.reset();
-        }
-        KeyCode::Char(':') => {
-            app.input_mode = InputMode::Settings;
         }
         _ => {}
     }
@@ -44,6 +40,11 @@ fn handle_editing(app: &mut App, key: &KeyEvent) -> Result<(), Error> {
             app.input_mode = InputMode::Normal;
             let word = app.input.to_string().apply_ref(|w| spellcheck(w))?;
             let results = crate::client::look_up(&word)?;
+            // NOTE: This fixes the appearance of the word in the search bar if the word is
+            // misspelled. I'm not sure if this would be the preferred approach for everyone, so
+            // let's leave it as it is for now. An option that allows users to select other
+            // variants would be nice.
+            app.input = word.into();
             app.results = results.0;
             App::update_all(app);
         }
@@ -107,9 +108,7 @@ fn handle_select_definition(app: &mut App, key: &KeyEvent) -> Result<(), Error> 
 
 fn handle_settings(app: &mut App, key: &KeyEvent) -> Result<(), Error> {
     match key.code {
-        KeyCode::Char('q') => {
-            app.input_mode = InputMode::Editing;
-        }
+        KeyCode::Char('q') => app.input_mode = InputMode::Editing,
         KeyCode::Char('h') | KeyCode::Char('l') => {
             app.is_spelling_fix_enabled = !app.is_spelling_fix_enabled;
         }
