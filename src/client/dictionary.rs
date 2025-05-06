@@ -30,7 +30,7 @@ mod tests {
             .with_status(200)
             .with_body(expected_response)
             .create();
-        let result = look_up_handler("foo", &format!("{url}")).unwrap().0;
+        let result = look_up_handler("foo", &url).unwrap().0;
         let t = result[0].clone();
         let m = &t.meanings.unwrap()[0];
         let pos = m.partOfSpeech.as_ref().unwrap();

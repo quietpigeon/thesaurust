@@ -14,14 +14,13 @@ tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"] }
 ratatui = "0.29.0"
 anyhow = "1.0.75"
 tui-input = "0.12.0"
-serpapi-search-rust = "0.1.0"
 dotenvy = "0.15.7"
 thiserror = "2.0.12"
-mockito = "1.7.0"
 apply = "0.3.0"
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"
+mockito = "1.7.0"
 
 [package.metadata.cargo-machete]
 ignored = ["serde"]

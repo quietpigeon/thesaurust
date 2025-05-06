@@ -13,7 +13,7 @@ pub(crate) enum Error {
     BadStatus(StatusCode),
 
     #[error(transparent)]
-    TUI(#[from] anyhow::Error),
+    Tui(#[from] anyhow::Error),
 
     #[error(transparent)]
     TerminalBackend(#[from] std::io::Error),

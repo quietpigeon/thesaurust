@@ -38,11 +38,11 @@ mod tests {
             .with_status(200)
             .with_body(expected_response)
             .create();
-        let result = suggest_handler("coffee", &format!("{url}")).unwrap().0;
+        let result = suggest_handler("coffee", &url).unwrap().0;
         assert_eq!(result.len(), 2);
         assert_eq!(result[0].word.as_ref().unwrap(), "coffee");
 
-        let n = 180 as i32;
+        let n = 180;
         assert_eq!(result[1].score.as_ref().unwrap(), &n);
 
         mock.assert();

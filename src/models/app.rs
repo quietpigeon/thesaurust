@@ -111,7 +111,8 @@ mod tests {
     fn mock_app_in(input_mode: InputMode) -> App {
         let mut mock_app = App::new();
         mock_app.input_mode = input_mode;
-        return mock_app;
+
+        mock_app
     }
 
     fn mock_part_of_speech() -> String {
