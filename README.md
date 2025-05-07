@@ -22,18 +22,11 @@ The data is fetched from the API provided by <https://dictionaryapi.dev/>. Since
 
 ## Installation
 
-You need to install [Rust](https://www.rust-lang.org/tools/install) before you can proceed.
-
-Clone this repository:
-
-```zsh
-git clone https://github.com/QuietPigeon2001/thesaurust
-```
-
-Navigate to the repository and run the following commands:
+> [!NOTE]
+> You need to install [Rust](https://www.rust-lang.org/tools/install) before you can proceed.
 
 ```zsh
-cargo install --locked cargo-thesaurust 
+cargo install cargo-thesaurust --locked
 thesaurust
 ```
 
