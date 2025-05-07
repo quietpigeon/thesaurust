@@ -12,10 +12,6 @@ mod tui;
 mod ui;
 
 fn main() -> Result<(), Error> {
-    // NOTE: The program should continue to run even if `.env` does not exist.
-    // FIXME: Remove if not used? Or perhaps it can be used to customize the colorscheme.
-    dotenvy::dotenv().ok();
-
     let mut app = App::new();
     let backend = CrosstermBackend::new(std::io::stderr());
     let terminal = Terminal::new(backend)?;

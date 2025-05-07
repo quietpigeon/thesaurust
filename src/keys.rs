@@ -7,17 +7,15 @@ use tui_input::backend::crossterm::EventHandler;
 pub(crate) fn key_handler(app: &mut App, key: KeyEvent) -> Result<(), Error> {
     match app.input_mode {
         InputMode::Normal => handle_normal(app, &key),
-        InputMode::Editing => handle_editing(app, &key),
+        InputMode::Insert => handle_editing(app, &key),
         InputMode::SelectPartOfSpeech => handle_select_pos(app, &key),
         InputMode::SelectDefinition => handle_select_definition(app, &key),
-        InputMode::Settings => handle_settings(app, &key),
     }
 }
 
 fn handle_normal(app: &mut App, key: &KeyEvent) -> Result<(), Error> {
     match key.code {
-        KeyCode::Char('q') => App::quit(app),
-        KeyCode::Char(':') => app.input_mode = InputMode::Settings,
+        KeyCode::Char('q') | KeyCode::Esc => App::quit(app),
         KeyCode::Char('j') | KeyCode::Char('k') if !app.results.is_empty() => {
             app.input_mode = InputMode::SelectPartOfSpeech
         }
@@ -25,7 +23,7 @@ fn handle_normal(app: &mut App, key: &KeyEvent) -> Result<(), Error> {
             app.input_mode = InputMode::SelectDefinition;
         }
         KeyCode::Char('/') => {
-            app.input_mode = InputMode::Editing;
+            app.input_mode = InputMode::Insert;
             app.input.reset();
         }
         _ => {}
@@ -61,13 +59,13 @@ fn handle_editing(app: &mut App, key: &KeyEvent) -> Result<(), Error> {
 
 fn handle_select_pos(app: &mut App, key: &KeyEvent) -> Result<(), Error> {
     match key.code {
-        KeyCode::Char('j') => {
+        KeyCode::Char('j') | KeyCode::Down => {
             app.part_of_speech_list.down();
         }
-        KeyCode::Char('k') => {
+        KeyCode::Char('k') | KeyCode::Up => {
             app.part_of_speech_list.up();
         }
-        KeyCode::Char('q') => {
+        KeyCode::Char('q') | KeyCode::Esc => {
             app.input_mode = InputMode::Normal;
         }
         KeyCode::Enter => {
@@ -83,34 +81,22 @@ fn handle_select_pos(app: &mut App, key: &KeyEvent) -> Result<(), Error> {
 
 fn handle_select_definition(app: &mut App, key: &KeyEvent) -> Result<(), Error> {
     match key.code {
-        KeyCode::Char('l') => {
+        KeyCode::Char('l') | KeyCode::Right | KeyCode::Char('j') | KeyCode::Down => {
             app.definition_list.down();
             App::update_synonym_list(app);
         }
-        KeyCode::Char('h') => {
+        KeyCode::Char('h') | KeyCode::Left | KeyCode::Char('k') | KeyCode::Up => {
             app.definition_list.up();
             App::update_synonym_list(app);
         }
-        KeyCode::Char('q') => {
-            app.input_mode = InputMode::Normal;
+        KeyCode::Char('q') | KeyCode::Esc => {
+            app.input_mode = InputMode::SelectPartOfSpeech;
             app.definition_list.state.select(Some(0));
             App::update_synonym_list(app);
         }
         KeyCode::Char('/') => {
-            app.input_mode = InputMode::Editing;
+            app.input_mode = InputMode::Insert;
             app.input.reset();
-        }
-        _ => {}
-    }
-
-    Ok(())
-}
-
-fn handle_settings(app: &mut App, key: &KeyEvent) -> Result<(), Error> {
-    match key.code {
-        KeyCode::Char('q') => app.input_mode = InputMode::Editing,
-        KeyCode::Char('h') | KeyCode::Char('l') => {
-            app.is_spelling_fix_enabled = !app.is_spelling_fix_enabled;
         }
         _ => {}
     }
