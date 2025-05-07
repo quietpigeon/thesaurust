@@ -10,7 +10,6 @@ pub(crate) struct App {
     pub results: Vec<Thesaurus>,
     pub part_of_speech_list: StatefulList<String>,
     pub definition_list: StatefulList<String>,
-    pub is_spelling_fix_enabled: bool,
     pub synonym_list: StatefulList<String>,
 }
 
@@ -31,10 +30,9 @@ impl App {
             InputMode::Normal if !self.results.is_empty() => {
                 String::from("j, k: Change part of speech  /: Insert")
             }
-            InputMode::Editing => String::from("<ENTER>: Search  <ESC>: Exit"),
+            InputMode::Insert => String::from("<ENTER>: Search  <ESC>: Exit"),
             InputMode::SelectPartOfSpeech => String::from("<ENTER>: Select"),
             InputMode::SelectDefinition => String::from("l, h: Change definition  /: Insert"),
-            InputMode::Settings => self.toggle_spelling_suggestion(),
             _ => String::from("/: Insert"),
         }
     }
@@ -95,10 +93,6 @@ impl App {
             // Select the first item as default.
             self.part_of_speech_list.state.select(Some(0))
         }
-    }
-
-    fn toggle_spelling_suggestion(&mut self) -> String {
-        format!("Spelling suggestion: {}", self.is_spelling_fix_enabled)
     }
 }
 
@@ -213,7 +207,7 @@ mod tests {
 
     #[test]
     fn test_instructions_in_editing_mode() {
-        let mut mock_app = mock_app_in(InputMode::Editing);
+        let mut mock_app = mock_app_in(InputMode::Insert);
         assert_eq!(
             App::update_instructions(&mut mock_app),
             "<ENTER>: Search  <ESC>: Exit"
@@ -232,26 +226,6 @@ mod tests {
         assert_eq!(
             App::update_instructions(&mut mock_app),
             "l, h: Change definition  /: Insert"
-        );
-    }
-
-    #[test]
-    fn test_instructions_in_settings_mode_with_spelling_fix_enabled() {
-        let mut mock_app = mock_app_in(InputMode::Settings);
-        mock_app.is_spelling_fix_enabled = true;
-        assert_eq!(
-            App::update_instructions(&mut mock_app),
-            format!("Spelling suggestion: true")
-        );
-    }
-
-    #[test]
-    fn test_instructions_in_settings_mode_with_spelling_fix_disabled() {
-        let mut mock_app = mock_app_in(InputMode::Settings);
-        // mock_app.is_spelling_fix_enabled is false by default.
-        assert_eq!(
-            App::update_instructions(&mut mock_app),
-            format!("Spelling suggestion: false")
         );
     }
 }

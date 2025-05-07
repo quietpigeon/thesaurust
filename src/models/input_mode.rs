@@ -2,8 +2,7 @@
 pub(crate) enum InputMode {
     #[default]
     Normal,
-    Editing,
+    Insert,
     SelectPartOfSpeech,
     SelectDefinition,
-    Settings,
 }
